@@ -137,6 +137,7 @@ export default function Habits() {
       completedToday: false,
       unit: "lista",
       frequency: "weekly",
+      monthlyDays: [],
       reminderTime: "18:00",
       reminderEnabled: true,
       createdAt: "2024-01-05"
@@ -154,6 +155,7 @@ export default function Habits() {
       completedToday: true,
       unit: "sesión",
       frequency: "daily",
+      monthlyDays: [],
       reminderTime: "20:00",
       reminderEnabled: true,
       createdAt: "2024-01-08"
