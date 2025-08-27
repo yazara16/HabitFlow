@@ -41,6 +41,7 @@ interface Habit {
   unit: string;
   frequency?: "daily" | "weekly" | "monthly" | "custom";
   monthlyDays?: number[];
+  monthlyMonths?: number[];
 }
 
 export default function Dashboard() {
