@@ -43,7 +43,8 @@ interface Habit {
   color: string;
   target: number;
   unit: string;
-  frequency: "daily" | "weekly" | "custom";
+  frequency: "daily" | "weekly" | "monthly" | "custom";
+  monthlyDays?: number[];
   reminderTime?: string;
   reminderEnabled: boolean;
 }
@@ -116,6 +117,7 @@ export default function HabitDialog({ open, onOpenChange, habit, onSave }: Habit
     target: habit?.target || 1,
     unit: habit?.unit || "veces",
     frequency: habit?.frequency || "daily",
+    monthlyDays: habit?.monthlyDays || [],
     reminderTime: habit?.reminderTime || "09:00",
     reminderEnabled: habit?.reminderEnabled || false,
     ...habit
@@ -145,6 +147,7 @@ export default function HabitDialog({ open, onOpenChange, habit, onSave }: Habit
         target: 1,
         unit: "veces",
         frequency: "daily",
+        monthlyDays: [],
         reminderTime: "09:00",
         reminderEnabled: false,
       });
@@ -316,8 +319,56 @@ export default function HabitDialog({ open, onOpenChange, habit, onSave }: Habit
                     <span>Semanal</span>
                   </div>
                 </SelectItem>
+                <SelectItem value="monthly">
+                  <div className="flex items-center space-x-2">
+                    <Target className="h-4 w-4" />
+                    <span>Días específicos del mes</span>
+                  </div>
+                </SelectItem>
               </SelectContent>
             </Select>
+
+            {/* Monthly Days Selector */}
+            {formData.frequency === "monthly" && (
+              <div className="space-y-3 mt-4">
+                <Label>Selecciona los días del mes</Label>
+                <div className="grid grid-cols-7 gap-2">
+                  {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => {
+                    const isSelected = formData.monthlyDays?.includes(day) || false;
+                    return (
+                      <button
+                        key={day}
+                        type="button"
+                        onClick={() => {
+                          const currentDays = formData.monthlyDays || [];
+                          const newDays = isSelected
+                            ? currentDays.filter(d => d !== day)
+                            : [...currentDays, day].sort((a, b) => a - b);
+                          setFormData(prev => ({ ...prev, monthlyDays: newDays }));
+                        }}
+                        className={`
+                          w-8 h-8 rounded-md text-sm font-medium transition-all
+                          ${
+                            isSelected
+                              ? "bg-primary text-primary-foreground shadow-sm"
+                              : "bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground"
+                          }
+                        `}
+                      >
+                        {day}
+                      </button>
+                    );
+                  })}
+                </div>
+                {formData.monthlyDays && formData.monthlyDays.length > 0 && (
+                  <div className="p-2 bg-muted/50 rounded-md">
+                    <p className="text-sm text-muted-foreground">
+                      Días seleccionados: {formData.monthlyDays.join(", ")}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Reminder Settings */}
