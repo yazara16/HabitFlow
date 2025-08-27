@@ -120,6 +120,7 @@ export default function Habits() {
       completedToday: false,
       unit: "USD",
       frequency: "weekly",
+      monthlyDays: [],
       reminderEnabled: false,
       createdAt: "2024-01-01"
     },
