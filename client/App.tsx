@@ -9,6 +9,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard";
+import Habits from "./pages/Habits";
 import PlaceholderPage from "./pages/PlaceholderPage";
 
 const queryClient = new QueryClient();
@@ -22,15 +23,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route
-            path="/habits"
-            element={
-              <PlaceholderPage
-                title="Gestión de Hábitos"
-                description="Aquí podrás crear, editar y organizar todos tus hábitos por categorías."
-              />
-            }
-          />
+          <Route path="/habits" element={<Habits />} />
           <Route
             path="/calendar"
             element={
