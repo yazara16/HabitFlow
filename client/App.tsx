@@ -11,6 +11,7 @@ import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard";
 import Habits from "./pages/Habits";
 import Calendar from "./pages/Calendar";
+import Settings from "./pages/Settings";
 import PlaceholderPage from "./pages/PlaceholderPage";
 
 const queryClient = new QueryClient();
@@ -26,15 +27,7 @@ const App = () => (
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/habits" element={<Habits />} />
           <Route path="/calendar" element={<Calendar />} />
-          <Route
-            path="/settings"
-            element={
-              <PlaceholderPage
-                title="Configuración"
-                description="Personaliza tu experiencia, notificaciones y preferencias de la aplicación."
-              />
-            }
-          />
+          <Route path="/settings" element={<Settings />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
