@@ -57,11 +57,11 @@ export default function Calendar() {
   const [selectedDay, setSelectedDay] = useState<CalendarDay | null>(null);
   const [dayDetailOpen, setDayDetailOpen] = useState(false);
 
-  // Mock data for calendar habits
+  // Mock data for calendar habits - reduced examples
   const mockHabits: CalendarHabit[] = [
     {
       id: "1",
-      name: "Correr",
+      name: "Ejercicio",
       category: "exercise",
       icon: Dumbbell,
       color: "text-red-500 bg-red-500/10",
@@ -71,25 +71,6 @@ export default function Calendar() {
     },
     {
       id: "2",
-      name: "Agua",
-      category: "hydration",
-      icon: Droplets,
-      color: "text-blue-500 bg-blue-500/10",
-      time: "09:00",
-      completed: true,
-      streak: 3
-    },
-    {
-      id: "3",
-      name: "Ahorro",
-      category: "finance",
-      icon: DollarSign,
-      color: "text-green-500 bg-green-500/10",
-      completed: false,
-      streak: 7
-    },
-    {
-      id: "4",
       name: "Meditar",
       category: "custom",
       icon: Star,
