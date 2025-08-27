@@ -346,7 +346,7 @@ export default function HabitDialog({ open, onOpenChange, habit, onSave }: Habit
           </div>
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="flex-shrink-0">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
