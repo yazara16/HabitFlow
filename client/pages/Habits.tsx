@@ -59,7 +59,8 @@ interface Habit {
   streak: number;
   completedToday: boolean;
   unit: string;
-  frequency: "daily" | "weekly" | "custom";
+  frequency: "daily" | "weekly" | "monthly" | "custom";
+  monthlyDays?: number[];
   reminderTime?: string;
   reminderEnabled: boolean;
   createdAt: string;
