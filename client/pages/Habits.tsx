@@ -82,6 +82,7 @@ export default function Habits() {
       completedToday: true,
       unit: "sesión",
       frequency: "daily",
+      monthlyDays: [],
       reminderTime: "07:00",
       reminderEnabled: true,
       createdAt: "2024-01-15",
