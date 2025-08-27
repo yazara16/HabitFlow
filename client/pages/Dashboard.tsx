@@ -1,4 +1,6 @@
 import { useState } from "react";
+import HabitDialog from "@/components/HabitDialog";
+import ProgressCharts from "@/components/ProgressCharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -39,6 +41,8 @@ interface Habit {
 }
 
 export default function Dashboard() {
+  const [habitDialogOpen, setHabitDialogOpen] = useState(false);
+  const [editingHabit, setEditingHabit] = useState<Habit | undefined>(undefined);
   const [habits, setHabits] = useState<Habit[]>([
     {
       id: "1",
@@ -159,7 +163,13 @@ export default function Dashboard() {
               </h1>
               <p className="text-muted-foreground capitalize">{today}</p>
             </div>
-            <Button className="mt-4 sm:mt-0 flex items-center space-x-2">
+            <Button
+              className="mt-4 sm:mt-0 flex items-center space-x-2"
+              onClick={() => {
+                setEditingHabit(undefined);
+                setHabitDialogOpen(true);
+              }}
+            >
               <Plus className="h-4 w-4" />
               <span>Nuevo Hábito</span>
             </Button>
@@ -315,7 +325,14 @@ export default function Dashboard() {
                         </div>
                       </div>
                       
-                      <Button variant="ghost" size="sm">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setEditingHabit(habit);
+                          setHabitDialogOpen(true);
+                        }}
+                      >
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </div>
@@ -404,7 +421,32 @@ export default function Dashboard() {
             </Card>
           </div>
         </div>
+
+        {/* Analytics Section */}
+        <div className="mt-8">
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-foreground mb-2">Análisis y Progreso</h2>
+            <p className="text-muted-foreground">Visualiza tu rendimiento y identifica patrones para mejorar</p>
+          </div>
+          <ProgressCharts />
+        </div>
       </div>
+
+      {/* Habit Creation/Edit Dialog */}
+      <HabitDialog
+        open={habitDialogOpen}
+        onOpenChange={setHabitDialogOpen}
+        habit={editingHabit}
+        onSave={(newHabit) => {
+          if (editingHabit) {
+            // Update existing habit
+            setHabits(prev => prev.map(h => h.id === editingHabit.id ? { ...newHabit, id: editingHabit.id } : h));
+          } else {
+            // Add new habit
+            setHabits(prev => [...prev, { ...newHabit, completed: 0, streak: 0, completedToday: false }]);
+          }
+        }}
+      />
     </div>
   );
 }
