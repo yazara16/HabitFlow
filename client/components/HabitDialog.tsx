@@ -153,20 +153,20 @@ export default function HabitDialog({ open, onOpenChange, habit, onSave }: Habit
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[525px]">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-[525px] max-h-[90vh] flex flex-col">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle>
             {habit ? "Editar Hábito" : "Crear Nuevo Hábito"}
           </DialogTitle>
           <DialogDescription>
-            {habit 
-              ? "Modifica los detalles de tu hábito" 
+            {habit
+              ? "Modifica los detalles de tu hábito"
               : "Define un nuevo hábito para seguir y mejorar tu rutina diaria"
             }
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-6 py-4">
+        <div className="grid gap-6 py-4 overflow-y-auto flex-1 pr-1">
           {/* Basic Info */}
           <div className="space-y-4">
             <div className="space-y-2">
