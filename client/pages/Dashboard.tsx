@@ -38,11 +38,14 @@ interface Habit {
   streak: number;
   completedToday: boolean;
   unit: string;
+  frequency?: "daily" | "weekly" | "monthly" | "custom";
+  monthlyDays?: number[];
 }
 
 export default function Dashboard() {
   const [habitDialogOpen, setHabitDialogOpen] = useState(false);
   const [editingHabit, setEditingHabit] = useState<Habit | undefined>(undefined);
+  const [userName] = useState("Ara Moreno"); // En una app real, esto vendría del contexto de usuario
   const [habits, setHabits] = useState<Habit[]>([
     {
       id: "1",
@@ -159,7 +162,7 @@ export default function Dashboard() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h1 className="text-3xl font-bold text-foreground mb-2">
-                ¡Buen día! 👋
+                ¡Buen día, {userName}! 👋
               </h1>
               <p className="text-muted-foreground capitalize">{today}</p>
             </div>
