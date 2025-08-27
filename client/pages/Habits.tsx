@@ -101,6 +101,7 @@ export default function Habits() {
       completedToday: false,
       unit: "vasos",
       frequency: "daily",
+      monthlyDays: [],
       reminderTime: "09:00",
       reminderEnabled: true,
       createdAt: "2024-01-10",
