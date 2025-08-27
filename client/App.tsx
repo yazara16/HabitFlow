@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard";
 import Habits from "./pages/Habits";
+import Calendar from "./pages/Calendar";
 import PlaceholderPage from "./pages/PlaceholderPage";
 
 const queryClient = new QueryClient();
@@ -24,15 +25,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/habits" element={<Habits />} />
-          <Route
-            path="/calendar"
-            element={
-              <PlaceholderPage
-                title="Calendario Interactivo"
-                description="Planifica y visualiza tus hábitos en un calendario con funcionalidad drag & drop."
-              />
-            }
-          />
+          <Route path="/calendar" element={<Calendar />} />
           <Route
             path="/settings"
             element={
