@@ -1,6 +1,7 @@
 import { useState } from "react";
 import HabitDialog from "@/components/HabitDialog";
 import ProgressCharts from "@/components/ProgressCharts";
+import NotificationsPanel from "@/components/NotificationsPanel";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -166,16 +167,19 @@ export default function Dashboard() {
               </h1>
               <p className="text-muted-foreground capitalize">{today}</p>
             </div>
-            <Button
-              className="mt-4 sm:mt-0 flex items-center space-x-2"
-              onClick={() => {
-                setEditingHabit(undefined);
-                setHabitDialogOpen(true);
-              }}
-            >
-              <Plus className="h-4 w-4" />
-              <span>Nuevo Hábito</span>
-            </Button>
+            <div className="flex items-center space-x-3 mt-4 sm:mt-0">
+              <NotificationsPanel />
+              <Button
+                className="flex items-center space-x-2"
+                onClick={() => {
+                  setEditingHabit(undefined);
+                  setHabitDialogOpen(true);
+                }}
+              >
+                <Plus className="h-4 w-4" />
+                <span>Nuevo Hábito</span>
+              </Button>
+            </div>
           </div>
         </div>
 
