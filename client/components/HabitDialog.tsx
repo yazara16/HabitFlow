@@ -45,6 +45,7 @@ interface Habit {
   unit: string;
   frequency: "daily" | "weekly" | "monthly" | "custom";
   monthlyDays?: number[];
+  monthlyMonths?: number[];
   reminderTime?: string;
   reminderEnabled: boolean;
 }
@@ -118,6 +119,7 @@ export default function HabitDialog({ open, onOpenChange, habit, onSave }: Habit
     unit: habit?.unit || "veces",
     frequency: habit?.frequency || "daily",
     monthlyDays: habit?.monthlyDays || [],
+    monthlyMonths: habit?.monthlyMonths || [],
     reminderTime: habit?.reminderTime || "09:00",
     reminderEnabled: habit?.reminderEnabled || false,
     ...habit
@@ -148,6 +150,7 @@ export default function HabitDialog({ open, onOpenChange, habit, onSave }: Habit
         unit: "veces",
         frequency: "daily",
         monthlyDays: [],
+        monthlyMonths: [],
         reminderTime: "09:00",
         reminderEnabled: false,
       });
@@ -328,45 +331,93 @@ export default function HabitDialog({ open, onOpenChange, habit, onSave }: Habit
               </SelectContent>
             </Select>
 
-            {/* Monthly Days Selector */}
+            {/* Monthly Days and Months Selector */}
             {formData.frequency === "monthly" && (
-              <div className="space-y-3 mt-4">
-                <Label>Selecciona los días del mes</Label>
-                <div className="grid grid-cols-7 gap-2">
-                  {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => {
-                    const isSelected = formData.monthlyDays?.includes(day) || false;
-                    return (
-                      <button
-                        key={day}
-                        type="button"
-                        onClick={() => {
-                          const currentDays = formData.monthlyDays || [];
-                          const newDays = isSelected
-                            ? currentDays.filter(d => d !== day)
-                            : [...currentDays, day].sort((a, b) => a - b);
-                          setFormData(prev => ({ ...prev, monthlyDays: newDays }));
-                        }}
-                        className={`
-                          w-8 h-8 rounded-md text-sm font-medium transition-all
-                          ${
-                            isSelected
-                              ? "bg-primary text-primary-foreground shadow-sm"
-                              : "bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground"
-                          }
-                        `}
-                      >
-                        {day}
-                      </button>
-                    );
-                  })}
-                </div>
-                {formData.monthlyDays && formData.monthlyDays.length > 0 && (
-                  <div className="p-2 bg-muted/50 rounded-md">
-                    <p className="text-sm text-muted-foreground">
-                      Días seleccionados: {formData.monthlyDays.join(", ")}
-                    </p>
+              <div className="space-y-4 mt-4">
+                <div className="space-y-3">
+                  <Label>Selecciona los meses</Label>
+                  <div className="grid grid-cols-3 md:grid-cols-4 gap-2">
+                    {[
+                      "Ene", "Feb", "Mar", "Abr", "May", "Jun",
+                      "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"
+                    ].map((monthName, index) => {
+                      const monthNumber = index + 1;
+                      const isSelected = formData.monthlyMonths?.includes(monthNumber) || false;
+                      return (
+                        <button
+                          key={monthNumber}
+                          type="button"
+                          onClick={() => {
+                            const currentMonths = formData.monthlyMonths || [];
+                            const newMonths = isSelected
+                              ? currentMonths.filter(m => m !== monthNumber)
+                              : [...currentMonths, monthNumber].sort((a, b) => a - b);
+                            setFormData(prev => ({ ...prev, monthlyMonths: newMonths }));
+                          }}
+                          className={`
+                            px-3 py-2 rounded-md text-sm font-medium transition-all
+                            ${
+                              isSelected
+                                ? "bg-primary text-primary-foreground shadow-sm"
+                                : "bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground"
+                            }
+                          `}
+                        >
+                          {monthName}
+                        </button>
+                      );
+                    })}
                   </div>
-                )}
+                  {formData.monthlyMonths && formData.monthlyMonths.length > 0 && (
+                    <div className="p-2 bg-muted/50 rounded-md">
+                      <p className="text-sm text-muted-foreground">
+                        Meses seleccionados: {formData.monthlyMonths.map(m => [
+                          "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+                          "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+                        ][m - 1]).join(", ")}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-3">
+                  <Label>Selecciona los días del mes</Label>
+                  <div className="grid grid-cols-7 gap-2">
+                    {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => {
+                      const isSelected = formData.monthlyDays?.includes(day) || false;
+                      return (
+                        <button
+                          key={day}
+                          type="button"
+                          onClick={() => {
+                            const currentDays = formData.monthlyDays || [];
+                            const newDays = isSelected
+                              ? currentDays.filter(d => d !== day)
+                              : [...currentDays, day].sort((a, b) => a - b);
+                            setFormData(prev => ({ ...prev, monthlyDays: newDays }));
+                          }}
+                          className={`
+                            w-8 h-8 rounded-md text-sm font-medium transition-all
+                            ${
+                              isSelected
+                                ? "bg-primary text-primary-foreground shadow-sm"
+                                : "bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground"
+                            }
+                          `}
+                        >
+                          {day}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {formData.monthlyDays && formData.monthlyDays.length > 0 && (
+                    <div className="p-2 bg-muted/50 rounded-md">
+                      <p className="text-sm text-muted-foreground">
+                        Días seleccionados: {formData.monthlyDays.join(", ")}
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
