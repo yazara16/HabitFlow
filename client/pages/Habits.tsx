@@ -61,6 +61,7 @@ interface Habit {
   unit: string;
   frequency: "daily" | "weekly" | "monthly" | "custom";
   monthlyDays?: number[];
+  monthlyMonths?: number[];
   reminderTime?: string;
   reminderEnabled: boolean;
   createdAt: string;
@@ -83,6 +84,7 @@ export default function Habits() {
       unit: "sesión",
       frequency: "daily",
       monthlyDays: [],
+      monthlyMonths: [],
       reminderTime: "07:00",
       reminderEnabled: true,
       createdAt: "2024-01-15",
@@ -102,6 +104,7 @@ export default function Habits() {
       unit: "vasos",
       frequency: "daily",
       monthlyDays: [],
+      monthlyMonths: [],
       reminderTime: "09:00",
       reminderEnabled: true,
       createdAt: "2024-01-10",
@@ -121,6 +124,7 @@ export default function Habits() {
       unit: "USD",
       frequency: "weekly",
       monthlyDays: [],
+      monthlyMonths: [],
       reminderEnabled: false,
       createdAt: "2024-01-01"
     },
@@ -138,6 +142,7 @@ export default function Habits() {
       unit: "lista",
       frequency: "weekly",
       monthlyDays: [],
+      monthlyMonths: [],
       reminderTime: "18:00",
       reminderEnabled: true,
       createdAt: "2024-01-05"
@@ -156,6 +161,7 @@ export default function Habits() {
       unit: "sesión",
       frequency: "daily",
       monthlyDays: [],
+      monthlyMonths: [],
       reminderTime: "20:00",
       reminderEnabled: true,
       createdAt: "2024-01-08"
