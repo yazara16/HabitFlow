@@ -11,5 +11,9 @@ export const routes: Routes = [
   { path: 'calendar', component: CalendarComponent },
   { path: 'settings', component: SettingsComponent },
   { path: 'notifications/:id', component: NotificationDetailComponent },
+  // Legacy capitalized paths support
+  { path: 'Habits', redirectTo: 'habits', pathMatch: 'full' },
+  { path: 'Calendar', redirectTo: 'calendar', pathMatch: 'full' },
+  { path: 'Settings', redirectTo: 'settings', pathMatch: 'full' },
   { path: '**', redirectTo: '' }
 ];
