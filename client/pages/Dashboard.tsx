@@ -272,7 +272,7 @@ export default function Dashboard() {
                   </Badge>
                 </CardTitle>
                 <CardDescription>
-                  Mantén tu momentum y completa tus hábitos diarios
+                  Mantén tu momento y completa tus hábitos diarios
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
