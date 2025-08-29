@@ -155,7 +155,7 @@ export default function Calendar() {
     return days;
   };
 
-  const calendarDays = generateCalendarDays();
+  const calendarDays = useMemo(() => generateCalendarDays(), [currentDate, habits]);
 
   const navigateMonth = (direction: 'prev' | 'next') => {
     setCurrentDate(prev => {
