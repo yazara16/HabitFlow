@@ -127,12 +127,16 @@ export default function Calendar() {
       const isCurrentMonth = date.getMonth() === month;
       const isToday = date.toDateString() === today.toDateString();
       
-      // Mock habit assignment (in real app, this would come from backend)
-      // Only assign habits to some days (not all days) to avoid overcrowding
-      const shouldHaveHabits = isCurrentMonth && (date.getDay() === 1 || date.getDay() === 3 || date.getDay() === 5 || date.getDate() % 7 === 0);
-      const dayHabits = shouldHaveHabits ? mockHabits.map(habit => ({
-        ...habit,
-        completed: Math.random() > 0.4, // Random completion for demo
+      // Build habits for the day from global list
+      const dayHabits: CalendarHabit[] = isCurrentMonth ? habits.filter(h => isScheduledOn(h, date)).map(h => ({
+        id: h.id,
+        name: h.name,
+        category: h.category,
+        icon: h.icon,
+        color: h.color,
+        time: h.reminderTime,
+        completed: date.toDateString() === new Date().toDateString() ? (h.completed >= h.target) : false,
+        streak: h.streak,
       })) : [];
       
       const completionRate = dayHabits.length > 0 
