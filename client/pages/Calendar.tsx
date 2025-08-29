@@ -416,8 +416,7 @@ export default function Calendar() {
                       <div className="space-y-1">
                         {displayHabits.map((habit, hIdx) => {
                           const Icon = habit.icon;
-                          const source = habits.find(x => x.id === habit.id);
-                          const draggable = source?.frequency !== 'daily';
+                          const draggable = true;
                           return (
                             <div
                               key={hIdx}
@@ -430,7 +429,7 @@ export default function Calendar() {
                               onDragEnd={() => {
                                 setTimeout(() => { isDraggingRef.current = false; }, 50);
                               }}
-                              className={`flex items-center space-x-1 p-2 rounded text-xs ${habit.color} ${draggable ? 'cursor-move' : ''}`}
+                              className={`flex items-center space-x-1 p-2 rounded text-xs ${habit.color} cursor-move`}
                             >
                               <Icon className="h-3 w-3" />
                               <span className="truncate">{habit.name}</span>
