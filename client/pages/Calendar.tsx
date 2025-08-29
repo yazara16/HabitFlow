@@ -54,7 +54,7 @@ const MAX_HABITS_PER_DAY = 2;
 
 export default function Calendar() {
   useHabitReminders();
-  const { habits, addHabit, updateHabit } = useHabits();
+  const { habits, addHabit, updateHabit, removeHabit } = useHabits();
   const isDraggingRef = useRef(false);
   const [forceShowDates, setForceShowDates] = useState<Record<string, boolean>>({});
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -62,6 +62,7 @@ export default function Calendar() {
   const [selectedDay, setSelectedDay] = useState<CalendarDay | null>(null);
   const [dayDetailOpen, setDayDetailOpen] = useState(false);
   const [habitDialogOpen, setHabitDialogOpen] = useState(false);
+  const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
 
   const isScheduledOn = (habit: Habit, date: Date) => {
     const created = habit.createdAt ? new Date(habit.createdAt + "T00:00:00") : new Date(0);
