@@ -48,26 +48,7 @@ import Navigation from "@/components/Navigation";
 import HabitDialog from "@/components/HabitDialog";
 import { useHabits, Habit as HabitType } from "@/contexts/HabitsContext";
 
-interface Habit {
-  id: string;
-  name: string;
-  description?: string;
-  category: "exercise" | "hydration" | "finance" | "shopping" | "custom";
-  icon: any;
-  color: string;
-  target: number;
-  completed: number;
-  streak: number;
-  completedToday: boolean;
-  unit: string;
-  frequency: "daily" | "weekly" | "monthly" | "custom";
-  monthlyDays?: number[];
-  monthlyMonths?: number[];
-  reminderTime?: string;
-  reminderEnabled: boolean;
-  createdAt: string;
-  lastCompleted?: string;
-}
+type Habit = HabitType;
 
 export default function Habits() {
   const [habits, setHabits] = useState<Habit[]>([
