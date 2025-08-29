@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -55,6 +55,7 @@ const MAX_HABITS_PER_DAY = 2;
 export default function Calendar() {
   useHabitReminders();
   const { habits, addHabit, updateHabit } = useHabits();
+  const isDraggingRef = useRef(false);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<"month" | "week">("month");
   const [selectedDay, setSelectedDay] = useState<CalendarDay | null>(null);
@@ -390,6 +391,7 @@ export default function Calendar() {
                     <div
                       key={idx}
                       onClick={() => {
+                        if (isDraggingRef.current) return;
                         const completionRate = shownHabits.length > 0 ? (shownHabits.filter(h => h.completed).length / shownHabits.length) * 100 : 0;
                         handleDayClick({ date, habits: shownHabits, isCurrentMonth: true, isToday, completionRate });
                       }}
@@ -399,7 +401,7 @@ export default function Calendar() {
                         const id = e.dataTransfer.getData('text/plain');
                         if (id) handleDropHabit(id, date);
                       }}
-                      className={`p-2 min-h:[140px] border border-border rounded-lg cursor-pointer transition-all hover:border-border/60 ${isToday ? 'ring-2 ring-primary' : ''}`}
+                      className={`p-2 min-h-[140px] border border-border rounded-lg cursor-pointer transition-all hover:border-border/60 ${isToday ? 'ring-2 ring-primary' : ''}`}
                     >
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-sm font-medium">{dayNames[date.getDay()]} {date.getDate()}</span>
@@ -413,8 +415,14 @@ export default function Calendar() {
                             <div
                               key={hIdx}
                               draggable={draggable}
+                              onMouseDown={(e) => e.stopPropagation()}
                               onDragStart={(e) => {
+                                isDraggingRef.current = true;
                                 e.dataTransfer.setData('text/plain', habit.id);
+                              }}
+                              onDragEnd={() => {
+                                // small timeout to avoid click firing after drag
+                                setTimeout(() => { isDraggingRef.current = false; }, 50);
                               }}
                               className={`flex items-center space-x-1 p-2 rounded text-xs ${habit.color} ${draggable ? 'cursor-move' : ''}`}
                             >
