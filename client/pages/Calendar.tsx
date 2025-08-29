@@ -27,6 +27,7 @@ import Navigation from "@/components/Navigation";
 import HabitDialog from "@/components/HabitDialog";
 import { useHabits, Habit as HabitType } from "@/contexts/HabitsContext";
 import { useHabitReminders } from "@/hooks/use-habit-reminders";
+import { toast } from "@/hooks/use-toast";
 
 type Habit = HabitType;
 
@@ -53,7 +54,7 @@ const MAX_HABITS_PER_DAY = 2;
 
 export default function Calendar() {
   useHabitReminders();
-  const { habits, addHabit } = useHabits();
+  const { habits, addHabit, updateHabit } = useHabits();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<"month" | "week">("month");
   const [selectedDay, setSelectedDay] = useState<CalendarDay | null>(null);
@@ -173,6 +174,22 @@ export default function Calendar() {
 
   const dayNames = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
 
+  const weekStart = useMemo(() => {
+    const d = new Date(currentDate);
+    const wd = d.getDay();
+    d.setDate(d.getDate() - wd);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }, [currentDate]);
+
+  const weekDays = useMemo(() => (
+    Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(weekStart);
+      d.setDate(d.getDate() + i);
+      return d;
+    })
+  ), [weekStart]);
+
   const thisMonthStats = calendarDays
     .filter((day) => day.isCurrentMonth)
     .reduce(
@@ -186,6 +203,31 @@ export default function Calendar() {
       },
       { totalDays: 0, perfectDays: 0, goodDays: 0 }
     );
+
+  const handleDropHabit = (habitId: string, dropDate: Date) => {
+    const h = habits.find((x) => x.id === habitId);
+    if (!h) return;
+    const createdAt = dropDate.toISOString().split('T')[0];
+    if (h.frequency === 'daily') {
+      toast({ title: 'No se puede mover', description: 'Los hábitos diarios se repiten todos los días.' });
+      return;
+    }
+    if (h.frequency === 'weekly') {
+      updateHabit(h.id, { createdAt });
+      toast({ title: 'Hábito movido', description: `Programado los ${dayNames[dropDate.getDay()]}.` });
+      return;
+    }
+    if (h.frequency === 'monthly') {
+      const m = dropDate.getMonth() + 1;
+      const d = dropDate.getDate();
+      const months = Array.from(new Set([...(h.monthlyMonths || []), m])).sort((a, b) => a - b);
+      const days = Array.from(new Set([...(h.monthlyDays || []), d])).sort((a, b) => a - b);
+      updateHabit(h.id, { createdAt, monthlyMonths: months, monthlyDays: days });
+      toast({ title: 'Hábito movido', description: `Programado el día ${d} de ${monthNames[m - 1]}.` });
+      return;
+    }
+    toast({ title: 'Frecuencia no soportada', description: 'Esta frecuencia aún no admite arrastrar y soltar.' });
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -330,10 +372,64 @@ export default function Calendar() {
                 ))}
               </div>
             ) : (
-              <div className="space-y-4">
-                <p className="text-center text-muted-foreground py-8">
-                  Vista semanal en desarrollo. Próximamente con funcionalidad drag & drop.
-                </p>
+              <div className="grid grid-cols-7 gap-2">
+                {weekDays.map((date, idx) => {
+                  const isToday = date.toDateString() === new Date().toDateString();
+                  const dayHabits: CalendarHabit[] = habits.filter(h => isScheduledOn(h, date)).map(h => ({
+                    id: h.id,
+                    name: h.name,
+                    category: h.category,
+                    icon: h.icon,
+                    color: h.color,
+                    time: h.reminderTime,
+                    completed: date.toDateString() === new Date().toDateString() ? (h.completed >= h.target) : false,
+                    streak: h.streak,
+                  }));
+                  return (
+                    <div
+                      key={idx}
+                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        const id = e.dataTransfer.getData('text/plain');
+                        if (id) handleDropHabit(id, date);
+                      }}
+                      className={`p-2 min-h-[140px] border border-border rounded-lg ${isToday ? 'ring-2 ring-primary' : ''}`}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium">{dayNames[date.getDay()]} {date.getDate()}</span>
+                      </div>
+                      <div className="space-y-1">
+                        {dayHabits.map((habit, hIdx) => {
+                          const Icon = habit.icon;
+                          const source = habits.find(x => x.id === habit.id);
+                          const draggable = source?.frequency !== 'daily';
+                          return (
+                            <div
+                              key={hIdx}
+                              draggable={draggable}
+                              onDragStart={(e) => {
+                                e.dataTransfer.setData('text/plain', habit.id);
+                              }}
+                              className={`flex items-center space-x-1 p-2 rounded text-xs ${habit.color} ${draggable ? 'cursor-move' : ''}`}
+                            >
+                              <Icon className="h-3 w-3" />
+                              <span className="truncate">{habit.name}</span>
+                              {habit.completed && (
+                                <CheckCircle2 className="h-3 w-3 text-success ml-auto" />
+                              )}
+                            </div>
+                          );
+                        })}
+                        {dayHabits.length === 0 && (
+                          <div className="text-xs text-muted-foreground text-center py-6 border border-dashed border-border rounded">
+                            Arrastra aquí
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </CardContent>
