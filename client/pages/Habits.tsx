@@ -47,6 +47,7 @@ import {
 import Navigation from "@/components/Navigation";
 import HabitDialog from "@/components/HabitDialog";
 import { useHabits, Habit as HabitType } from "@/contexts/HabitsContext";
+import { toast } from "@/hooks/use-toast";
 
 type Habit = HabitType;
 
@@ -144,7 +145,7 @@ export default function Habits() {
                 Gestión de Hábitos
               </h1>
               <p className="text-muted-foreground">
-                Organiza, edita y supervisa todos tus hábitos desde un solo lugar
+                Organiza, edita y supervisa todos tus h��bitos desde un solo lugar
               </p>
             </div>
             <Button 
