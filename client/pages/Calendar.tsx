@@ -423,7 +423,7 @@ export default function Calendar() {
               <div className="text-center py-8">
                 <Target className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <p className="text-muted-foreground">No hay hábitos programados para este día</p>
-                <Button className="mt-4" size="sm">
+                <Button className="mt-4" size="sm" onClick={() => setHabitDialogOpen(true)}>
                   <Plus className="h-4 w-4 mr-2" />
                   Agregar Hábito
                 </Button>
