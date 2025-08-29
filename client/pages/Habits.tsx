@@ -116,6 +116,7 @@ export default function Habits() {
     removeHabit(habitId);
     setDeleteDialogOpen(false);
     setHabitToDelete(null);
+    toast({ title: 'Hábito eliminado' });
   };
 
   const handleEditHabit = (habit: Habit) => {
@@ -145,7 +146,7 @@ export default function Habits() {
                 Gestión de Hábitos
               </h1>
               <p className="text-muted-foreground">
-                Organiza, edita y supervisa todos tus h��bitos desde un solo lugar
+                Organiza, edita y supervisa todos tus hábitos desde un solo lugar
               </p>
             </div>
             <Button 
