@@ -28,10 +28,12 @@ import {
 } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import { useHabits, Habit as HabitType } from "@/contexts/HabitsContext";
+import { useHabitReminders } from "@/hooks/use-habit-reminders";
 
 type Habit = HabitType;
 
 export default function Dashboard() {
+  useHabitReminders();
   const { habits, addHabit, updateHabit } = useHabits();
   const [habitDialogOpen, setHabitDialogOpen] = useState(false);
   const [editingHabit, setEditingHabit] = useState<Habit | undefined>(undefined);

@@ -26,6 +26,7 @@ import {
 import Navigation from "@/components/Navigation";
 import HabitDialog from "@/components/HabitDialog";
 import { useHabits, Habit as HabitType } from "@/contexts/HabitsContext";
+import { useHabitReminders } from "@/hooks/use-habit-reminders";
 
 type Habit = HabitType;
 
@@ -51,6 +52,7 @@ interface CalendarDay {
 const MAX_HABITS_PER_DAY = 2;
 
 export default function Calendar() {
+  useHabitReminders();
   const { habits, addHabit } = useHabits();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<"month" | "week">("month");
@@ -439,14 +441,6 @@ export default function Calendar() {
               </div>
             )}
 
-            {selectedDay && (
-              <div className="flex justify-end">
-                <Button size="sm" onClick={() => setHabitDialogOpen(true)}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Agregar Hábito
-                </Button>
-              </div>
-            )}
           </div>
         </DialogContent>
       </Dialog>
