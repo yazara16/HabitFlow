@@ -135,6 +135,8 @@ export default function Settings() {
     setHasUnsavedChanges(true);
   };
 
+  const [avatar, setAvatar] = useState<string | null>(typeof window !== 'undefined' ? localStorage.getItem('profile.avatar') : null);
+
   const colorSchemes = [
     { id: "purple", name: "Púrpura", color: "bg-purple-500" },
     { id: "blue", name: "Azul", color: "bg-blue-500" },
