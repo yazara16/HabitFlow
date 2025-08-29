@@ -46,6 +46,7 @@ import {
 } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import HabitDialog from "@/components/HabitDialog";
+import { useHabits, Habit as HabitType } from "@/contexts/HabitsContext";
 
 interface Habit {
   id: string;
