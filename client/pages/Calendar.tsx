@@ -498,7 +498,17 @@ export default function Calendar() {
               selectedDay?.habits.map((habit, index) => {
                 const Icon = habit.icon;
                 return (
-                  <div key={index} className="flex items-center space-x-3 p-3 border border-border rounded-lg">
+                  <div
+                    key={index}
+                    className="flex items-center space-x-3 p-3 border border-border rounded-lg hover:border-border/60 cursor-pointer"
+                    onClick={() => {
+                      const original = habits.find(h => h.id === habit.id);
+                      if (original) {
+                        setEditingHabit(original as any);
+                        setHabitDialogOpen(true);
+                      }
+                    }}
+                  >
                     <div className={`p-2 rounded-lg ${habit.color}`}>
                       <Icon className="h-4 w-4" />
                     </div>
@@ -513,17 +523,30 @@ export default function Calendar() {
                         )}
                       </div>
 
-                      <div className="flex items-center space-x-4 text-sm text-muted-foreground mt-1">
-                        {habit.time && (
+                      <div className="flex items-center justify-between mt-1">
+                        <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+                          {habit.time && (
+                            <div className="flex items-center space-x-1">
+                              <Clock className="h-3 w-3" />
+                              <span>{habit.time}</span>
+                            </div>
+                          )}
                           <div className="flex items-center space-x-1">
-                            <Clock className="h-3 w-3" />
-                            <span>{habit.time}</span>
+                            <Flame className="h-3 w-3 text-orange-500" />
+                            <span>{habit.streak} días</span>
                           </div>
-                        )}
-                        <div className="flex items-center space-x-1">
-                          <Flame className="h-3 w-3 text-orange-500" />
-                          <span>{habit.streak} días</span>
                         </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeHabit(habit.id);
+                            toast({ title: 'Hábito eliminado' });
+                          }}
+                        >
+                          Eliminar
+                        </Button>
                       </div>
                     </div>
                   </div>
