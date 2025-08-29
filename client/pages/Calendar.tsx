@@ -1,16 +1,15 @@
 import { useMemo, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
+import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { 
+import {
   ChevronLeft,
   ChevronRight,
   Calendar as CalendarIcon,
@@ -21,14 +20,8 @@ import {
   Flame,
   TrendingUp,
   Clock,
-  Dumbbell,
-  Droplets,
-  DollarSign,
-  ShoppingCart,
-  Star,
   Grid3X3,
   List,
-  MoreHorizontal
 } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import HabitDialog from "@/components/HabitDialog";
@@ -55,6 +48,8 @@ interface CalendarDay {
   completionRate: number;
 }
 
+const MAX_HABITS_PER_DAY = 2;
+
 export default function Calendar() {
   const { habits, addHabit } = useHabits();
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -63,32 +58,8 @@ export default function Calendar() {
   const [dayDetailOpen, setDayDetailOpen] = useState(false);
   const [habitDialogOpen, setHabitDialogOpen] = useState(false);
 
-  // Mock data for calendar habits - reduced examples
-  const mockHabits: CalendarHabit[] = [
-    {
-      id: "1",
-      name: "Ejercicio",
-      category: "exercise",
-      icon: Dumbbell,
-      color: "text-red-500 bg-red-500/10",
-      time: "07:00",
-      completed: false,
-      streak: 5
-    },
-    {
-      id: "2",
-      name: "Meditar",
-      category: "custom",
-      icon: Star,
-      color: "text-purple-500 bg-purple-500/10",
-      time: "20:00",
-      completed: true,
-      streak: 12
-    }
-  ];
-
   const isScheduledOn = (habit: Habit, date: Date) => {
-    const created = habit.createdAt ? new Date(habit.createdAt + 'T00:00:00') : new Date(0);
+    const created = habit.createdAt ? new Date(habit.createdAt + "T00:00:00") : new Date(0);
     if (date < created) return false;
     switch (habit.frequency) {
       case "daily":
@@ -99,8 +70,10 @@ export default function Calendar() {
       case "monthly": {
         const month = date.getMonth() + 1;
         const day = date.getDate();
-        const months = habit.monthlyMonths && habit.monthlyMonths.length > 0 ? habit.monthlyMonths : [month];
-        const days = habit.monthlyDays && habit.monthlyDays.length > 0 ? habit.monthlyDays : [day];
+        const defaultMonths = [created.getMonth() + 1];
+        const defaultDays = [created.getDate()];
+        const months = habit.monthlyMonths && habit.monthlyMonths.length > 0 ? habit.monthlyMonths : defaultMonths;
+        const days = habit.monthlyDays && habit.monthlyDays.length > 0 ? habit.monthlyDays : defaultDays;
         return months.includes(month) && days.includes(day);
       }
       default:
@@ -108,59 +81,58 @@ export default function Calendar() {
     }
   };
 
-  // Generate calendar days
   const generateCalendarDays = (): CalendarDay[] => {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
     const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
     const startDate = new Date(firstDay);
     startDate.setDate(startDate.getDate() - firstDay.getDay());
-    
+
     const days: CalendarDay[] = [];
     const today = new Date();
-    
+
     for (let i = 0; i < 42; i++) {
       const date = new Date(startDate);
       date.setDate(startDate.getDate() + i);
-      
+
       const isCurrentMonth = date.getMonth() === month;
       const isToday = date.toDateString() === today.toDateString();
-      
-      // Build habits for the day from global list
-      const dayHabits: CalendarHabit[] = isCurrentMonth ? habits.filter(h => isScheduledOn(h, date)).map(h => ({
-        id: h.id,
-        name: h.name,
-        category: h.category,
-        icon: h.icon,
-        color: h.color,
-        time: h.reminderTime,
-        completed: date.toDateString() === new Date().toDateString() ? (h.completed >= h.target) : false,
-        streak: h.streak,
-      })) : [];
-      
-      const completionRate = dayHabits.length > 0 
-        ? (dayHabits.filter(h => h.completed).length / dayHabits.length) * 100 
-        : 0;
-      
+
+      const dayHabits: CalendarHabit[] = isCurrentMonth
+        ? habits
+            .filter((h) => isScheduledOn(h, date))
+            .map((h) => ({
+              id: h.id,
+              name: h.name,
+              category: h.category,
+              icon: h.icon,
+              color: h.color,
+              time: h.reminderTime,
+              completed: date.toDateString() === new Date().toDateString() ? h.completed >= h.target : false,
+              streak: h.streak,
+            }))
+        : [];
+
+      const completionRate = dayHabits.length > 0 ? (dayHabits.filter((h) => h.completed).length / dayHabits.length) * 100 : 0;
+
       days.push({
         date,
         habits: dayHabits,
         isCurrentMonth,
         isToday,
-        completionRate
+        completionRate,
       });
     }
-    
+
     return days;
   };
 
   const calendarDays = useMemo(() => generateCalendarDays(), [currentDate, habits]);
 
-  const navigateMonth = (direction: 'prev' | 'next') => {
-    setCurrentDate(prev => {
+  const navigateMonth = (direction: "prev" | "next") => {
+    setCurrentDate((prev) => {
       const newDate = new Date(prev);
-      if (direction === 'prev') {
+      if (direction === "prev") {
         newDate.setMonth(prev.getMonth() - 1);
       } else {
         newDate.setMonth(prev.getMonth() + 1);
@@ -183,38 +155,46 @@ export default function Calendar() {
   };
 
   const monthNames = [
-    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+    "Enero",
+    "Febrero",
+    "Marzo",
+    "Abril",
+    "Mayo",
+    "Junio",
+    "Julio",
+    "Agosto",
+    "Septiembre",
+    "Octubre",
+    "Noviembre",
+    "Diciembre",
   ];
 
   const dayNames = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
 
   const thisMonthStats = calendarDays
-    .filter(day => day.isCurrentMonth)
-    .reduce((acc, day) => {
-      if (day.habits.length > 0) {
-        acc.totalDays++;
-        if (day.completionRate === 100) acc.perfectDays++;
-        if (day.completionRate >= 50) acc.goodDays++;
-      }
-      return acc;
-    }, { totalDays: 0, perfectDays: 0, goodDays: 0 });
+    .filter((day) => day.isCurrentMonth)
+    .reduce(
+      (acc, day) => {
+        if (day.habits.length > 0) {
+          acc.totalDays++;
+          if (day.completionRate === 100) acc.perfectDays++;
+          if (day.completionRate >= 50) acc.goodDays++;
+        }
+        return acc;
+      },
+      { totalDays: 0, perfectDays: 0, goodDays: 0 }
+    );
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      
+
       <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-foreground mb-2">
-                Calendario de Hábitos
-              </h1>
-              <p className="text-muted-foreground">
-                Planifica y visualiza tus hábitos en el tiempo
-              </p>
+              <h1 className="text-3xl font-bold text-foreground mb-2">Calendario de Hábitos</h1>
+              <p className="text-muted-foreground">Planifica y visualiza tus hábitos en el tiempo</p>
             </div>
             <div className="flex items-center space-x-2 mt-4 sm:mt-0">
               <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as "month" | "week")}>
@@ -232,7 +212,6 @@ export default function Calendar() {
             </div>
           </div>
 
-          {/* Stats Overview */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <Card>
               <CardContent className="p-4">
@@ -245,7 +224,7 @@ export default function Calendar() {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
@@ -257,17 +236,13 @@ export default function Calendar() {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">Tasa de Éxito</p>
-                    <p className="text-2xl font-bold">
-                      {thisMonthStats.totalDays > 0 
-                        ? Math.round((thisMonthStats.goodDays / thisMonthStats.totalDays) * 100)
-                        : 0}%
-                    </p>
+                    <p className="text-2xl font-bold">{thisMonthStats.totalDays > 0 ? Math.round((thisMonthStats.goodDays / thisMonthStats.totalDays) * 100) : 0}%</p>
                   </div>
                   <Flame className="h-8 w-8 text-orange-500/60" />
                 </div>
@@ -276,83 +251,75 @@ export default function Calendar() {
           </div>
         </div>
 
-        {/* Calendar Navigation */}
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center space-x-2">
                 <CalendarIcon className="h-5 w-5" />
-                <span>{monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}</span>
+                <span>
+                  {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+                </span>
               </CardTitle>
               <div className="flex items-center space-x-2">
-                <Button variant="outline" size="sm" onClick={() => navigateMonth('prev')}>
+                <Button variant="outline" size="sm" onClick={() => navigateMonth("prev")}>
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
                 <Button variant="outline" size="sm" onClick={() => setCurrentDate(new Date())}>
                   Hoy
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => navigateMonth('next')}>
+                <Button variant="outline" size="sm" onClick={() => navigateMonth("next")}>
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </div>
             </div>
-            <CardDescription>
-              Haz clic en cualquier día para ver y gestionar tus hábitos
-            </CardDescription>
+            <CardDescription>Haz clic en cualquier día para ver y gestionar tus hábitos</CardDescription>
           </CardHeader>
-          
+
           <CardContent>
             {viewMode === "month" ? (
               <div className="grid grid-cols-7 gap-2">
-                {/* Day headers */}
-                {dayNames.map(day => (
+                {dayNames.map((day) => (
                   <div key={day} className="p-2 text-center text-sm font-medium text-muted-foreground">
                     {day}
                   </div>
                 ))}
-                
-                {/* Calendar days */}
+
                 {calendarDays.map((day, index) => (
                   <div
                     key={index}
                     onClick={() => day.isCurrentMonth && handleDayClick(day)}
                     className={`
                       p-2 min-h-[80px] border border-border rounded-lg cursor-pointer transition-all hover:border-border/60
-                      ${day.isCurrentMonth ? 'bg-background' : 'bg-muted/30'}
-                      ${day.isToday ? 'ring-2 ring-primary' : ''}
-                      ${day.isCurrentMonth ? 'hover:shadow-sm' : ''}
+                      ${day.isCurrentMonth ? "bg-background" : "bg-muted/30"}
+                      ${day.isToday ? "ring-2 ring-primary" : ""}
+                      ${day.isCurrentMonth ? "hover:shadow-sm" : ""}
                     `}
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <span className={`text-sm font-medium ${
-                        day.isCurrentMonth ? 'text-foreground' : 'text-muted-foreground'
-                      }`}>
+                      <span
+                        className={`text-sm font-medium ${day.isCurrentMonth ? "text-foreground" : "text-muted-foreground"}`}
+                      >
                         {day.date.getDate()}
                       </span>
                       {day.completionRate > 0 && day.isCurrentMonth && (
                         <div className={`w-2 h-2 rounded-full ${getCompletionColor(day.completionRate)}`} />
                       )}
                     </div>
-                    
+
                     {day.isCurrentMonth && (
                       <div className="space-y-1">
-                        {day.habits.slice(0, 3).map((habit, habitIndex) => {
+                        {day.habits.slice(0, MAX_HABITS_PER_DAY).map((habit, habitIndex) => {
                           const Icon = habit.icon;
                           return (
-                            <div
-                              key={habitIndex}
-                              className={`flex items-center space-x-1 p-1 rounded text-xs ${habit.color}`}
-                            >
+                            <div key={habitIndex} className={`flex items-center space-x-1 p-1 rounded text-xs ${habit.color}`}>
                               <Icon className="h-3 w-3" />
-                              {habit.completed && (
-                                <CheckCircle2 className="h-3 w-3 text-success ml-auto" />
-                              )}
+                              {habit.completed && <CheckCircle2 className="h-3 w-3 text-success ml-auto" />}
                             </div>
                           );
                         })}
-                        {day.habits.length > 3 && (
+                        {day.habits.length > MAX_HABITS_PER_DAY && (
                           <div className="text-xs text-muted-foreground text-center">
-                            +{day.habits.length - 3} más
+                            +{day.habits.length - MAX_HABITS_PER_DAY} más
                           </div>
                         )}
                       </div>
@@ -370,7 +337,6 @@ export default function Calendar() {
           </CardContent>
         </Card>
 
-        {/* Legend */}
         <Card className="mt-6">
           <CardHeader>
             <CardTitle className="text-lg">Leyenda</CardTitle>
@@ -398,26 +364,25 @@ export default function Calendar() {
         </Card>
       </div>
 
-      {/* Day Detail Dialog */}
       <Dialog open={dayDetailOpen} onOpenChange={setDayDetailOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle className="flex items-center space-x-2">
               <CalendarIcon className="h-5 w-5" />
               <span>
-                {selectedDay?.date.toLocaleDateString('es-ES', { 
-                  weekday: 'long', 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
+                {selectedDay?.date.toLocaleDateString("es-ES", {
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
                 })}
               </span>
             </DialogTitle>
             <DialogDescription>
-              {selectedDay?.habits.length || 0} hábitos programados para este día
+              {(selectedDay?.habits.length || 0)} hábitos programados para este día
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="space-y-4 py-4">
             {selectedDay?.habits.length === 0 ? (
               <div className="text-center py-8">
@@ -436,7 +401,7 @@ export default function Calendar() {
                     <div className={`p-2 rounded-lg ${habit.color}`}>
                       <Icon className="h-4 w-4" />
                     </div>
-                    
+
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
                         <h4 className="font-medium">{habit.name}</h4>
@@ -446,7 +411,7 @@ export default function Calendar() {
                           <Circle className="h-5 w-5 text-muted-foreground" />
                         )}
                       </div>
-                      
+
                       <div className="flex items-center space-x-4 text-sm text-muted-foreground mt-1">
                         {habit.time && (
                           <div className="flex items-center space-x-1">
@@ -464,15 +429,22 @@ export default function Calendar() {
                 );
               })
             )}
-            
+
             {selectedDay && selectedDay.habits.length > 0 && (
               <div className="p-3 bg-muted/50 rounded-lg">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Progreso del día:</span>
-                  <span className="font-medium">
-                    {Math.round(selectedDay.completionRate)}% completado
-                  </span>
+                  <span className="font-medium">{Math.round(selectedDay.completionRate)}% completado</span>
                 </div>
+              </div>
+            )}
+
+            {selectedDay && (
+              <div className="flex justify-end">
+                <Button size="sm" onClick={() => setHabitDialogOpen(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Agregar Hábito
+                </Button>
               </div>
             )}
           </div>
