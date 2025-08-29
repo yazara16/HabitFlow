@@ -27,9 +27,15 @@ export interface Habit {
 
 interface HabitsContextValue {
   habits: Habit[];
-  addHabit: (habit: Omit<Habit, "id" | "completed" | "streak" | "completedToday" | "createdAt"> & { id?: string }, options?: { assignDate?: Date }) => void;
+  addHabit: (
+    habit: Omit<Habit, "id" | "completed" | "streak" | "completedToday" | "createdAt"> & { id?: string },
+    options?: { assignDate?: Date }
+  ) => void;
   updateHabit: (id: string, patch: Partial<Habit>) => void;
   removeHabit: (id: string) => void;
+  getHabitsForDate: (date: Date) => Habit[];
+  hideHabitOnDate: (id: string, date: Date) => void;
+  updateHabitForDate: (id: string, date: Date, patch: Partial<Habit>) => void;
 }
 
 const HabitsContext = createContext<HabitsContextValue | undefined>(undefined);
@@ -141,6 +147,64 @@ const initialHabits: Habit[] = [
 
 export function HabitsProvider({ children }: { children: React.ReactNode }) {
   const [habits, setHabits] = useState<Habit[]>(initialHabits);
+  const [perDayHidden, setPerDayHidden] = useState<Record<string, Set<string>>>({});
+  const [perDayOverrides, setPerDayOverrides] = useState<Record<string, Record<string, Partial<Habit>>>>({});
+
+  const toISO = (date: Date) => date.toISOString().split('T')[0];
+
+  const isHabitScheduledOnDate = (habit: Habit, date: Date) => {
+    const created = habit.createdAt ? new Date(habit.createdAt + "T00:00:00") : new Date(0);
+    if (date < created) return false;
+    switch (habit.frequency) {
+      case "daily":
+        return true;
+      case "weekly": {
+        return date.getDay() === created.getDay();
+      }
+      case "monthly": {
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+        const defaultMonths = [created.getMonth() + 1];
+        const defaultDays = [created.getDate()];
+        const months = habit.monthlyMonths && habit.monthlyMonths.length > 0 ? habit.monthlyMonths : defaultMonths;
+        const days = habit.monthlyDays && habit.monthlyDays.length > 0 ? habit.monthlyDays : defaultDays;
+        return months.includes(month) && days.includes(day);
+      }
+      default:
+        return false;
+    }
+  };
+
+  const getHabitsForDate = (date: Date): Habit[] => {
+    const iso = toISO(date);
+    return habits
+      .filter(h => isHabitScheduledOnDate(h, date))
+      .filter(h => !perDayHidden[h.id]?.has(iso))
+      .map(h => {
+        const override = perDayOverrides[h.id]?.[iso];
+        return override ? ({ ...h, ...override }) : h;
+      });
+  };
+
+  const hideHabitOnDate = (id: string, date: Date) => {
+    const iso = toISO(date);
+    setPerDayHidden(prev => {
+      const existing = new Set(prev[id] ?? []);
+      existing.add(iso);
+      return { ...prev, [id]: existing };
+    });
+  };
+
+  const updateHabitForDate = (id: string, date: Date, patch: Partial<Habit>) => {
+    const iso = toISO(date);
+    setPerDayOverrides(prev => ({
+      ...prev,
+      [id]: {
+        ...(prev[id] || {}),
+        [iso]: { ...(prev[id]?.[iso] || {}), ...patch }
+      }
+    }));
+  };
 
   const value = useMemo<HabitsContextValue>(() => ({
     habits,
@@ -173,8 +237,21 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
     },
     removeHabit: (id) => {
       setHabits(prev => prev.filter(h => h.id !== id));
-    }
-  }), [habits]);
+      setPerDayHidden(prev => {
+        const copy = { ...prev };
+        delete copy[id];
+        return copy;
+      });
+      setPerDayOverrides(prev => {
+        const copy = { ...prev } as Record<string, Record<string, Partial<Habit>>>;
+        delete copy[id];
+        return copy;
+      });
+    },
+    getHabitsForDate,
+    hideHabitOnDate,
+    updateHabitForDate,
+  }), [habits, perDayHidden, perDayOverrides]);
 
   return <HabitsContext.Provider value={value}>{children}</HabitsContext.Provider>;
 }
