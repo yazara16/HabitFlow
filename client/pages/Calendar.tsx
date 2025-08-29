@@ -56,10 +56,12 @@ interface CalendarDay {
 }
 
 export default function Calendar() {
+  const { habits, addHabit } = useHabits();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<"month" | "week">("month");
   const [selectedDay, setSelectedDay] = useState<CalendarDay | null>(null);
   const [dayDetailOpen, setDayDetailOpen] = useState(false);
+  const [habitDialogOpen, setHabitDialogOpen] = useState(false);
 
   // Mock data for calendar habits - reduced examples
   const mockHabits: CalendarHabit[] = [
