@@ -78,6 +78,7 @@ interface UserSettings {
 }
 
 export default function Settings() {
+  const { theme: currentTheme, colorScheme: currentScheme, setTheme, setColorScheme } = useTheme();
   const [settings, setSettings] = useState<UserSettings>({
     // Profile
     name: "Usuario Demo",
