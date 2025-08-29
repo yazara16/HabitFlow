@@ -40,6 +40,8 @@ import {
   Info
 } from "lucide-react";
 import Navigation from "@/components/Navigation";
+import { useTheme } from "@/contexts/ThemeContext";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface UserSettings {
   // Profile
