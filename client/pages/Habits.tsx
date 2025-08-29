@@ -391,18 +391,9 @@ export default function Habits() {
         habit={editingHabit}
         onSave={(newHabit) => {
           if (editingHabit) {
-            // Update existing habit
-            setHabits(prev => prev.map(h => h.id === editingHabit.id ? { ...h, ...newHabit } : h));
+            updateHabit(editingHabit.id, newHabit as any);
           } else {
-            // Add new habit
-            const habitWithDefaults = {
-              ...newHabit,
-              completed: 0,
-              streak: 0,
-              completedToday: false,
-              createdAt: new Date().toISOString().split('T')[0]
-            };
-            setHabits(prev => [...prev, habitWithDefaults]);
+            addHabit(newHabit as any);
           }
         }}
       />
