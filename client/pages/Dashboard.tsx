@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import { useHabits, Habit as HabitType } from "@/contexts/HabitsContext";
+import { toast } from "@/hooks/use-toast";
 import { useHabitReminders } from "@/hooks/use-habit-reminders";
 
 type Habit = HabitType;
