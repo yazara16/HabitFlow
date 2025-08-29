@@ -385,22 +385,27 @@ export default function Calendar() {
                     completed: date.toDateString() === new Date().toDateString() ? (h.completed >= h.target) : false,
                     streak: h.streak,
                   }));
+                  const shownHabits = date.getDate() % 2 === 0 ? dayHabits : [];
                   return (
                     <div
                       key={idx}
+                      onClick={() => {
+                        const completionRate = shownHabits.length > 0 ? (shownHabits.filter(h => h.completed).length / shownHabits.length) * 100 : 0;
+                        handleDayClick({ date, habits: shownHabits, isCurrentMonth: true, isToday, completionRate });
+                      }}
                       onDragOver={(e) => e.preventDefault()}
                       onDrop={(e) => {
                         e.preventDefault();
                         const id = e.dataTransfer.getData('text/plain');
                         if (id) handleDropHabit(id, date);
                       }}
-                      className={`p-2 min-h-[140px] border border-border rounded-lg ${isToday ? 'ring-2 ring-primary' : ''}`}
+                      className={`p-2 min-h:[140px] border border-border rounded-lg cursor-pointer transition-all hover:border-border/60 ${isToday ? 'ring-2 ring-primary' : ''}`}
                     >
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-sm font-medium">{dayNames[date.getDay()]} {date.getDate()}</span>
                       </div>
                       <div className="space-y-1">
-                        {dayHabits.map((habit, hIdx) => {
+                        {shownHabits.map((habit, hIdx) => {
                           const Icon = habit.icon;
                           const source = habits.find(x => x.id === habit.id);
                           const draggable = source?.frequency !== 'daily';
@@ -421,7 +426,7 @@ export default function Calendar() {
                             </div>
                           );
                         })}
-                        {dayHabits.length === 0 && (
+                        {shownHabits.length === 0 && (
                           <div className="text-xs text-muted-foreground text-center py-6 border border-dashed border-border rounded">
                             Arrastra aquí
                           </div>
