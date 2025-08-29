@@ -244,7 +244,7 @@ export default function NotificationsPanel() {
           <>
             <DropdownMenuSeparator />
             <div className="p-2">
-              <Button variant="ghost" size="sm" className="w-full text-center">
+              <Button variant="ghost" size="sm" className="w-full text-center" onClick={() => navigate('/dashboard')}>
                 Ver todas las notificaciones
               </Button>
             </div>
