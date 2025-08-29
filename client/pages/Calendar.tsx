@@ -487,7 +487,7 @@ export default function Calendar() {
             {selectedDay?.habits.length === 0 ? (
               <div className="text-center py-8">
                 <Target className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground">No hay h��bitos programados para este día</p>
+                <p className="text-muted-foreground">No hay hábitos programados para este día</p>
                 <Button className="mt-4" size="sm" onClick={() => setHabitDialogOpen(true)}>
                   <Plus className="h-4 w-4 mr-2" />
                   Agregar Hábito
@@ -546,9 +546,20 @@ export default function Calendar() {
       <HabitDialog
         open={habitDialogOpen}
         onOpenChange={setHabitDialogOpen}
+        hideFrequency
         onSave={(newHabit) => {
           if (selectedDay) {
-            addHabit(newHabit as any, { assignDate: selectedDay.date });
+            const date = selectedDay.date;
+            const m = date.getMonth() + 1;
+            const d = date.getDate();
+            const habitToSave = {
+              ...newHabit,
+              frequency: 'monthly',
+              monthlyMonths: [m],
+              monthlyDays: [d],
+            } as any;
+            addHabit(habitToSave, { assignDate: date });
+            setForceShowDates((s) => ({ ...s, [date.toDateString()]: true }));
           } else {
             addHabit(newHabit as any);
           }
