@@ -133,13 +133,13 @@ export default function Calendar() {
 
   const calendarDays = useMemo(() => generateCalendarDays(), [currentDate, habits]);
 
-  const navigateMonth = (direction: "prev" | "next") => {
+  const navigate = (direction: "prev" | "next") => {
     setCurrentDate((prev) => {
       const newDate = new Date(prev);
-      if (direction === "prev") {
-        newDate.setMonth(prev.getMonth() - 1);
+      if (viewMode === "month") {
+        newDate.setMonth(prev.getMonth() + (direction === "prev" ? -1 : 1));
       } else {
-        newDate.setMonth(prev.getMonth() + 1);
+        newDate.setDate(prev.getDate() + (direction === "prev" ? -5 : 5));
       }
       return newDate;
     });
@@ -196,21 +196,19 @@ export default function Calendar() {
 
   const dayNames = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
 
-  const weekStart = useMemo(() => {
+  const windowStart = useMemo(() => {
     const d = new Date(currentDate);
-    const wd = d.getDay();
-    d.setDate(d.getDate() - wd);
     d.setHours(0, 0, 0, 0);
     return d;
   }, [currentDate]);
 
-  const weekDays = useMemo(() => (
-    Array.from({ length: 7 }, (_, i) => {
-      const d = new Date(weekStart);
+  const fiveDays = useMemo(() => (
+    Array.from({ length: 5 }, (_, i) => {
+      const d = new Date(windowStart);
       d.setDate(d.getDate() + i);
       return d;
     })
-  ), [weekStart]);
+  ), [windowStart]);
 
   const thisMonthStats = calendarDays
     .filter((day) => day.isCurrentMonth)
@@ -327,13 +325,13 @@ export default function Calendar() {
                 </span>
               </CardTitle>
               <div className="flex items-center space-x-2">
-                <Button variant="outline" size="sm" onClick={() => navigateMonth("prev")}>
+                <Button variant="outline" size="sm" onClick={() => navigate("prev") }>
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
                 <Button variant="outline" size="sm" onClick={() => setCurrentDate(new Date())}>
                   Hoy
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => navigateMonth("next")}>
+                <Button variant="outline" size="sm" onClick={() => navigate("next") }>
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </div>
@@ -394,64 +392,76 @@ export default function Calendar() {
                 ))}
               </div>
             ) : (
-              <div className="space-y-2">
-                {Array.from({ length: 6 }, (_, row) => (
-                  <div key={row} className="grid grid-cols-7 gap-2">
-                    {calendarDays.slice(row * 7, row * 7 + 7).map((day, idx) => (
-                      <div
-                        key={idx}
-                        onClick={() => {
-                          if (isDraggingRef.current) return;
-                          handleDayClick(day);
-                        }}
-                        onDragOver={(e) => e.preventDefault()}
-                        onDrop={(e) => {
-                          e.preventDefault();
-                          const id = e.dataTransfer.getData('text/plain');
-                          if (id) handleDropHabit(id, day.date);
-                        }}
-                        className={`p-2 min-h-[140px] border border-border rounded-lg cursor-pointer transition-all hover:border-border/60 ${day.isToday ? 'ring-2 ring-primary' : ''}`}
-                      >
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-medium">{dayNames[day.date.getDay()]} {day.date.getDate()}</span>
-                        </div>
-                        <div className="space-y-1">
-                          {day.habits.map((habit, hIdx) => {
-                            const Icon = habit.icon;
-                            const source = habits.find(x => x.id === habit.id);
-                            const draggable = source?.frequency !== 'daily';
-                            return (
-                              <div
-                                key={hIdx}
-                                draggable={draggable}
-                                onMouseDown={(e) => e.stopPropagation()}
-                                onDragStart={(e) => {
-                                  isDraggingRef.current = true;
-                                  e.dataTransfer.setData('text/plain', habit.id);
-                                }}
-                                onDragEnd={() => {
-                                  setTimeout(() => { isDraggingRef.current = false; }, 50);
-                                }}
-                                className={`flex items-center space-x-1 p-2 rounded text-xs ${habit.color} ${draggable ? 'cursor-move' : ''}`}
-                              >
-                                <Icon className="h-3 w-3" />
-                                <span className="truncate">{habit.name}</span>
-                                {habit.completed && (
-                                  <CheckCircle2 className="h-3 w-3 text-success ml-auto" />
-                                )}
-                              </div>
-                            );
-                          })}
-                          {day.habits.length === 0 && (
-                            <div className="text-xs text-muted-foreground text-center py-6 border border-dashed border-border rounded">
-                              Arrastra aquí
-                            </div>
-                          )}
-                        </div>
+              <div className="grid grid-cols-5 gap-2">
+                {fiveDays.map((date, idx) => {
+                  const isToday = date.toDateString() === new Date().toDateString();
+                  const realHabits: CalendarHabit[] = habits.filter(h => isScheduledOn(h, date)).map(h => ({
+                    id: h.id,
+                    name: h.name,
+                    category: h.category,
+                    icon: h.icon,
+                    color: h.color,
+                    time: h.reminderTime,
+                    completed: date.toDateString() === new Date().toDateString() ? (h.completed >= h.target) : false,
+                    streak: h.streak,
+                  }));
+                  const displayHabits = realHabits.length > 0 ? realHabits : (date.getDate() % 2 === 0 ? realHabits : []);
+                  return (
+                    <div
+                      key={idx}
+                      onClick={() => {
+                        if (isDraggingRef.current) return;
+                        const completionRate = realHabits.length > 0 ? (realHabits.filter(h => h.completed).length / realHabits.length) * 100 : 0;
+                        handleDayClick({ date, habits: realHabits, isCurrentMonth: true, isToday, completionRate });
+                      }}
+                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        const id = e.dataTransfer.getData('text/plain');
+                        if (id) handleDropHabit(id, date);
+                        setTimeout(() => { isDraggingRef.current = false; }, 0);
+                      }}
+                      className={`p-2 min-h-[140px] border border-border rounded-lg cursor-pointer transition-all hover:border-border/60 ${isToday ? 'ring-2 ring-primary' : ''}`}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium">{dayNames[date.getDay()]} {date.getDate()}</span>
                       </div>
-                    ))}
-                  </div>
-                ))}
+                      <div className="space-y-1">
+                        {displayHabits.map((habit, hIdx) => {
+                          const Icon = habit.icon;
+                          const source = habits.find(x => x.id === habit.id);
+                          const draggable = source?.frequency !== 'daily';
+                          return (
+                            <div
+                              key={hIdx}
+                              draggable={draggable}
+                              onMouseDown={(e) => e.stopPropagation()}
+                              onDragStart={(e) => {
+                                isDraggingRef.current = true;
+                                e.dataTransfer.setData('text/plain', habit.id);
+                              }}
+                              onDragEnd={() => {
+                                setTimeout(() => { isDraggingRef.current = false; }, 50);
+                              }}
+                              className={`flex items-center space-x-1 p-2 rounded text-xs ${habit.color} ${draggable ? 'cursor-move' : ''}`}
+                            >
+                              <Icon className="h-3 w-3" />
+                              <span className="truncate">{habit.name}</span>
+                              {habit.completed && (
+                                <CheckCircle2 className="h-3 w-3 text-success ml-auto" />
+                              )}
+                            </div>
+                          );
+                        })}
+                        {displayHabits.length === 0 && (
+                          <div className="text-xs text-muted-foreground text-center py-6 border border-dashed border-border rounded">
+                            Arrastra aquí
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </CardContent>
