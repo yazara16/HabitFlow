@@ -248,6 +248,29 @@ export default function Settings() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
+                    <div className="flex items-center gap-4">
+                      <Avatar className="h-16 w-16">
+                        <AvatarImage src={avatar ?? undefined} alt="Avatar" />
+                        <AvatarFallback>HF</AvatarFallback>
+                      </Avatar>
+                      <div className="space-y-2">
+                        <Input type="file" accept="image/*" onChange={(e) => {
+                          const f = e.target.files && e.target.files[0];
+                          if (!f) return;
+                          const reader = new FileReader();
+                          reader.onload = () => {
+                            const data = reader.result as string;
+                            setAvatar(data);
+                            localStorage.setItem('profile.avatar', data);
+                            setHasUnsavedChanges(true);
+                          };
+                          reader.readAsDataURL(f);
+                        }} />
+                        {avatar && (
+                          <Button variant="outline" size="sm" onClick={() => { setAvatar(null); localStorage.removeItem('profile.avatar'); setHasUnsavedChanges(true); }}>Quitar foto</Button>
+                        )}
+                      </div>
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="name">Nombre completo</Label>
