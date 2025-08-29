@@ -356,8 +356,10 @@ export default function Dashboard() {
         onSave={(newHabit) => {
           if (editingHabit) {
             updateHabit(editingHabit.id, newHabit as any);
+            toast({ title: 'Hábito actualizado' });
           } else {
             addHabit(newHabit as any);
+            toast({ title: 'Hábito creado' });
           }
         }}
       />
