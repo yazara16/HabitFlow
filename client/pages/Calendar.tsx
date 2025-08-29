@@ -478,6 +478,18 @@ export default function Calendar() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <HabitDialog
+        open={habitDialogOpen}
+        onOpenChange={setHabitDialogOpen}
+        onSave={(newHabit) => {
+          if (selectedDay) {
+            addHabit(newHabit as any, { assignDate: selectedDay.date });
+          } else {
+            addHabit(newHabit as any);
+          }
+        }}
+      />
     </div>
   );
 }
