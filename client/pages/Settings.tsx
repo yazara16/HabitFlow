@@ -96,8 +96,8 @@ export default function Settings() {
     reminderTime: "09:00",
     
     // Appearance
-    theme: "system",
-    colorScheme: "purple",
+    theme: currentTheme,
+    colorScheme: currentScheme,
     compactMode: false,
     animationsEnabled: true,
     
