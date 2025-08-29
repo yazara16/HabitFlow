@@ -112,7 +112,7 @@ export default function Habits() {
   };
 
   const deleteHabit = (habitId: string) => {
-    setHabits(prev => prev.filter(h => h.id !== habitId));
+    removeHabit(habitId);
     setDeleteDialogOpen(false);
     setHabitToDelete(null);
   };
