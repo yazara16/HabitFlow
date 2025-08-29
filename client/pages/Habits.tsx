@@ -101,18 +101,14 @@ export default function Habits() {
   };
 
   const incrementHabit = (habitId: string) => {
-    setHabits(prev => prev.map(habit => {
-      if (habit.id === habitId && habit.completed < habit.target) {
-        const newCompleted = habit.completed + 1;
-        return {
-          ...habit,
-          completed: newCompleted,
-          completedToday: newCompleted >= habit.target,
-          lastCompleted: newCompleted >= habit.target ? new Date().toISOString().split('T')[0] : habit.lastCompleted
-        };
-      }
-      return habit;
-    }));
+    const h = habits.find(h => h.id === habitId);
+    if (!h || h.completed < 0 || h.completed >= h.target) return;
+    const newCompleted = h.completed + 1;
+    updateHabit(habitId, {
+      completed: newCompleted,
+      completedToday: newCompleted >= h.target,
+      lastCompleted: newCompleted >= h.target ? new Date().toISOString().split('T')[0] : h.lastCompleted
+    });
   };
 
   const deleteHabit = (habitId: string) => {
