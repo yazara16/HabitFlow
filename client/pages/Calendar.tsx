@@ -117,7 +117,7 @@ export default function Calendar() {
 
       days.push({
         date,
-        habits: dayHabits,
+        habits: (date.getDate() % 2 === 0 ? dayHabits : []),
         isCurrentMonth,
         isToday,
         completionRate,
