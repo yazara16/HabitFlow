@@ -569,10 +569,17 @@ export default function Calendar() {
 
       <HabitDialog
         open={habitDialogOpen}
-        onOpenChange={setHabitDialogOpen}
+        onOpenChange={(open) => {
+          setHabitDialogOpen(open);
+          if (!open) setEditingHabit(null);
+        }}
         hideFrequency
+        habit={editingHabit as any}
         onSave={(newHabit) => {
-          if (selectedDay) {
+          if (editingHabit) {
+            updateHabit(editingHabit.id, newHabit as any);
+            toast({ title: 'Hábito actualizado' });
+          } else if (selectedDay) {
             const date = selectedDay.date;
             const m = date.getMonth() + 1;
             const d = date.getDate();
@@ -584,8 +591,10 @@ export default function Calendar() {
             } as any;
             addHabit(habitToSave, { assignDate: date });
             setForceShowDates((s) => ({ ...s, [date.toDateString()]: true }));
+            toast({ title: 'Hábito creado' });
           } else {
             addHabit(newHabit as any);
+            toast({ title: 'Hábito creado' });
           }
         }}
       />
