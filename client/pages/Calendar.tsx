@@ -31,6 +31,8 @@ import {
   MoreHorizontal
 } from "lucide-react";
 import Navigation from "@/components/Navigation";
+import HabitDialog from "@/components/HabitDialog";
+import { useHabits, Habit as HabitType } from "@/contexts/HabitsContext";
 
 interface CalendarHabit {
   id: string;
