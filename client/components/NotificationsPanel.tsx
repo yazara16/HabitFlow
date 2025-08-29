@@ -180,7 +180,8 @@ export default function NotificationsPanel() {
                 return (
                   <div
                     key={notification.id}
-                    className={`p-3 hover:bg-muted/50 transition-colors ${
+                    onClick={() => openNotification(notification)}
+                    className={`p-3 hover:bg-muted/50 transition-colors cursor-pointer ${
                       !notification.read ? 'bg-primary/5' : ''
                     }`}
                   >
