@@ -87,6 +87,27 @@ export default function Calendar() {
     }
   ];
 
+  const isScheduledOn = (habit: Habit, date: Date) => {
+    const created = habit.createdAt ? new Date(habit.createdAt + 'T00:00:00') : new Date(0);
+    if (date < created) return false;
+    switch (habit.frequency) {
+      case "daily":
+        return true;
+      case "weekly": {
+        return date.getDay() === created.getDay();
+      }
+      case "monthly": {
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+        const months = habit.monthlyMonths && habit.monthlyMonths.length > 0 ? habit.monthlyMonths : [month];
+        const days = habit.monthlyDays && habit.monthlyDays.length > 0 ? habit.monthlyDays : [day];
+        return months.includes(month) && days.includes(day);
+      }
+      default:
+        return false;
+    }
+  };
+
   // Generate calendar days
   const generateCalendarDays = (): CalendarDay[] => {
     const year = currentDate.getFullYear();
