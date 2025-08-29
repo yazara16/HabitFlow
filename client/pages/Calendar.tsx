@@ -56,6 +56,7 @@ export default function Calendar() {
   useHabitReminders();
   const { habits, addHabit, updateHabit } = useHabits();
   const isDraggingRef = useRef(false);
+  const [forceShowDates, setForceShowDates] = useState<Record<string, boolean>>({});
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<"month" | "week">("month");
   const [selectedDay, setSelectedDay] = useState<CalendarDay | null>(null);
@@ -102,7 +103,7 @@ export default function Calendar() {
       const isCurrentMonth = date.getMonth() === month;
       const isToday = date.toDateString() === today.toDateString();
 
-      const dayHabits: CalendarHabit[] = isCurrentMonth
+      const realHabits: CalendarHabit[] = isCurrentMonth
         ? habits
             .filter((h) => isScheduledOn(h, date))
             .map((h) => ({
@@ -117,11 +118,14 @@ export default function Calendar() {
             }))
         : [];
 
+      const key = date.toDateString();
+      const shouldShow = forceShowDates[key] || date.getDate() % 2 === 0;
+      const dayHabits = shouldShow ? realHabits : [];
       const completionRate = dayHabits.length > 0 ? (dayHabits.filter((h) => h.completed).length / dayHabits.length) * 100 : 0;
 
       days.push({
         date,
-        habits: (date.getDate() % 2 === 0 ? dayHabits : []),
+        habits: dayHabits,
         isCurrentMonth,
         isToday,
         completionRate,
@@ -131,7 +135,7 @@ export default function Calendar() {
     return days;
   };
 
-  const calendarDays = useMemo(() => generateCalendarDays(), [currentDate, habits]);
+  const calendarDays = useMemo(() => generateCalendarDays(), [currentDate, habits, forceShowDates]);
 
   const navigate = (direction: "prev" | "next") => {
     setCurrentDate((prev) => {
@@ -146,28 +150,7 @@ export default function Calendar() {
   };
 
   const handleDayClick = (day: CalendarDay) => {
-    const date = day.date;
-    const today = new Date();
-    const realHabits: CalendarHabit[] = habits
-      .filter((h) => isScheduledOn(h, date))
-      .map((h) => ({
-        id: h.id,
-        name: h.name,
-        category: h.category,
-        icon: h.icon,
-        color: h.color,
-        time: h.reminderTime,
-        completed: date.toDateString() === today.toDateString() ? h.completed >= h.target : false,
-        streak: h.streak,
-      }));
-    const completionRate = realHabits.length > 0 ? (realHabits.filter((h) => h.completed).length / realHabits.length) * 100 : 0;
-    setSelectedDay({
-      date,
-      habits: realHabits,
-      isCurrentMonth: day.isCurrentMonth,
-      isToday: date.toDateString() === today.toDateString(),
-      completionRate,
-    });
+    setSelectedDay(day);
     setDayDetailOpen(true);
   };
 
@@ -234,6 +217,7 @@ export default function Calendar() {
     }
     if (h.frequency === 'weekly') {
       updateHabit(h.id, { createdAt });
+      setForceShowDates((s) => ({ ...s, [dropDate.toDateString()]: true }));
       toast({ title: 'Hábito movido', description: `Programado los ${dayNames[dropDate.getDay()]}.` });
       return;
     }
@@ -243,6 +227,7 @@ export default function Calendar() {
       const months = Array.from(new Set([...(h.monthlyMonths || []), m])).sort((a, b) => a - b);
       const days = Array.from(new Set([...(h.monthlyDays || []), d])).sort((a, b) => a - b);
       updateHabit(h.id, { createdAt, monthlyMonths: months, monthlyDays: days });
+      setForceShowDates((s) => ({ ...s, [dropDate.toDateString()]: true }));
       toast({ title: 'Hábito movido', description: `Programado el día ${d} de ${monthNames[m - 1]}.` });
       return;
     }
@@ -405,14 +390,16 @@ export default function Calendar() {
                     completed: date.toDateString() === new Date().toDateString() ? (h.completed >= h.target) : false,
                     streak: h.streak,
                   }));
-                  const displayHabits = realHabits.length > 0 ? realHabits : (date.getDate() % 2 === 0 ? realHabits : []);
+                  const key = date.toDateString();
+                  const shouldShow = forceShowDates[key] || date.getDate() % 2 === 0;
+                  const displayHabits = shouldShow ? realHabits : [];
                   return (
                     <div
                       key={idx}
                       onClick={() => {
                         if (isDraggingRef.current) return;
-                        const completionRate = realHabits.length > 0 ? (realHabits.filter(h => h.completed).length / realHabits.length) * 100 : 0;
-                        handleDayClick({ date, habits: realHabits, isCurrentMonth: true, isToday, completionRate });
+                        const completionRate = displayHabits.length > 0 ? (displayHabits.filter(h => h.completed).length / displayHabits.length) * 100 : 0;
+                        handleDayClick({ date, habits: displayHabits, isCurrentMonth: true, isToday, completionRate });
                       }}
                       onDragOver={(e) => e.preventDefault()}
                       onDrop={(e) => {
