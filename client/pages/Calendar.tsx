@@ -34,6 +34,8 @@ import Navigation from "@/components/Navigation";
 import HabitDialog from "@/components/HabitDialog";
 import { useHabits, Habit as HabitType } from "@/contexts/HabitsContext";
 
+type Habit = HabitType;
+
 interface CalendarHabit {
   id: string;
   name: string;
