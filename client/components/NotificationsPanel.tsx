@@ -38,6 +38,7 @@ interface Notification {
 }
 
 export default function NotificationsPanel() {
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState<Notification[]>([
     {
       id: "1",
