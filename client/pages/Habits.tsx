@@ -89,22 +89,15 @@ export default function Habits() {
     });
 
   const toggleHabit = (habitId: string) => {
-    setHabits(prev => prev.map(habit => {
-      if (habit.id === habitId) {
-        const newCompleted = habit.completedToday ? 
-          Math.max(0, habit.completed - 1) : 
-          Math.min(habit.target, habit.completed + 1);
-        
-        return {
-          ...habit,
-          completed: newCompleted,
-          completedToday: !habit.completedToday,
-          streak: !habit.completedToday ? habit.streak + 1 : habit.streak,
-          lastCompleted: !habit.completedToday ? new Date().toISOString().split('T')[0] : habit.lastCompleted
-        };
-      }
-      return habit;
-    }));
+    const h = habits.find(h => h.id === habitId);
+    if (!h) return;
+    const newCompleted = h.completedToday ? Math.max(0, h.completed - 1) : Math.min(h.target, h.completed + 1);
+    updateHabit(habitId, {
+      completed: newCompleted,
+      completedToday: !h.completedToday,
+      streak: !h.completedToday ? h.streak + 1 : h.streak,
+      lastCompleted: !h.completedToday ? new Date().toISOString().split('T')[0] : h.lastCompleted
+    });
   };
 
   const incrementHabit = (habitId: string) => {
