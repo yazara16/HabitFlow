@@ -130,6 +130,16 @@ export default function NotificationsPanel() {
     }
   };
 
+  const openNotification = (n: Notification) => {
+    setNotifications(prev => prev.map(x => x.id === n.id ? { ...x, read: true } : x));
+    const target =
+      n.type === "reminder" ? "/habits" :
+      n.type === "milestone" ? "/dashboard" :
+      n.type === "achievement" ? "/dashboard" :
+      n.type === "system" ? "/settings" : "/dashboard";
+    navigate(target);
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
