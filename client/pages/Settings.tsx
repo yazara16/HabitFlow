@@ -118,6 +118,8 @@ export default function Settings() {
 
   const updateSetting = <K extends keyof UserSettings>(key: K, value: UserSettings[K]) => {
     setSettings(prev => ({ ...prev, [key]: value }));
+    if (key === "theme") setTheme(value as any);
+    if (key === "colorScheme") setColorScheme(value as any);
     setHasUnsavedChanges(true);
   };
 
