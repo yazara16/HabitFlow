@@ -146,7 +146,28 @@ export default function Calendar() {
   };
 
   const handleDayClick = (day: CalendarDay) => {
-    setSelectedDay(day);
+    const date = day.date;
+    const today = new Date();
+    const realHabits: CalendarHabit[] = habits
+      .filter((h) => isScheduledOn(h, date))
+      .map((h) => ({
+        id: h.id,
+        name: h.name,
+        category: h.category,
+        icon: h.icon,
+        color: h.color,
+        time: h.reminderTime,
+        completed: date.toDateString() === today.toDateString() ? h.completed >= h.target : false,
+        streak: h.streak,
+      }));
+    const completionRate = realHabits.length > 0 ? (realHabits.filter((h) => h.completed).length / realHabits.length) * 100 : 0;
+    setSelectedDay({
+      date,
+      habits: realHabits,
+      isCurrentMonth: day.isCurrentMonth,
+      isToday: date.toDateString() === today.toDateString(),
+      completionRate,
+    });
     setDayDetailOpen(true);
   };
 
@@ -373,76 +394,64 @@ export default function Calendar() {
                 ))}
               </div>
             ) : (
-              <div className="grid grid-cols-7 gap-2">
-                {weekDays.map((date, idx) => {
-                  const isToday = date.toDateString() === new Date().toDateString();
-                  const dayHabits: CalendarHabit[] = habits.filter(h => isScheduledOn(h, date)).map(h => ({
-                    id: h.id,
-                    name: h.name,
-                    category: h.category,
-                    icon: h.icon,
-                    color: h.color,
-                    time: h.reminderTime,
-                    completed: date.toDateString() === new Date().toDateString() ? (h.completed >= h.target) : false,
-                    streak: h.streak,
-                  }));
-                  const shownHabits = date.getDate() % 2 === 0 ? dayHabits : [];
-                  return (
-                    <div
-                      key={idx}
-                      onClick={() => {
-                        if (isDraggingRef.current) return;
-                        const completionRate = shownHabits.length > 0 ? (shownHabits.filter(h => h.completed).length / shownHabits.length) * 100 : 0;
-                        handleDayClick({ date, habits: shownHabits, isCurrentMonth: true, isToday, completionRate });
-                      }}
-                      onDragOver={(e) => e.preventDefault()}
-                      onDrop={(e) => {
-                        e.preventDefault();
-                        const id = e.dataTransfer.getData('text/plain');
-                        if (id) handleDropHabit(id, date);
-                      }}
-                      className={`p-2 min-h-[140px] border border-border rounded-lg cursor-pointer transition-all hover:border-border/60 ${isToday ? 'ring-2 ring-primary' : ''}`}
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium">{dayNames[date.getDay()]} {date.getDate()}</span>
-                      </div>
-                      <div className="space-y-1">
-                        {shownHabits.map((habit, hIdx) => {
-                          const Icon = habit.icon;
-                          const source = habits.find(x => x.id === habit.id);
-                          const draggable = source?.frequency !== 'daily';
-                          return (
-                            <div
-                              key={hIdx}
-                              draggable={draggable}
-                              onMouseDown={(e) => e.stopPropagation()}
-                              onDragStart={(e) => {
-                                isDraggingRef.current = true;
-                                e.dataTransfer.setData('text/plain', habit.id);
-                              }}
-                              onDragEnd={() => {
-                                // small timeout to avoid click firing after drag
-                                setTimeout(() => { isDraggingRef.current = false; }, 50);
-                              }}
-                              className={`flex items-center space-x-1 p-2 rounded text-xs ${habit.color} ${draggable ? 'cursor-move' : ''}`}
-                            >
-                              <Icon className="h-3 w-3" />
-                              <span className="truncate">{habit.name}</span>
-                              {habit.completed && (
-                                <CheckCircle2 className="h-3 w-3 text-success ml-auto" />
-                              )}
+              <div className="space-y-2">
+                {Array.from({ length: 6 }, (_, row) => (
+                  <div key={row} className="grid grid-cols-7 gap-2">
+                    {calendarDays.slice(row * 7, row * 7 + 7).map((day, idx) => (
+                      <div
+                        key={idx}
+                        onClick={() => {
+                          if (isDraggingRef.current) return;
+                          handleDayClick(day);
+                        }}
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          const id = e.dataTransfer.getData('text/plain');
+                          if (id) handleDropHabit(id, day.date);
+                        }}
+                        className={`p-2 min-h-[140px] border border-border rounded-lg cursor-pointer transition-all hover:border-border/60 ${day.isToday ? 'ring-2 ring-primary' : ''}`}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium">{dayNames[day.date.getDay()]} {day.date.getDate()}</span>
+                        </div>
+                        <div className="space-y-1">
+                          {day.habits.map((habit, hIdx) => {
+                            const Icon = habit.icon;
+                            const source = habits.find(x => x.id === habit.id);
+                            const draggable = source?.frequency !== 'daily';
+                            return (
+                              <div
+                                key={hIdx}
+                                draggable={draggable}
+                                onMouseDown={(e) => e.stopPropagation()}
+                                onDragStart={(e) => {
+                                  isDraggingRef.current = true;
+                                  e.dataTransfer.setData('text/plain', habit.id);
+                                }}
+                                onDragEnd={() => {
+                                  setTimeout(() => { isDraggingRef.current = false; }, 50);
+                                }}
+                                className={`flex items-center space-x-1 p-2 rounded text-xs ${habit.color} ${draggable ? 'cursor-move' : ''}`}
+                              >
+                                <Icon className="h-3 w-3" />
+                                <span className="truncate">{habit.name}</span>
+                                {habit.completed && (
+                                  <CheckCircle2 className="h-3 w-3 text-success ml-auto" />
+                                )}
+                              </div>
+                            );
+                          })}
+                          {day.habits.length === 0 && (
+                            <div className="text-xs text-muted-foreground text-center py-6 border border-dashed border-border rounded">
+                              Arrastra aquí
                             </div>
-                          );
-                        })}
-                        {shownHabits.length === 0 && (
-                          <div className="text-xs text-muted-foreground text-center py-6 border border-dashed border-border rounded">
-                            Arrastra aquí
-                          </div>
-                        )}
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    ))}
+                  </div>
+                ))}
               </div>
             )}
           </CardContent>
