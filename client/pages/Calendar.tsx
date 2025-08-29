@@ -211,27 +211,11 @@ export default function Calendar() {
     const h = habits.find((x) => x.id === habitId);
     if (!h) return;
     const createdAt = dropDate.toISOString().split('T')[0];
-    if (h.frequency === 'daily') {
-      toast({ title: 'No se puede mover', description: 'Los hábitos diarios se repiten todos los días.' });
-      return;
-    }
-    if (h.frequency === 'weekly') {
-      updateHabit(h.id, { createdAt });
-      setForceShowDates((s) => ({ ...s, [dropDate.toDateString()]: true }));
-      toast({ title: 'Hábito movido', description: `Programado los ${dayNames[dropDate.getDay()]}.` });
-      return;
-    }
-    if (h.frequency === 'monthly') {
-      const m = dropDate.getMonth() + 1;
-      const d = dropDate.getDate();
-      const months = Array.from(new Set([...(h.monthlyMonths || []), m])).sort((a, b) => a - b);
-      const days = Array.from(new Set([...(h.monthlyDays || []), d])).sort((a, b) => a - b);
-      updateHabit(h.id, { createdAt, monthlyMonths: months, monthlyDays: days });
-      setForceShowDates((s) => ({ ...s, [dropDate.toDateString()]: true }));
-      toast({ title: 'Hábito movido', description: `Programado el día ${d} de ${monthNames[m - 1]}.` });
-      return;
-    }
-    toast({ title: 'Frecuencia no soportada', description: 'Esta frecuencia aún no admite arrastrar y soltar.' });
+    const m = dropDate.getMonth() + 1;
+    const d = dropDate.getDate();
+    updateHabit(h.id, { createdAt, frequency: 'monthly' as any, monthlyMonths: [m], monthlyDays: [d] });
+    setForceShowDates((s) => ({ ...s, [dropDate.toDateString()]: true }));
+    toast({ title: 'Hábito movido', description: `Programado el ${d} de ${monthNames[m - 1]}.` });
   };
 
   return (
@@ -503,7 +487,7 @@ export default function Calendar() {
             {selectedDay?.habits.length === 0 ? (
               <div className="text-center py-8">
                 <Target className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground">No hay hábitos programados para este día</p>
+                <p className="text-muted-foreground">No hay h��bitos programados para este día</p>
                 <Button className="mt-4" size="sm" onClick={() => setHabitDialogOpen(true)}>
                   <Plus className="h-4 w-4 mr-2" />
                   Agregar Hábito
