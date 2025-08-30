@@ -220,7 +220,7 @@ export default function Index() {
               <span className="text-xl font-bold text-foreground">HabitFlow</span>
             </div>
             <p className="text-muted-foreground text-center md:text-right">
-              © 2025 HabitFlow. Construyendo mejores h\u00E1bitos, un d\u00EDa a la vez.
+              © 2025 HabitFlow. Construyendo mejores hábitos, un día a la vez.
             </p>
           </div>
         </div>
