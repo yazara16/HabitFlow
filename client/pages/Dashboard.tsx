@@ -27,6 +27,7 @@ import {
   ArrowDown,
 } from "lucide-react";
 import Navigation from "@/components/Navigation";
+import { useAuth } from "@/contexts/AuthContext";
 import { useHabits, Habit as HabitType } from "@/contexts/HabitsContext";
 import { toast } from "@/hooks/use-toast";
 import { useHabitReminders } from "@/hooks/use-habit-reminders";
@@ -36,9 +37,10 @@ type Habit = HabitType;
 export default function Dashboard() {
   useHabitReminders();
   const { habits, addHabit, updateHabit } = useHabits();
+  const { user } = useAuth();
   const [habitDialogOpen, setHabitDialogOpen] = useState(false);
   const [editingHabit, setEditingHabit] = useState<Habit | undefined>(undefined);
-  const [userName] = useState("Ara Moreno");
+  const userName = user?.name ?? "";
 
   const today = new Date().toLocaleDateString("es-ES", {
     weekday: "long",
@@ -82,7 +84,7 @@ export default function Dashboard() {
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-foreground mb-2">¡Buen día, {userName}! 👋</h1>
+              <h1 className="text-3xl font-bold text-foreground mb-2">¡Buen día{userName ? ", " : ""}{userName}! 👋</h1>
               <p className="text-muted-foreground capitalize">{today}</p>
             </div>
             <div className="flex items-center space-x-3 mt-4 sm:mt-0">
