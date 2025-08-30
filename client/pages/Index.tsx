@@ -92,16 +92,18 @@ export default function Index() {
           </p>
           
           <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4 mb-12">
-            <Link to="/dashboard">
+            <Link to="/register">
               <Button size="lg" className="px-8 py-6 text-lg font-semibold">
                 <Play className="mr-2 h-5 w-5" />
-                Comenzar Gratis
+                Registrarse
               </Button>
             </Link>
-            <Button variant="outline" size="lg" className="px-8 py-6 text-lg">
-              <BarChart3 className="mr-2 h-5 w-5" />
-              Ver Demo
-            </Button>
+            <Link to="/login">
+              <Button variant="outline" size="lg" className="px-8 py-6 text-lg">
+                <BarChart3 className="mr-2 h-5 w-5" />
+                Iniciar sesión
+              </Button>
+            </Link>
           </div>
 
           {/* Stats */}
