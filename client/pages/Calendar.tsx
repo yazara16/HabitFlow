@@ -54,7 +54,7 @@ const MAX_HABITS_PER_DAY = 2;
 
 export default function Calendar() {
   useHabitReminders();
-  const { habits, addHabit, updateHabit, removeHabit } = useHabits();
+  const { habits, addHabit, updateHabit, removeHabit, getHabitsForDate, hideHabitOnDate, updateHabitForDate } = useHabits();
   const isDraggingRef = useRef(false);
   const [forceShowDates, setForceShowDates] = useState<Record<string, boolean>>({});
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -105,18 +105,7 @@ export default function Calendar() {
       const isToday = date.toDateString() === today.toDateString();
 
       const realHabits: CalendarHabit[] = isCurrentMonth
-        ? habits
-            .filter((h) => isScheduledOn(h, date))
-            .map((h) => ({
-              id: h.id,
-              name: h.name,
-              category: h.category,
-              icon: h.icon,
-              color: h.color,
-              time: h.reminderTime,
-              completed: date.toDateString() === new Date().toDateString() ? h.completed >= h.target : false,
-              streak: h.streak,
-            }))
+        ? getHabitsForDate(date).map(h => toCalHabit(h, date))
         : [];
 
       const key = date.toDateString();
@@ -150,8 +139,30 @@ export default function Calendar() {
     });
   };
 
+  const toCalHabit = (h: Habit, date: Date): CalendarHabit => ({
+    id: h.id,
+    name: h.name,
+    category: h.category,
+    icon: h.icon,
+    color: h.color,
+    time: h.reminderTime,
+    completed: date.toDateString() === new Date().toDateString() ? h.completed >= h.target : false,
+    streak: h.streak,
+  });
+
+  const buildCalendarDay = (date: Date): CalendarDay => {
+    const isToday = date.toDateString() === new Date().toDateString();
+    const hs = getHabitsForDate(date).map(h => toCalHabit(h, date));
+    const completionRate = hs.length > 0 ? (hs.filter(h => h.completed).length / hs.length) * 100 : 0;
+    return { date, habits: hs, isCurrentMonth: true, isToday, completionRate };
+  };
+
+  const refreshSelectedDay = (date: Date) => {
+    setSelectedDay(buildCalendarDay(date));
+  };
+
   const handleDayClick = (day: CalendarDay) => {
-    setSelectedDay(day);
+    setSelectedDay(buildCalendarDay(day.date));
     setDayDetailOpen(true);
   };
 
@@ -366,16 +377,7 @@ export default function Calendar() {
               <div className="grid grid-cols-5 gap-2">
                 {fiveDays.map((date, idx) => {
                   const isToday = date.toDateString() === new Date().toDateString();
-                  const realHabits: CalendarHabit[] = habits.filter(h => isScheduledOn(h, date)).map(h => ({
-                    id: h.id,
-                    name: h.name,
-                    category: h.category,
-                    icon: h.icon,
-                    color: h.color,
-                    time: h.reminderTime,
-                    completed: date.toDateString() === new Date().toDateString() ? (h.completed >= h.target) : false,
-                    streak: h.streak,
-                  }));
+                  const realHabits: CalendarHabit[] = getHabitsForDate(date).map(h => toCalHabit(h, date));
                   const key = date.toDateString();
                   const shouldShow = forceShowDates[key] || date.getDate() % 2 === 0;
                   const displayHabits = shouldShow ? realHabits : [];
@@ -542,8 +544,10 @@ export default function Calendar() {
                           size="sm"
                           onClick={(e) => {
                             e.stopPropagation();
-                            removeHabit(habit.id);
-                            toast({ title: 'Hábito eliminado' });
+                            if (!selectedDay) return;
+                            hideHabitOnDate(habit.id, selectedDay.date);
+                            refreshSelectedDay(selectedDay.date);
+                            toast({ title: 'Hábito eliminado para este día' });
                           }}
                         >
                           Eliminar
@@ -577,7 +581,11 @@ export default function Calendar() {
         hideFrequency
         habit={editingHabit as any}
         onSave={(newHabit) => {
-          if (editingHabit) {
+          if (editingHabit && selectedDay) {
+            updateHabitForDate(editingHabit.id, selectedDay.date, newHabit as any);
+            refreshSelectedDay(selectedDay.date);
+            toast({ title: 'Hábito actualizado para este día' });
+          } else if (editingHabit) {
             updateHabit(editingHabit.id, newHabit as any);
             toast({ title: 'Hábito actualizado' });
           } else if (selectedDay) {
@@ -592,6 +600,7 @@ export default function Calendar() {
             } as any;
             addHabit(habitToSave, { assignDate: date });
             setForceShowDates((s) => ({ ...s, [date.toDateString()]: true }));
+            refreshSelectedDay(date);
             toast({ title: 'Hábito creado' });
           } else {
             addHabit(newHabit as any);
