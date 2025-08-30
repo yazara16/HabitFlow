@@ -87,6 +87,19 @@ export default function Calendar() {
     }
   };
 
+  function toCalHabit(h: Habit, date: Date): CalendarHabit {
+    return {
+      id: h.id,
+      name: h.name,
+      category: h.category,
+      icon: h.icon,
+      color: h.color,
+      time: h.reminderTime,
+      completed: date.toDateString() === new Date().toDateString() ? h.completed >= h.target : false,
+      streak: h.streak,
+    };
+  }
+
   const generateCalendarDays = (): CalendarDay[] => {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
@@ -138,17 +151,6 @@ export default function Calendar() {
       return newDate;
     });
   };
-
-  const toCalHabit = (h: Habit, date: Date): CalendarHabit => ({
-    id: h.id,
-    name: h.name,
-    category: h.category,
-    icon: h.icon,
-    color: h.color,
-    time: h.reminderTime,
-    completed: date.toDateString() === new Date().toDateString() ? h.completed >= h.target : false,
-    streak: h.streak,
-  });
 
   const buildCalendarDay = (date: Date): CalendarDay => {
     const isToday = date.toDateString() === new Date().toDateString();
