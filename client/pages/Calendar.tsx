@@ -121,9 +121,7 @@ export default function Calendar() {
         ? getHabitsForDate(date).map(h => toCalHabit(h, date))
         : [];
 
-      const key = date.toDateString();
-      const shouldShow = forceShowDates[key] || date.getDate() % 2 === 0;
-      const dayHabits = shouldShow ? realHabits : [];
+      const dayHabits = realHabits;
       const completionRate = dayHabits.length > 0 ? (dayHabits.filter((h) => h.completed).length / dayHabits.length) * 100 : 0;
 
       days.push({
@@ -138,7 +136,7 @@ export default function Calendar() {
     return days;
   };
 
-  const calendarDays = useMemo(() => generateCalendarDays(), [currentDate, habits, forceShowDates]);
+  const calendarDays = useMemo(() => generateCalendarDays(), [currentDate, habits]);
 
   const navigate = (direction: "prev" | "next") => {
     setCurrentDate((prev) => {
@@ -228,7 +226,6 @@ export default function Calendar() {
     const m = dropDate.getMonth() + 1;
     const d = dropDate.getDate();
     updateHabit(h.id, { createdAt, frequency: 'monthly' as any, monthlyMonths: [m], monthlyDays: [d] });
-    setForceShowDates((s) => ({ ...s, [dropDate.toDateString()]: true }));
     toast({ title: 'Hábito movido', description: `Programado el ${d} de ${monthNames[m - 1]}.` });
   };
 
@@ -380,9 +377,7 @@ export default function Calendar() {
                 {fiveDays.map((date, idx) => {
                   const isToday = date.toDateString() === new Date().toDateString();
                   const realHabits: CalendarHabit[] = getHabitsForDate(date).map(h => toCalHabit(h, date));
-                  const key = date.toDateString();
-                  const shouldShow = forceShowDates[key] || date.getDate() % 2 === 0;
-                  const displayHabits = shouldShow ? realHabits : [];
+                  const displayHabits = realHabits;
                   return (
                     <div
                       key={idx}
@@ -601,7 +596,6 @@ export default function Calendar() {
               monthlyDays: [d],
             } as any;
             addHabit(habitToSave, { assignDate: date });
-            setForceShowDates((s) => ({ ...s, [date.toDateString()]: true }));
             refreshSelectedDay(date);
             toast({ title: 'Hábito creado' });
           } else {
