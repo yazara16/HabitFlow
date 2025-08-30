@@ -19,7 +19,7 @@ import {
   Clock,
   Heart
 } from "lucide-react";
-import Navigation from "@/components/Navigation";
+import LandingNav from "@/components/LandingNav";
 
 export default function Index() {
   const features = [
@@ -70,10 +70,10 @@ export default function Index() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
+      <LandingNav />
       
       {/* Hero Section */}
-      <section className="relative px-4 py-20 sm:px-6 lg:px-8 bg-gradient-to-br from-background via-background to-accent/10">
+      <section id="hero" className="relative px-4 py-20 sm:px-6 lg:px-8 bg-gradient-to-br from-background via-background to-accent/10">
         <div className="max-w-7xl mx-auto text-center">
           
           <h1 className="text-4xl sm:text-6xl font-bold text-foreground mb-6 leading-tight">
@@ -117,7 +117,7 @@ export default function Index() {
       </section>
 
       {/* Features Section */}
-      <section className="px-4 py-20 sm:px-6 lg:px-8">
+      <section id="features" className="px-4 py-20 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
@@ -149,7 +149,7 @@ export default function Index() {
       </section>
 
       {/* Categories Preview */}
-      <section className="px-4 py-20 sm:px-6 lg:px-8 bg-muted/30">
+      <section id="categories" className="px-4 py-20 sm:px-6 lg:px-8 bg-muted/30">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
@@ -205,6 +205,17 @@ export default function Index() {
                 <span>Gratis para siempre • No requiere tarjeta</span>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section id="contact" className="px-4 py-20 sm:px-6 lg:px-8">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">Contacto</h2>
+          <p className="text-lg text-muted-foreground mb-6">Escríbenos a soporte@habitflow.app o completa el formulario pronto disponible.</p>
+          <div className="flex items-center justify-center space-x-3">
+            <a href="mailto:soporte@habitflow.app" className="underline text-primary">soporte@habitflow.app</a>
           </div>
         </div>
       </section>
