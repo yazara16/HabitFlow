@@ -1,14 +1,13 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { 
-  CheckCircle2, 
-  BarChart3, 
-  Calendar, 
-  Bell, 
-  Zap, 
-  Target, 
+import {
+  CheckCircle2,
+  BarChart3,
+  Calendar,
+  Bell,
+  Zap,
+  Target,
   TrendingUp,
   Star,
   Award,
@@ -76,10 +75,6 @@ export default function Index() {
       {/* Hero Section */}
       <section className="relative px-4 py-20 sm:px-6 lg:px-8 bg-gradient-to-br from-background via-background to-accent/10">
         <div className="max-w-7xl mx-auto text-center">
-          <Badge variant="secondary" className="mb-4 inline-flex items-center space-x-2">
-            <Star className="h-3 w-3" />
-            <span>¡Nuevo! Version 2.0 disponible</span>
-          </Badge>
           
           <h1 className="text-4xl sm:text-6xl font-bold text-foreground mb-6 leading-tight">
             Transforma tu vida con
@@ -198,7 +193,7 @@ export default function Index() {
               Únete a miles de personas que ya están construyendo mejores hábitos y alcanzando sus metas con HabitFlow.
             </p>
             <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
-              <Link to="/dashboard">
+              <Link to="/register">
                 <Button size="lg" className="px-8 py-6 text-lg font-semibold">
                   <CheckCircle2 className="mr-2 h-5 w-5" />
                   Comenzar Ahora
@@ -225,7 +220,7 @@ export default function Index() {
               <span className="text-xl font-bold text-foreground">HabitFlow</span>
             </div>
             <p className="text-muted-foreground text-center md:text-right">
-              © 2024 HabitFlow. Construyendo mejores hábitos, un día a la vez.
+              © 2025 HabitFlow. Construyendo mejores h��bitos, un día a la vez.
             </p>
           </div>
         </div>
