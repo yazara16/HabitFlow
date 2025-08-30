@@ -6,8 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/hooks/use-toast";
-import { UserPlus, Mail, Lock, Chrome, ShieldCheck } from "lucide-react";
+import { UserPlus, Mail, Lock, Chrome, ShieldCheck, Image as ImageIcon } from "lucide-react";
 import { FormEvent, useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -17,7 +18,10 @@ export default function Register() {
   const [confirm, setConfirm] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const onSubmit = (e: FormEvent) => {
+  const { register: registerUser, loginWithGoogle } = useAuth();
+  const [photoDataUrl, setPhotoDataUrl] = useState<string | undefined>(undefined);
+
+  const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
       toast({ title: "Nombre requerido" });
@@ -35,16 +39,21 @@ export default function Register() {
       toast({ title: "Las contraseñas no coinciden" });
       return;
     }
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      setLoading(true);
+      await registerUser({ name, email, password, photoUrl: photoDataUrl });
       toast({ title: "Registro exitoso" });
       navigate("/dashboard");
-    }, 700);
+    } catch (err: any) {
+      toast({ title: "Error", description: err?.message || "No se pudo registrar" });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const signUpWithGoogle = () => {
-    toast({ title: "Google no configurado", description: "Conecta un proveedor para habilitarlo" });
+  const signUpWithGoogle = async () => {
+    await loginWithGoogle();
+    navigate("/dashboard");
   };
 
   return (
@@ -78,6 +87,24 @@ export default function Register() {
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input id="password" type="password" placeholder="********" value={password} onChange={(e) => setPassword(e.target.value)} className="pl-9" />
                 </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="photo">Foto (opcional)</Label>
+                <div className="relative">
+                  <Input id="photo" type="file" accept="image/*" onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) { setPhotoDataUrl(undefined); return; }
+                    const reader = new FileReader();
+                    reader.onload = () => setPhotoDataUrl(reader.result as string);
+                    reader.readAsDataURL(file);
+                  }} />
+                </div>
+                {photoDataUrl && (
+                  <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+                    <ImageIcon className="h-3 w-3" />
+                    <span>Foto cargada</span>
+                  </div>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="confirm">Confirmar contraseña</Label>
