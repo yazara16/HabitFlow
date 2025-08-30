@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/hooks/use-toast";
 import { Mail, Lock, LogIn, ShieldCheck, User, Chrome } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 import { FormEvent, useState } from "react";
 
 export default function Login() {
@@ -14,6 +15,8 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const { login, loginWithGoogle } = useAuth();
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -25,16 +28,21 @@ export default function Login() {
       toast({ title: "Contraseña muy corta", description: "Mínimo 6 caracteres" });
       return;
     }
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      setLoading(true);
+      await login({ email, password });
       toast({ title: "Sesión iniciada" });
       navigate("/dashboard");
-    }, 600);
+    } catch (err: any) {
+      toast({ title: "Error", description: err?.message || "No se pudo iniciar sesión" });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const signInWithGoogle = () => {
-    toast({ title: "Google no configurado", description: "Conecta un proveedor para habilitarlo" });
+  const signInWithGoogle = async () => {
+    await loginWithGoogle();
+    navigate("/dashboard");
   };
 
   return (
