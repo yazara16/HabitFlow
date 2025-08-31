@@ -116,17 +116,6 @@ export default function Index() {
         </div>
       </section>
 
-      {/* About Section */}
-      <section id="about" className="px-4 py-20 sm:px-6 lg:px-8 bg-muted/20">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">Sobre nosotros</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            En HabitFlow creemos que pequeños pasos diarios generan grandes cambios. Nuestra misión es darte
-            herramientas claras, visuales y motivadoras para construir hábitos sostenibles y alcanzar tus metas.
-          </p>
-        </div>
-      </section>
-
       {/* Features Section */}
       <section id="features" className="px-4 py-20 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
@@ -188,6 +177,31 @@ export default function Index() {
                 </CardContent>
               </Card>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* About Section */}
+      <section id="about" className="px-4 py-20 sm:px-6 lg:px-8 bg-muted/20">
+        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8 items-center">
+          <img src="/placeholder.svg" alt="Ilustración de progreso y hábitos" className="w-full rounded-xl border border-border" />
+          <div className="text-center md:text-left">
+            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">Sobre nosotros</h2>
+            <p className="text-lg text-muted-foreground">
+              En HabitFlow creemos que pequeños pasos diarios generan grandes cambios. Nuestra misión es darte
+              herramientas claras, visuales y motivadoras para construir hábitos sostenibles y alcanzar tus metas.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section id="contact" className="px-4 py-20 sm:px-6 lg:px-8">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">Contacto</h2>
+          <p className="text-lg text-muted-foreground mb-6">Escríbenos a soporte@habitflow.app o completa el formulario pronto disponible.</p>
+          <div className="flex items-center justify-center space-x-3">
+            <a href="mailto:soporte@habitflow.app" className="underline text-primary">soporte@habitflow.app</a>
           </div>
         </div>
       </section>
