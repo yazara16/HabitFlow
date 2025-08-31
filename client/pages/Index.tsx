@@ -1,6 +1,10 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { toast } from "@/hooks/use-toast";
 import {
   CheckCircle2,
   BarChart3,
@@ -17,7 +21,11 @@ import {
   Play,
   Users,
   Clock,
-  Heart
+  Heart,
+  Twitter,
+  Instagram,
+  Facebook,
+  Linkedin
 } from "lucide-react";
 import LandingNav from "@/components/LandingNav";
 
@@ -197,12 +205,36 @@ export default function Index() {
 
       {/* Contact Section */}
       <section id="contact" className="px-4 py-20 sm:px-6 lg:px-8">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">Contacto</h2>
-          <p className="text-lg text-muted-foreground mb-6">Escríbenos a soporte@habitflow.app o completa el formulario pronto disponible.</p>
-          <div className="flex items-center justify-center space-x-3">
-            <a href="mailto:soporte@habitflow.app" className="underline text-primary">soporte@habitflow.app</a>
+        <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-10 items-start">
+          <div>
+            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">Contacto</h2>
+            <p className="text-lg text-muted-foreground mb-6">Escríbenos o conéctate con nosotros en redes sociales.</p>
+            <div className="flex items-center space-x-4">
+              <a href="mailto:soporte@habitflow.app" className="underline text-primary">soporte@habitflow.app</a>
+              <a href="#" aria-label="Twitter" className="p-2 rounded-lg border border-border hover:bg-muted/50 transition"><Twitter className="h-4 w-4" /></a>
+              <a href="#" aria-label="Instagram" className="p-2 rounded-lg border border-border hover:bg-muted/50 transition"><Instagram className="h-4 w-4" /></a>
+              <a href="#" aria-label="Facebook" className="p-2 rounded-lg border border-border hover:bg-muted/50 transition"><Facebook className="h-4 w-4" /></a>
+              <a href="#" aria-label="LinkedIn" className="p-2 rounded-lg border border-border hover:bg-muted/50 transition"><Linkedin className="h-4 w-4" /></a>
+            </div>
           </div>
+          <form
+            onSubmit={(e) => { e.preventDefault(); toast({ title: "Mensaje enviado" }); }}
+            className="space-y-4"
+          >
+            <div className="space-y-2">
+              <Label htmlFor="cname">Nombre</Label>
+              <Input id="cname" placeholder="Tu nombre" required />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="cemail">Correo</Label>
+              <Input id="cemail" type="email" placeholder="tu@correo.com" required />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="cmsg">Mensaje</Label>
+              <Textarea id="cmsg" placeholder="Cuéntanos en qué podemos ayudarte" rows={4} required />
+            </div>
+            <Button type="submit" className="w-full md:w-auto">Enviar</Button>
+          </form>
         </div>
       </section>
 
@@ -230,17 +262,6 @@ export default function Index() {
                 <span>Gratis para siempre • No requiere tarjeta</span>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Contact Section */}
-      <section id="contact" className="px-4 py-20 sm:px-6 lg:px-8">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">Contacto</h2>
-          <p className="text-lg text-muted-foreground mb-6">Escríbenos a soporte@habitflow.app o completa el formulario pronto disponible.</p>
-          <div className="flex items-center justify-center space-x-3">
-            <a href="mailto:soporte@habitflow.app" className="underline text-primary">soporte@habitflow.app</a>
           </div>
         </div>
       </section>
