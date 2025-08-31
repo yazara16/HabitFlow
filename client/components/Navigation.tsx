@@ -1,26 +1,33 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Target, 
-  BarChart3, 
-  Calendar, 
-  Settings, 
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import NotificationsPanel from "@/components/NotificationsPanel";
+import { useAuth } from "@/contexts/AuthContext";
+import {
+  Target,
+  BarChart3,
+  Calendar,
+  Settings,
   Menu,
   X,
-  CheckCircle2
+  CheckCircle2,
+  User,
+  LogOut
 } from "lucide-react";
 import { useState } from "react";
 
 export default function Navigation() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: BarChart3 },
     { name: "Hábitos", href: "/habits", icon: Target },
     { name: "Calendario", href: "/calendar", icon: Calendar },
-    { name: "Configuración", href: "/settings", icon: Settings },
   ];
 
   return (
@@ -53,6 +60,37 @@ export default function Navigation() {
                 </Link>
               );
             })}
+          </div>
+
+          <div className="hidden md:flex items-center space-x-2">
+            <NotificationsPanel />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex items-center focus:outline-none">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={user?.photoUrl} />
+                    <AvatarFallback>HF</AvatarFallback>
+                  </Avatar>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <div className="px-3 py-2">
+                  <p className="text-sm font-medium truncate">{user?.name || "Usuario"}</p>
+                  <p className="text-xs text-muted-foreground truncate">{user?.email || ""}</p>
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate('/profile')}>
+                  <User className="h-4 w-4 mr-2" /> Perfil
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/settings')}>
+                  <Settings className="h-4 w-4 mr-2" /> Configuración
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => { logout(); navigate('/'); }}>
+                  <LogOut className="h-4 w-4 mr-2" /> Cerrar sesión
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           {/* Mobile menu button */}
@@ -96,6 +134,12 @@ export default function Navigation() {
                   </Link>
                 );
               })}
+              <div className="flex items-center justify-between px-2 pt-2">
+                <NotificationsPanel />
+                <Button variant="ghost" size="sm" onClick={() => { setMobileMenuOpen(false); navigate('/settings'); }}>
+                  <Settings className="h-4 w-4 mr-2" /> Configuración
+                </Button>
+              </div>
             </div>
           </div>
         )}
