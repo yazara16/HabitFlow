@@ -1,7 +1,6 @@
 import { useState } from "react";
 import HabitDialog from "@/components/HabitDialog";
 import ProgressCharts from "@/components/ProgressCharts";
-import NotificationsPanel from "@/components/NotificationsPanel";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -88,7 +87,6 @@ export default function Dashboard() {
               <p className="text-muted-foreground capitalize">{today}</p>
             </div>
             <div className="flex items-center space-x-3 mt-4 sm:mt-0">
-              <NotificationsPanel />
               <Button
                 className="flex items-center space-x-2"
                 onClick={() => {
