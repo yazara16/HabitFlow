@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, LogIn, UserPlus } from "lucide-react";
 
 export default function LandingNav() {
   return (
@@ -19,8 +19,8 @@ export default function LandingNav() {
             <a href="#categories"><Button variant="ghost" size="sm">Organiza</Button></a>
             <a href="#about"><Button variant="ghost" size="sm">Sobre nosotros</Button></a>
             <a href="#contact"><Button variant="ghost" size="sm">Contacto</Button></a>
-            <Link to="/login"><Button variant="outline" size="sm">Iniciar sesión</Button></Link>
-            <Link to="/register"><Button size="sm">Registro</Button></Link>
+            <Link to="/login"><Button variant="outline" size="sm"><LogIn className="mr-2 h-4 w-4"/>Iniciar sesión</Button></Link>
+            <Link to="/register"><Button size="sm"><UserPlus className="mr-2 h-4 w-4"/>Registro</Button></Link>
           </div>
         </div>
       </div>
