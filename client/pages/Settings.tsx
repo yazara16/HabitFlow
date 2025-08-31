@@ -41,6 +41,7 @@ import {
 } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface UserSettings {
@@ -79,10 +80,11 @@ interface UserSettings {
 
 export default function Settings() {
   const { theme: currentTheme, colorScheme: currentScheme, setTheme, setColorScheme } = useTheme();
+  const { user, updateProfile } = useAuth();
   const [settings, setSettings] = useState<UserSettings>({
     // Profile
-    name: "Usuario Demo",
-    email: "usuario@ejemplo.com",
+    name: user?.name || "",
+    email: user?.email || "",
     bio: "Construyendo mejores hábitos cada día",
     timezone: "America/Mexico_City",
     language: "es",
@@ -123,11 +125,9 @@ export default function Settings() {
     setHasUnsavedChanges(true);
   };
 
-  const saveSettings = () => {
-    // In a real app, this would save to backend
-    console.log("Saving settings:", settings);
+  const saveSettings = async () => {
+    await updateProfile({ name: settings.name, email: settings.email });
     setHasUnsavedChanges(false);
-    // Show success message
   };
 
   const resetSettings = () => {
@@ -135,7 +135,7 @@ export default function Settings() {
     setHasUnsavedChanges(true);
   };
 
-  const [avatar, setAvatar] = useState<string | null>(typeof window !== 'undefined' ? localStorage.getItem('profile.avatar') : null);
+  const [avatar, setAvatar] = useState<string | null>(user?.photoUrl || null);
 
   const colorSchemes = [
     { id: "purple", name: "Púrpura", color: "bg-purple-500" },
@@ -145,6 +145,13 @@ export default function Settings() {
     { id: "pink", name: "Rosa", color: "bg-pink-500" },
     { id: "indigo", name: "Índigo", color: "bg-indigo-500" },
   ];
+
+  useEffect(() => {
+    if (user) {
+      setSettings(prev => ({ ...prev, name: user.name, email: user.email }));
+      setAvatar(user.photoUrl || null);
+    }
+  }, [user]);
 
   const timezones = [
     "America/Mexico_City",
@@ -258,16 +265,15 @@ export default function Settings() {
                           const f = e.target.files && e.target.files[0];
                           if (!f) return;
                           const reader = new FileReader();
-                          reader.onload = () => {
+                          reader.onload = async () => {
                             const data = reader.result as string;
                             setAvatar(data);
-                            localStorage.setItem('profile.avatar', data);
-                            setHasUnsavedChanges(true);
+                            await updateProfile({ photoUrl: data });
                           };
                           reader.readAsDataURL(f);
                         }} />
                         {avatar && (
-                          <Button variant="outline" size="sm" onClick={() => { setAvatar(null); localStorage.removeItem('profile.avatar'); setHasUnsavedChanges(true); }}>Quitar foto</Button>
+                          <Button variant="outline" size="sm" onClick={async () => { setAvatar(null); await updateProfile({ photoUrl: undefined }); }}>Quitar foto</Button>
                         )}
                       </div>
                     </div>
