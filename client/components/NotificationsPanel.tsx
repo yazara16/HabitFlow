@@ -134,7 +134,7 @@ export default function NotificationsPanel() {
   };
 
   const getTarget = (n: Notification) => (
-    n.type === "reminder" ? "/habits" :
+    n.type === "reminder" ? "/today" :
     n.type === "milestone" ? "/achievements" :
     n.type === "achievement" ? "/achievements" :
     n.type === "streak" ? "/streak" :
