@@ -18,6 +18,8 @@ import Settings from "./pages/Settings";
 import PlaceholderPage from "./pages/PlaceholderPage";
 import Profile from "./pages/Profile";
 import NotificationsPage from "./pages/Notifications";
+import Streak from "./pages/Streak";
+import Achievements from "./pages/Achievements";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
@@ -40,6 +42,8 @@ const App = () => (
           <Route path="/settings" element={<Settings />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/notifications" element={<NotificationsPage />} />
+          <Route path="/streak" element={<Streak />} />
+          <Route path="/achievements" element={<Achievements />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
