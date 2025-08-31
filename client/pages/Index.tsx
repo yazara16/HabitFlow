@@ -26,7 +26,9 @@ import {
   Instagram,
   Facebook,
   Linkedin,
-  MessageSquare
+  MessageSquare,
+  UserPlus,
+  LogIn
 } from "lucide-react";
 import LandingNav from "@/components/LandingNav";
 
@@ -98,13 +100,13 @@ export default function Index() {
           <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4 mb-12">
             <Link to="/register">
               <Button size="lg" className="px-8 py-6 text-lg font-semibold">
-                <Play className="mr-2 h-5 w-5" />
+                <UserPlus className="mr-2 h-5 w-5" />
                 Registrarse
               </Button>
             </Link>
             <Link to="/login">
               <Button variant="outline" size="lg" className="px-8 py-6 text-lg">
-                <BarChart3 className="mr-2 h-5 w-5" />
+                <LogIn className="mr-2 h-5 w-5" />
                 Iniciar sesión
               </Button>
             </Link>
@@ -212,7 +214,12 @@ export default function Index() {
       <section id="contact" className="px-4 py-20 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-10 items-start">
           <div>
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">Contacto</h2>
+            <div className="flex items-center justify-start mb-4">
+              <div className="w-12 h-12 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mr-3">
+                <MessageSquare className="h-6 w-6 text-primary" />
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-bold text-foreground">Contacto</h2>
+            </div>
             <p className="text-lg text-muted-foreground mb-6">Escríbenos o conéctate con nosotros en redes sociales.</p>
             <div className="flex items-center space-x-4">
               <a href="mailto:soporte@habitflow.app" className="underline text-primary">soporte@habitflow.app</a>
@@ -220,11 +227,6 @@ export default function Index() {
               <a href="#" aria-label="Instagram" className="p-2 rounded-lg border border-border hover:bg-muted/50 transition"><Instagram className="h-4 w-4" /></a>
               <a href="#" aria-label="Facebook" className="p-2 rounded-lg border border-border hover:bg-muted/50 transition"><Facebook className="h-4 w-4" /></a>
               <a href="#" aria-label="LinkedIn" className="p-2 rounded-lg border border-border hover:bg-muted/50 transition"><Linkedin className="h-4 w-4" /></a>
-            </div>
-            <div className="mt-6 flex items-center justify-start">
-              <div className="w-20 h-20 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                <MessageSquare className="h-8 w-8 text-primary" />
-              </div>
             </div>
           </div>
           <form
