@@ -122,7 +122,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card onClick={() => (window.location.href = '/streak')} className="cursor-pointer hover:shadow-md">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -158,7 +158,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card onClick={() => (window.location.href = '/achievements')} className="cursor-pointer hover:shadow-md">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
