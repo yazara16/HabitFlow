@@ -16,6 +16,7 @@ import Habits from "./pages/Habits";
 import Calendar from "./pages/Calendar";
 import Settings from "./pages/Settings";
 import PlaceholderPage from "./pages/PlaceholderPage";
+import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
@@ -36,6 +37,7 @@ const App = () => (
           <Route path="/habits" element={<Habits />} />
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
