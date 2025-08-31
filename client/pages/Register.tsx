@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
+import AuthNav from "@/components/AuthNav";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -57,6 +58,7 @@ export default function Register() {
 
   return (
     <div className="min-h-screen bg-background">
+      <AuthNav />
       <div className="max-w-md mx-auto px-4 py-10">
         <Card>
           <CardHeader>
