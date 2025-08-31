@@ -135,8 +135,9 @@ export default function NotificationsPanel() {
 
   const getTarget = (n: Notification) => (
     n.type === "reminder" ? "/habits" :
-    n.type === "milestone" ? "/dashboard" :
-    n.type === "achievement" ? "/dashboard" :
+    n.type === "milestone" ? "/achievements" :
+    n.type === "achievement" ? "/achievements" :
+    n.type === "streak" ? "/streak" :
     n.type === "system" ? "/settings" : "/dashboard"
   );
 
