@@ -192,7 +192,11 @@ export default function Index() {
       {/* About Section */}
       <section id="about" className="px-4 py-20 sm:px-6 lg:px-8 bg-muted/20">
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8 items-center">
-          <img src="/habits-illustration.svg" alt="Ilustración relacionada con hábitos" className="w-full rounded-xl border border-border" />
+          <div className="flex items-center justify-center">
+            <div className="w-40 h-40 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+              <Target className="h-16 w-16 text-primary" />
+            </div>
+          </div>
           <div className="text-center md:text-left">
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">Sobre nosotros</h2>
             <p className="text-lg text-muted-foreground">
