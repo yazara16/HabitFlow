@@ -25,7 +25,8 @@ import {
   Twitter,
   Instagram,
   Facebook,
-  Linkedin
+  Linkedin,
+  MessageSquare
 } from "lucide-react";
 import LandingNav from "@/components/LandingNav";
 
@@ -219,6 +220,11 @@ export default function Index() {
               <a href="#" aria-label="Instagram" className="p-2 rounded-lg border border-border hover:bg-muted/50 transition"><Instagram className="h-4 w-4" /></a>
               <a href="#" aria-label="Facebook" className="p-2 rounded-lg border border-border hover:bg-muted/50 transition"><Facebook className="h-4 w-4" /></a>
               <a href="#" aria-label="LinkedIn" className="p-2 rounded-lg border border-border hover:bg-muted/50 transition"><Linkedin className="h-4 w-4" /></a>
+            </div>
+            <div className="mt-6 flex items-center justify-start">
+              <div className="w-20 h-20 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                <MessageSquare className="h-8 w-8 text-primary" />
+              </div>
             </div>
           </div>
           <form
