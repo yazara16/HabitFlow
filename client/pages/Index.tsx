@@ -28,7 +28,9 @@ import {
   Linkedin,
   MessageSquare,
   UserPlus,
-  LogIn
+  LogIn,
+  Book,
+  GraduationCap
 } from "lucide-react";
 import LandingNav from "@/components/LandingNav";
 
@@ -176,6 +178,8 @@ export default function Index() {
               { name: "Ejercicio & Salud", icon: Heart, color: "bg-red-500", count: "12 hábitos" },
               { name: "Hidratación", icon: CheckCircle2, color: "bg-blue-500", count: "3 hábitos" },
               { name: "Finanzas", icon: TrendingUp, color: "bg-green-500", count: "8 hábitos" },
+              { name: "Lectura", icon: Book, color: "bg-amber-500", count: "6 hábitos" },
+              { name: "Estudio", icon: GraduationCap, color: "bg-teal-500", count: "5 hábitos" },
               { name: "Personalizado", icon: Star, color: "bg-purple-500", count: "15 hábitos" }
             ].map((category, index) => (
               <Card key={index} className="group hover:shadow-md transition-all duration-300">
