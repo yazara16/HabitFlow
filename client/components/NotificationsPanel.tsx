@@ -10,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { 
   Bell,
   X,
@@ -92,6 +93,8 @@ export default function NotificationsPanel() {
     }
   ]);
 
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [selected, setSelected] = useState<Notification | null>(null);
   const unreadCount = notifications.filter(n => !n.read).length;
 
   const markAsRead = (id: string) => {
@@ -130,17 +133,21 @@ export default function NotificationsPanel() {
     }
   };
 
+  const getTarget = (n: Notification) => (
+    n.type === "reminder" ? "/habits" :
+    n.type === "milestone" ? "/dashboard" :
+    n.type === "achievement" ? "/dashboard" :
+    n.type === "system" ? "/settings" : "/dashboard"
+  );
+
   const openNotification = (n: Notification) => {
     setNotifications(prev => prev.map(x => x.id === n.id ? { ...x, read: true } : x));
-    const target =
-      n.type === "reminder" ? "/habits" :
-      n.type === "milestone" ? "/dashboard" :
-      n.type === "achievement" ? "/dashboard" :
-      n.type === "system" ? "/settings" : "/dashboard";
-    navigate(target);
+    setSelected(n);
+    setDetailOpen(true);
   };
 
   return (
+    <>
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="sm" className="relative">
@@ -252,5 +259,33 @@ export default function NotificationsPanel() {
         )}
       </DropdownMenuContent>
     </DropdownMenu>
+
+    <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
+      <DialogContent className="sm:max-w-[460px]">
+        <DialogHeader>
+          <DialogTitle className="flex items-center space-x-2">
+            {selected && (
+              <span className={`p-2 rounded ${selected.color}`}>
+                <selected.icon className="h-4 w-4" />
+              </span>
+            )}
+            <span>{selected?.title}</span>
+          </DialogTitle>
+          <DialogDescription>{selected?.time}</DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4">
+          <p className="text-sm text-foreground">{selected?.message}</p>
+          <div className="flex items-center justify-end space-x-2">
+            <Button variant="outline" onClick={() => setDetailOpen(false)}>Cerrar</Button>
+            {selected && (
+              <Button onClick={() => { setDetailOpen(false); navigate(getTarget(selected)); }}>
+                Abrir
+              </Button>
+            )}
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }
