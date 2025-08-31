@@ -116,6 +116,17 @@ export default function Index() {
         </div>
       </section>
 
+      {/* About Section */}
+      <section id="about" className="px-4 py-20 sm:px-6 lg:px-8 bg-muted/20">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">Sobre nosotros</h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            En HabitFlow creemos que pequeños pasos diarios generan grandes cambios. Nuestra misión es darte
+            herramientas claras, visuales y motivadoras para construir hábitos sostenibles y alcanzar tus metas.
+          </p>
+        </div>
+      </section>
+
       {/* Features Section */}
       <section id="features" className="px-4 py-20 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
