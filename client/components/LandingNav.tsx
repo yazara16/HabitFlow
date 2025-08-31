@@ -16,7 +16,8 @@ export default function LandingNav() {
 
           <div className="hidden md:flex items-center space-x-1">
             <a href="#features"><Button variant="ghost" size="sm">Servicios</Button></a>
-            <a href="#categories"><Button variant="ghost" size="sm">Sobre nosotros</Button></a>
+            <a href="#about"><Button variant="ghost" size="sm">Sobre nosotros</Button></a>
+            <a href="#categories"><Button variant="ghost" size="sm">Organiza</Button></a>
             <a href="#contact"><Button variant="ghost" size="sm">Contacto</Button></a>
             <Link to="/login"><Button variant="outline" size="sm">Iniciar sesión</Button></Link>
             <Link to="/register"><Button size="sm">Registro</Button></Link>
