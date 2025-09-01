@@ -174,6 +174,9 @@ export default function Calendar() {
     return "bg-muted";
   };
 
+  // Alterna días con contenido: 1 día sí y otro no
+  const isAlternateOn = (date: Date) => (date.getDate() % 2 === 0);
+
   const monthNames = [
     "Enero",
     "Febrero",
@@ -351,7 +354,27 @@ export default function Calendar() {
                     </div>
 
                     {day.isCurrentMonth && (
-                      <div className="space-y-1" />
+                      <div className="space-y-1">
+                        {isAlternateOn(day.date) && (
+                          <>
+                            {day.habits.slice(0, MAX_HABITS_PER_DAY).map((habit, habitIndex) => {
+                              const Icon = habit.icon;
+                              return (
+                                <div key={habitIndex} className={`flex items-center space-x-1 p-1 rounded text-xs ${habit.color}`}>
+                                  <Icon className="h-3 w-3" />
+                                  <span className="truncate">{habit.name}</span>
+                                  {habit.completed && <CheckCircle2 className="h-3 w-3 text-success ml-auto" />}
+                                </div>
+                              );
+                            })}
+                            {day.habits.length > MAX_HABITS_PER_DAY && (
+                              <div className="text-xs text-muted-foreground text-center">
+                                +{day.habits.length - MAX_HABITS_PER_DAY} más
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </div>
                     )}
                   </div>
                 ))}
@@ -361,7 +384,7 @@ export default function Calendar() {
                 {fiveDays.map((date, idx) => {
                   const isToday = date.toDateString() === new Date().toDateString();
                   const realHabits: CalendarHabit[] = getHabitsForDate(date).map(h => toCalHabit(h, date));
-                  const displayHabits = realHabits;
+                  const displayHabits = isAlternateOn(date) ? realHabits : [];
                   return (
                     <div
                       key={idx}
@@ -383,6 +406,31 @@ export default function Calendar() {
                         <span className="text-sm font-medium">{dayNames[date.getDay()]} {date.getDate()}</span>
                       </div>
                       <div className="space-y-1">
+                        {displayHabits.map((habit, hIdx) => {
+                          const Icon = habit.icon;
+                          const draggable = true;
+                          return (
+                            <div
+                              key={hIdx}
+                              draggable={draggable}
+                              onMouseDown={(e) => e.stopPropagation()}
+                              onDragStart={(e) => {
+                                isDraggingRef.current = true;
+                                e.dataTransfer.setData('text/plain', habit.id);
+                              }}
+                              onDragEnd={() => {
+                                setTimeout(() => { isDraggingRef.current = false; }, 50);
+                              }}
+                              className={`flex items-center space-x-1 p-2 rounded text-xs ${habit.color} cursor-move`}
+                            >
+                              <Icon className="h-3 w-3" />
+                              <span className="truncate">{habit.name}</span>
+                              {habit.completed && (
+                                <CheckCircle2 className="h-3 w-3 text-success ml-auto" />
+                              )}
+                            </div>
+                          );
+                        })}
                         {displayHabits.length === 0 && (
                           <div className="text-xs text-muted-foreground text-center py-6 border border-dashed border-border rounded">
                             Arrastra aquí
