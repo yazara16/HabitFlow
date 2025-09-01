@@ -29,6 +29,7 @@ import {
   ArrowDown,
 } from "lucide-react";
 import Navigation from "@/components/Navigation";
+import Celebration from "@/components/Celebration";
 import { useAuth } from "@/contexts/AuthContext";
 import { useHabits, Habit as HabitType } from "@/contexts/HabitsContext";
 import { toast } from "@/hooks/use-toast";
@@ -41,6 +42,7 @@ export default function Dashboard() {
   const { habits, addHabit, updateHabit } = useHabits();
   const { user } = useAuth();
   const [habitDialogOpen, setHabitDialogOpen] = useState(false);
+  const [celebrate, setCelebrate] = useState(false);
   const [editingHabit, setEditingHabit] = useState<Habit | undefined>(undefined);
   const userName = user?.name ?? "";
   const navigate = useNavigate();
@@ -60,23 +62,33 @@ export default function Dashboard() {
     const h = habits.find((x) => x.id === habitId);
     if (!h) return;
     const newCompleted = h.completedToday ? Math.max(0, h.completed - 1) : Math.min(h.target, h.completed + 1);
+    const willBeCompleted = !h.completedToday && newCompleted >= h.target;
     updateHabit(habitId, {
       completed: newCompleted,
       completedToday: !h.completedToday,
       streak: !h.completedToday ? h.streak + 1 : h.streak,
       lastCompleted: !h.completedToday ? new Date().toISOString().split("T")[0] : h.lastCompleted,
     });
+    if (willBeCompleted) {
+      setCelebrate(true);
+      setTimeout(() => setCelebrate(false), 1600);
+    }
   };
 
   const incrementHabit = (habitId: string) => {
     const h = habits.find((x) => x.id === habitId);
     if (!h || h.completed >= h.target) return;
     const newCompleted = h.completed + 1;
+    const willBeCompleted = newCompleted >= h.target && h.completed < h.target;
     updateHabit(habitId, {
       completed: newCompleted,
       completedToday: newCompleted >= h.target,
       lastCompleted: newCompleted >= h.target ? new Date().toISOString().split("T")[0] : h.lastCompleted,
     });
+    if (willBeCompleted) {
+      setCelebrate(true);
+      setTimeout(() => setCelebrate(false), 1600);
+    }
   };
 
   return (
@@ -355,6 +367,7 @@ export default function Dashboard() {
         </div>
       </div>
 
+      <Celebration active={celebrate} />
       <HabitDialog
         open={habitDialogOpen}
         onOpenChange={setHabitDialogOpen}
