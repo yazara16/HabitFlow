@@ -157,7 +157,7 @@ export default function Calendar() {
   const buildCalendarDay = (date: Date): CalendarDay => {
     const isToday = date.toDateString() === new Date().toDateString();
     const all = getHabitsForDate(date).map(h => toCalHabit(h, date));
-    const hs = (viewMode === "month" && !isAlternateOn(date)) ? [] : all;
+    const hs = isAlternateOn(date) ? all : [];
     const completionRate = hs.length > 0 ? (hs.filter(h => h.completed).length / hs.length) * 100 : 0;
     return { date, habits: hs, isCurrentMonth: true, isToday, completionRate };
   };
