@@ -100,6 +100,10 @@ export default function Calendar() {
     };
   }
 
+  function isAlternateOn(date: Date) {
+    return date.getDate() % 2 === 0;
+  }
+
   const generateCalendarDays = (): CalendarDay[] => {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
@@ -174,9 +178,6 @@ export default function Calendar() {
     if (rate > 0) return "bg-destructive";
     return "bg-muted";
   };
-
-  // Alterna días con contenido: 1 día sí y otro no
-  const isAlternateOn = (date: Date) => (date.getDate() % 2 === 0);
 
   const monthNames = [
     "Enero",
