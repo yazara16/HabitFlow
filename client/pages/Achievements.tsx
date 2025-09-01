@@ -21,6 +21,23 @@ export default function Achievements() {
     { title: 'Objetivos al blanco', icon: Target, desc: 'Completaste 50 objetivos', earned: false },
   ];
 
+  const totalEarned = items.filter(i => i.earned).length;
+
+  const allAchievements = useMemo(() => {
+    const base = [
+      ...items,
+      { title: 'Hábito creado', icon: Award, desc: 'Creaste tu primer hábito', earned: habits.length > 0 },
+      { title: '10 hábitos completados', icon: Award, desc: 'Completaste 10 hábitos en total', earned: habits.reduce((a,h)=>a+(h.completed>=h.target?1:0),0) >= 10 },
+      { title: 'Lectura diaria', icon: Award, desc: 'Completaste un hábito de lectura', earned: habits.some(h=>h.category==='reading' && h.completed>=h.target) },
+      { title: 'Estudio constante', icon: Award, desc: 'Completaste un hábito de estudio', earned: habits.some(h=>h.category==='study' && h.completed>=h.target) },
+      { title: 'Ahorro logrado', icon: Award, desc: 'Cumpliste una meta de finanzas', earned: habits.some(h=>h.category==='finance' && h.completed>=h.target) },
+      { title: 'Semana perfecta', icon: Award, desc: '7 días seguidos completando', earned: false },
+      { title: 'Madrugador', icon: Award, desc: 'Completaste un hábito antes de las 8am', earned: false },
+      { title: 'Constancia', icon: Award, desc: '30 días con actividad', earned: false },
+    ];
+    return base;
+  }, [habits, items]);
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
