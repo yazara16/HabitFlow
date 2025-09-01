@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useMemo, useState } from "react";
-import { Dumbbell, Droplets, DollarSign, ShoppingCart, Star } from "lucide-react";
+import { Dumbbell, Droplets, DollarSign, ShoppingCart, Star, Book, BookOpen } from "lucide-react";
 
-export type HabitCategory = "exercise" | "hydration" | "finance" | "shopping" | "custom";
+export type HabitCategory = "exercise" | "hydration" | "finance" | "shopping" | "reading" | "study" | "custom";
 export type HabitFrequency = "daily" | "weekly" | "monthly" | "custom";
 
 export interface Habit {
@@ -98,7 +98,7 @@ const initialHabits: Habit[] = [
     completed: 30,
     streak: 7,
     completedToday: false,
-    unit: "USD",
+    unit: "MXN",
     frequency: "weekly",
     monthlyDays: [],
     monthlyMonths: [],
