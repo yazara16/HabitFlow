@@ -115,17 +115,20 @@ export default function Achievements() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="start">
-                            <DropdownMenuItem onClick={() => tryWebShare(a.title, s.text, s.url)}>
+                            <DropdownMenuItem onClick={async () => { const img = await generateAchievementImage(a.title); const ok = await tryWebShare(a.title, s.text, s.url, img); if (!ok) toast({ title: 'Compartir no disponible', description: 'Descarga la imagen y compártela manualmente.' }); }}>
                               <Share2 className="h-4 w-4 mr-2" /> Compartir directo
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => window.open(s.fb, '_blank', 'noreferrer')}>
-                              <Facebook className="h-4 w-4 mr-2" /> Facebook
+                              <Facebook className="h-4 w-4 mr-2" /> Facebook (texto)
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => window.open(s.wa, '_blank', 'noreferrer')}>
-                              <MessageCircle className="h-4 w-4 mr-2" /> WhatsApp
+                              <MessageCircle className="h-4 w-4 mr-2" /> WhatsApp (texto)
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => copyText(`${s.text} ${s.url}`)}>
                               <Copy className="h-4 w-4 mr-2" /> Copiar texto
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={async () => { const img = await generateAchievementImage(a.title); const urlObj = URL.createObjectURL(img); const aEl = document.createElement('a'); aEl.href = urlObj; aEl.download = `${slugify(a.title)}.png`; document.body.appendChild(aEl); aEl.click(); aEl.remove(); setTimeout(() => URL.revokeObjectURL(urlObj), 1000); }}>
+                              <Copy className="h-4 w-4 mr-2" /> Descargar imagen
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -171,18 +174,21 @@ export default function Achievements() {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="start">
-                              <DropdownMenuItem onClick={() => tryWebShare(a.title, s.text, s.url)}>
-                                <Share2 className="h-4 w-4 mr-2" /> Compartir directo
-                              </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => window.open(s.fb, '_blank', 'noreferrer')}>
-                                <Facebook className="h-4 w-4 mr-2" /> Facebook
-                              </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => window.open(s.wa, '_blank', 'noreferrer')}>
-                                <MessageCircle className="h-4 w-4 mr-2" /> WhatsApp
-                              </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => copyText(`${s.text} ${s.url}`)}>
-                                <Copy className="h-4 w-4 mr-2" /> Copiar texto
-                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={async () => { const img = await generateAchievementImage(a.title); const ok = await tryWebShare(a.title, s.text, s.url, img); if (!ok) toast({ title: 'Compartir no disponible', description: 'Descarga la imagen y compártela manualmente.' }); }}>
+                              <Share2 className="h-4 w-4 mr-2" /> Compartir directo
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => window.open(s.fb, '_blank', 'noreferrer')}>
+                              <Facebook className="h-4 w-4 mr-2" /> Facebook (texto)
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => window.open(s.wa, '_blank', 'noreferrer')}>
+                              <MessageCircle className="h-4 w-4 mr-2" /> WhatsApp (texto)
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => copyText(`${s.text} ${s.url}`)}>
+                              <Copy className="h-4 w-4 mr-2" /> Copiar texto
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={async () => { const img = await generateAchievementImage(a.title); const urlObj = URL.createObjectURL(img); const aEl = document.createElement('a'); aEl.href = urlObj; aEl.download = `${slugify(a.title)}.png`; document.body.appendChild(aEl); aEl.click(); aEl.remove(); setTimeout(() => URL.revokeObjectURL(urlObj), 1000); }}>
+                              <Copy className="h-4 w-4 mr-2" /> Descargar imagen
+                            </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
                         )})()}
