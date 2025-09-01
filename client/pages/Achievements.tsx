@@ -1,6 +1,8 @@
 import Navigation from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { useState, useMemo } from "react";
 import { Award, Star, Flame, Target, Droplets, Dumbbell } from "lucide-react";
 import { useHabits } from "@/contexts/HabitsContext";
 
