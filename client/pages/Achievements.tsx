@@ -84,7 +84,7 @@ export default function Achievements() {
 
   const buildShare = (title: string, desc: string) => {
     const url = window.location.href;
-    const text = `${title} — ${desc}`;
+    const text = `¡Felicidades por obtener este logro! ${title} — ${desc}`;
     const fb = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`;
     const wa = `https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`;
     return { url, text, fb, wa };
