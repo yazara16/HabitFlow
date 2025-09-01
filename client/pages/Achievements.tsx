@@ -197,14 +197,12 @@ export default function Achievements() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="start">
-                            <DropdownMenuItem onClick={async () => { const img = await generateAchievementImage(a.title, iconToEmoji(a.icon)); const ok = await tryWebShare(a.title, s.text, s.url, img); if (!ok) toast({ title: 'Compartir no disponible', description: 'Descarga la imagen y compártela manualmente.' }); }}>
-                              <Share2 className="h-4 w-4 mr-2" /> Compartir directo
-                            </DropdownMenuItem>
+
                             <DropdownMenuItem onClick={() => window.open(s.fb, '_blank', 'noreferrer')}>
-                              <Facebook className="h-4 w-4 mr-2" /> Facebook (texto)
+                              <Facebook className="h-4 w-4 mr-2" /> Facebook
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => window.open(s.wa, '_blank', 'noreferrer')}>
-                              <MessageCircle className="h-4 w-4 mr-2" /> WhatsApp (texto)
+                              <MessageCircle className="h-4 w-4 mr-2" /> WhatsApp
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => copyText(`${s.text} ${s.url}`)}>
                               <Copy className="h-4 w-4 mr-2" /> Copiar texto
@@ -256,14 +254,12 @@ export default function Achievements() {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="start">
-                              <DropdownMenuItem onClick={async () => { const img = await generateAchievementImage(a.title, iconToEmoji(a.icon)); const ok = await tryWebShare(a.title, s.text, s.url, img); if (!ok) toast({ title: 'Compartir no disponible', description: 'Descarga la imagen y compártela manualmente.' }); }}>
-                              <Share2 className="h-4 w-4 mr-2" /> Compartir directo
-                            </DropdownMenuItem>
+  
                             <DropdownMenuItem onClick={() => window.open(s.fb, '_blank', 'noreferrer')}>
-                              <Facebook className="h-4 w-4 mr-2" /> Facebook (texto)
+                              <Facebook className="h-4 w-4 mr-2" /> Facebook
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => window.open(s.wa, '_blank', 'noreferrer')}>
-                              <MessageCircle className="h-4 w-4 mr-2" /> WhatsApp (texto)
+                              <MessageCircle className="h-4 w-4 mr-2" /> WhatsApp
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => copyText(`${s.text} ${s.url}`)}>
                               <Copy className="h-4 w-4 mr-2" /> Copiar texto
