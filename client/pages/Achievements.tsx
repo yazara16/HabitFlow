@@ -8,6 +8,7 @@ import { useHabits } from "@/contexts/HabitsContext";
 
 export default function Achievements() {
   const { habits } = useHabits();
+  const [showAll, setShowAll] = useState(false);
   const achievedHydration = habits.find(h => h.category === 'hydration' && h.completed >= h.target);
   const achievedExercise = habits.find(h => h.category === 'exercise' && h.completed >= h.target);
   const totalAchievements = [achievedHydration, achievedExercise].filter(Boolean).length + 10;
