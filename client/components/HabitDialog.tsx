@@ -27,6 +27,7 @@ import {
   Star,
   Heart,
   Book,
+  BookOpen,
   Coffee,
   Moon,
   Target,
