@@ -4,7 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useState, useMemo } from "react";
 import { toast } from "@/hooks/use-toast";
-import { Award, Star, Flame, Target, Droplets, Dumbbell, Share2, Facebook, Instagram, MessageCircle, Link2, Copy } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Award, Star, Flame, Target, Droplets, Dumbbell, Share2, Facebook, MessageCircle, Copy } from "lucide-react";
 import { useHabits } from "@/contexts/HabitsContext";
 
 export default function Achievements() {
@@ -106,20 +107,27 @@ export default function Achievements() {
                   <p className="text-sm text-muted-foreground">{a.desc}</p>
                   <div className="flex items-center gap-2 mt-3">
                     {(() => { const s = buildShare(a.title, a.desc); return (
-                      <>
-                        <Button variant="ghost" size="sm" onClick={() => tryWebShare(a.title, s.text, s.url)}>
-                          <Share2 className="h-4 w-4 mr-1" /> Compartir
-                        </Button>
-                        <Button variant="ghost" size="sm" onClick={() => window.open(s.fb, '_blank', 'noreferrer') }>
-                          <Facebook className="h-4 w-4 mr-1" /> Facebook
-                        </Button>
-                        <Button variant="ghost" size="sm" onClick={() => window.open(s.wa, '_blank', 'noreferrer') }>
-                          <MessageCircle className="h-4 w-4 mr-1" /> WhatsApp
-                        </Button>
-                        <Button variant="ghost" size="sm" onClick={() => copyText(`${s.text} ${s.url}`)}>
-                          <Copy className="h-4 w-4 mr-1" /> Copiar
-                        </Button>
-                      </>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm">
+                            <Share2 className="h-4 w-4 mr-1" /> Compartir
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start">
+                          <DropdownMenuItem onClick={() => tryWebShare(a.title, s.text, s.url)}>
+                            <Share2 className="h-4 w-4 mr-2" /> Compartir directo
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => window.open(s.fb, '_blank', 'noreferrer')}>
+                            <Facebook className="h-4 w-4 mr-2" /> Facebook
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => window.open(s.wa, '_blank', 'noreferrer')}>
+                            <MessageCircle className="h-4 w-4 mr-2" /> WhatsApp
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => copyText(`${s.text} ${s.url}`)}>
+                            <Copy className="h-4 w-4 mr-2" /> Copiar texto
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     )})()}
                   </div>
                 </div>
@@ -153,20 +161,27 @@ export default function Achievements() {
                     <p className="text-xs text-muted-foreground">{a.desc}</p>
                     <div className="flex items-center gap-2 mt-3">
                       {(() => { const s = buildShare(a.title, a.desc); return (
-                        <>
-                          <Button variant="ghost" size="sm" onClick={() => tryWebShare(a.title, s.text, s.url)}>
-                            <Share2 className="h-4 w-4 mr-1" /> Compartir
-                          </Button>
-                          <Button variant="ghost" size="sm" onClick={() => window.open(s.fb, '_blank', 'noreferrer') }>
-                            <Facebook className="h-4 w-4 mr-1" /> Facebook
-                          </Button>
-                          <Button variant="ghost" size="sm" onClick={() => window.open(s.wa, '_blank', 'noreferrer') }>
-                            <MessageCircle className="h-4 w-4 mr-1" /> WhatsApp
-                          </Button>
-                          <Button variant="ghost" size="sm" onClick={() => copyText(`${s.text} ${s.url}`)}>
-                            <Copy className="h-4 w-4 mr-1" /> Copiar
-                          </Button>
-                        </>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm">
+                              <Share2 className="h-4 w-4 mr-1" /> Compartir
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="start">
+                            <DropdownMenuItem onClick={() => tryWebShare(a.title, s.text, s.url)}>
+                              <Share2 className="h-4 w-4 mr-2" /> Compartir directo
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => window.open(s.fb, '_blank', 'noreferrer')}>
+                              <Facebook className="h-4 w-4 mr-2" /> Facebook
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => window.open(s.wa, '_blank', 'noreferrer')}>
+                              <MessageCircle className="h-4 w-4 mr-2" /> WhatsApp
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => copyText(`${s.text} ${s.url}`)}>
+                              <Copy className="h-4 w-4 mr-2" /> Copiar texto
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       )})()}
                     </div>
                   </div>
