@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useState, useMemo } from "react";
 import { toast } from "@/hooks/use-toast";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Award, Star, Flame, Target, Droplets, Dumbbell, Share2, Facebook, MessageCircle, Copy } from "lucide-react";
+import { Award, Star, Flame, Target, Droplets, Dumbbell, Share2, Facebook, MessageCircle, Copy, Book, BookOpen, DollarSign, ShoppingCart } from "lucide-react";
 import { useHabits } from "@/contexts/HabitsContext";
 
 function slugify(s: string) {
@@ -18,7 +18,7 @@ function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number)
   if(line) lines.push(line); return { lines };
 }
 
-async function generateAchievementImage(title: string): Promise<Blob> {
+async function generateAchievementImage(title: string, emoji: string): Promise<Blob> {
   const w = 800, h = 450;
   const canvas = document.createElement('canvas');
   canvas.width = w; canvas.height = h;
@@ -33,11 +33,12 @@ async function generateAchievementImage(title: string): Promise<Blob> {
   const cx=w/2, cy=180, r=80;
   ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.fillStyle = '#fde68a'; ctx.fill();
   ctx.beginPath(); ctx.arc(cx, cy, r-16, 0, Math.PI*2); ctx.fillStyle = '#fbbf24'; ctx.fill();
-  ctx.fillStyle = '#78350f';
-  ctx.beginPath();
-  for (let i=0;i<5;i++){ const ang = -Math.PI/2 + i*2*Math.PI/5; const x = cx + Math.cos(ang)*40; const y = cy + Math.sin(ang)*40; if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); const ang2 = ang + Math.PI/5; const x2 = cx + Math.cos(ang2)*18; const y2 = cy + Math.sin(ang2)*18; ctx.lineTo(x2,y2); }
-  ctx.closePath(); ctx.fill();
+  ctx.font = 'bold 84px Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, system-ui, sans-serif';
   ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#78350f';
+  ctx.fillText(emoji || '🏅', cx, cy);
+  ctx.textBaseline = 'alphabetic';
   ctx.fillStyle = '#ffffff';
   ctx.font = 'bold 32px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial';
   ctx.fillText('¡Felicidades!', cx, cy+120);
@@ -57,12 +58,28 @@ async function blobToDataUrl(blob: Blob): Promise<string> {
   });
 }
 
-async function downloadAchievementImage(title: string) {
-  const img = await generateAchievementImage(title);
+async function downloadAchievementImage(title: string, emoji: string) {
+  const img = await generateAchievementImage(title, emoji);
   const dataUrl = await blobToDataUrl(img);
   const aEl = document.createElement('a');
   aEl.href = dataUrl; aEl.download = `${slugify(title)}.png`;
   document.body.appendChild(aEl); aEl.click(); aEl.remove();
+}
+
+function iconToEmoji(Icon: any): string {
+  switch (Icon) {
+    case Star: return '⭐';
+    case Droplets: return '💧';
+    case Dumbbell: return '🏋️';
+    case Flame: return '🔥';
+    case Target: return '🎯';
+    case Award: return '🏅';
+    case Book: return '📚';
+    case BookOpen: return '📖';
+    case DollarSign: return '💰';
+    case ShoppingCart: return '🛒';
+    default: return '🏅';
+  }
 }
 
 export default function Achievements() {
@@ -180,7 +197,7 @@ export default function Achievements() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="start">
-                            <DropdownMenuItem onClick={async () => { const img = await generateAchievementImage(a.title); const ok = await tryWebShare(a.title, s.text, s.url, img); if (!ok) toast({ title: 'Compartir no disponible', description: 'Descarga la imagen y compártela manualmente.' }); }}>
+                            <DropdownMenuItem onClick={async () => { const img = await generateAchievementImage(a.title, iconToEmoji(a.icon)); const ok = await tryWebShare(a.title, s.text, s.url, img); if (!ok) toast({ title: 'Compartir no disponible', description: 'Descarga la imagen y compártela manualmente.' }); }}>
                               <Share2 className="h-4 w-4 mr-2" /> Compartir directo
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => window.open(s.fb, '_blank', 'noreferrer')}>
@@ -192,7 +209,7 @@ export default function Achievements() {
                             <DropdownMenuItem onClick={() => copyText(`${s.text} ${s.url}`)}>
                               <Copy className="h-4 w-4 mr-2" /> Copiar texto
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => downloadAchievementImage(a.title)}>
+                            <DropdownMenuItem onClick={() => downloadAchievementImage(a.title, iconToEmoji(a.icon))}>
                               <Copy className="h-4 w-4 mr-2" /> Descargar imagen
                             </DropdownMenuItem>
                           </DropdownMenuContent>
@@ -239,7 +256,7 @@ export default function Achievements() {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="start">
-                              <DropdownMenuItem onClick={async () => { const img = await generateAchievementImage(a.title); const ok = await tryWebShare(a.title, s.text, s.url, img); if (!ok) toast({ title: 'Compartir no disponible', description: 'Descarga la imagen y compártela manualmente.' }); }}>
+                              <DropdownMenuItem onClick={async () => { const img = await generateAchievementImage(a.title, iconToEmoji(a.icon)); const ok = await tryWebShare(a.title, s.text, s.url, img); if (!ok) toast({ title: 'Compartir no disponible', description: 'Descarga la imagen y compártela manualmente.' }); }}>
                               <Share2 className="h-4 w-4 mr-2" /> Compartir directo
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => window.open(s.fb, '_blank', 'noreferrer')}>
@@ -251,7 +268,7 @@ export default function Achievements() {
                             <DropdownMenuItem onClick={() => copyText(`${s.text} ${s.url}`)}>
                               <Copy className="h-4 w-4 mr-2" /> Copiar texto
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => downloadAchievementImage(a.title)}>
+                            <DropdownMenuItem onClick={() => downloadAchievementImage(a.title, iconToEmoji(a.icon))}>
                               <Copy className="h-4 w-4 mr-2" /> Descargar imagen
                             </DropdownMenuItem>
                             </DropdownMenuContent>
