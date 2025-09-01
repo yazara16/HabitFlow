@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useState, useMemo } from "react";
 import { toast } from "@/hooks/use-toast";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Award, Star, Flame, Target, Droplets, Dumbbell, Share2, Facebook, MessageCircle, Copy, Book, BookOpen, DollarSign, ShoppingCart } from "lucide-react";
+import { Award, Star, Flame, Target, Droplets, Dumbbell, Share2, Copy, Book, BookOpen, DollarSign, ShoppingCart } from "lucide-react";
 import { useHabits } from "@/contexts/HabitsContext";
 
 function slugify(s: string) {
@@ -226,17 +226,10 @@ export default function Achievements() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="start">
-
-                            <DropdownMenuItem onClick={() => window.open(s.fb, '_blank', 'noreferrer')}>
-                              <Facebook className="h-4 w-4 mr-2" /> Facebook
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => window.open(s.wa, '_blank', 'noreferrer')}>
-                              <MessageCircle className="h-4 w-4 mr-2" /> WhatsApp
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => copyText(`${s.text} ${s.url}`)}>
+                            <DropdownMenuItem onSelect={() => copyText(`${s.text} ${s.url}`)}>
                               <Copy className="h-4 w-4 mr-2" /> Copiar texto
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => downloadAchievementImage(a.title, iconToEmoji(a.icon))}>
+                            <DropdownMenuItem onSelect={() => downloadAchievementImage(a.title, iconToEmoji(a.icon))}>
                               <Copy className="h-4 w-4 mr-2" /> Descargar imagen
                             </DropdownMenuItem>
                           </DropdownMenuContent>
@@ -283,20 +276,13 @@ export default function Achievements() {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="start">
-  
-                            <DropdownMenuItem onClick={() => window.open(s.fb, '_blank', 'noreferrer')}>
-                              <Facebook className="h-4 w-4 mr-2" /> Facebook
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => window.open(s.wa, '_blank', 'noreferrer')}>
-                              <MessageCircle className="h-4 w-4 mr-2" /> WhatsApp
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => copyText(`${s.text} ${s.url}`)}>
+                            <DropdownMenuItem onSelect={() => copyText(`${s.text} ${s.url}`)}>
                               <Copy className="h-4 w-4 mr-2" /> Copiar texto
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => downloadAchievementImage(a.title, iconToEmoji(a.icon))}>
+                            <DropdownMenuItem onSelect={() => downloadAchievementImage(a.title, iconToEmoji(a.icon))}>
                               <Copy className="h-4 w-4 mr-2" /> Descargar imagen
                             </DropdownMenuItem>
-                            </DropdownMenuContent>
+                          </DropdownMenuContent>
                           </DropdownMenu>
                         )})()}
                       </div>
