@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import HabitDialog from "@/components/HabitDialog";
 import ProgressCharts from "@/components/ProgressCharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -40,6 +41,7 @@ export default function Dashboard() {
   const [habitDialogOpen, setHabitDialogOpen] = useState(false);
   const [editingHabit, setEditingHabit] = useState<Habit | undefined>(undefined);
   const userName = user?.name ?? "";
+  const navigate = useNavigate();
 
   const today = new Date().toLocaleDateString("es-ES", {
     weekday: "long",
@@ -102,7 +104,7 @@ export default function Dashboard() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card onClick={() => (window.location.href = '/today')} className="cursor-pointer hover:shadow-md">
+          <Card onClick={() => navigate('/today')} className="cursor-pointer hover:shadow-md">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -122,7 +124,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card onClick={() => (window.location.href = '/streak')} className="cursor-pointer hover:shadow-md">
+          <Card onClick={() => navigate('/streak')} className="cursor-pointer hover:shadow-md">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -140,7 +142,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card onClick={() => (window.location.href = '/week')} className="cursor-pointer hover:shadow-md">
+          <Card onClick={() => navigate('/week')} className="cursor-pointer hover:shadow-md">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -158,7 +160,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card onClick={() => (window.location.href = '/achievements')} className="cursor-pointer hover:shadow-md">
+          <Card onClick={() => navigate('/achievements')} className="cursor-pointer hover:shadow-md">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
