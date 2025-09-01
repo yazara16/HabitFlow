@@ -77,6 +77,36 @@ export default function Achievements() {
             })}
           </CardContent>
         </Card>
+
+        {showAll && (
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle>Todos los logros</CardTitle>
+              <CardDescription>Desglose completo con medallas</CardDescription>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {allAchievements.map((a, idx) => {
+                const Icon = a.icon;
+                return (
+                  <div key={idx} className={`p-4 rounded-lg border ${a.earned ? 'bg-primary/5' : 'bg-muted/30'}`}>
+                    <div className="flex items-center space-x-3 mb-2">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center ${a.earned ? 'bg-yellow-500/20' : 'bg-muted'}`}>
+                        <Icon className={`h-4 w-4 ${a.earned ? 'text-yellow-600' : 'text-muted-foreground'}`} />
+                      </div>
+                      <p className="font-medium text-sm">{a.title}</p>
+                      {a.earned ? (
+                        <Badge variant="outline">Obtenido</Badge>
+                      ) : (
+                        <Badge variant="secondary">Bloqueado</Badge>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground">{a.desc}</p>
+                  </div>
+                );
+              })}
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
