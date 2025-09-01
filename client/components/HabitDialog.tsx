@@ -38,7 +38,7 @@ interface Habit {
   id?: string;
   name: string;
   description?: string;
-  category: "exercise" | "hydration" | "finance" | "shopping" | "custom";
+  category: "exercise" | "hydration" | "finance" | "shopping" | "reading" | "study" | "custom";
   icon: any;
   color: string;
   target: number;
@@ -78,7 +78,7 @@ const categories = [
     name: "Finanzas",
     icon: DollarSign,
     color: "text-green-500 bg-green-500/10", 
-    description: "Ahorro, gastos, inversiones"
+    description: "Ahorro, gastos, inversiones (MXN)"
   },
   {
     id: "shopping",
@@ -86,6 +86,20 @@ const categories = [
     icon: ShoppingCart,
     color: "text-orange-500 bg-orange-500/10",
     description: "Compras, mandados, tareas"
+  },
+  {
+    id: "reading",
+    name: "Lectura",
+    icon: Book,
+    color: "text-indigo-600 bg-indigo-600/10",
+    description: "Páginas, libros, lectura diaria"
+  },
+  {
+    id: "study",
+    name: "Estudio",
+    icon: BookOpen,
+    color: "text-cyan-600 bg-cyan-600/10",
+    description: "Estudio, cursos, repaso"
   },
   {
     id: "custom",
@@ -105,8 +119,8 @@ const customIcons = [
 ];
 
 const units = [
-  "minutos", "horas", "veces", "páginas", "vasos", "litros", 
-  "km", "pasos", "USD", "euros", "repeticiones", "series"
+  "minutos", "horas", "veces", "páginas", "vasos", "litros",
+  "km", "pasos", "MXN", "USD", "euros", "repeticiones", "series"
 ];
 
 export default function HabitDialog({ open, onOpenChange, habit, onSave, hideFrequency }: HabitDialogProps) {
