@@ -174,9 +174,6 @@ export default function Calendar() {
     return "bg-muted";
   };
 
-  // Alterna días activos: 1 día sí, 1 día no
-  const isAlternateOn = (date: Date) => (date.getDate() % 2 === 0);
-
   const monthNames = [
     "Enero",
     "Febrero",
@@ -354,15 +351,7 @@ export default function Calendar() {
                     </div>
 
                     {day.isCurrentMonth && (
-                      <div className="mt-1">
-                        {isAlternateOn(day.date) ? (
-                          <div className="inline-flex items-center px-2 py-0.5 rounded bg-primary/10 text-primary text-[10px]">
-                            Día activo
-                          </div>
-                        ) : (
-                          <div className="text-[10px] text-muted-foreground">Día libre</div>
-                        )}
-                      </div>
+                      <div className="space-y-1" />
                     )}
                   </div>
                 ))}
@@ -393,13 +382,11 @@ export default function Calendar() {
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-sm font-medium">{dayNames[date.getDay()]} {date.getDate()}</span>
                       </div>
-                      <div className="mt-1">
-                        {isAlternateOn(date) ? (
-                          <div className="inline-flex items-center px-2 py-1 rounded bg-primary/10 text-primary text-xs">
-                            Día activo
+                      <div className="space-y-1">
+                        {displayHabits.length === 0 && (
+                          <div className="text-xs text-muted-foreground text-center py-6 border border-dashed border-border rounded">
+                            Arrastra aquí
                           </div>
-                        ) : (
-                          <div className="text-xs text-muted-foreground">Día libre</div>
                         )}
                       </div>
                     </div>
