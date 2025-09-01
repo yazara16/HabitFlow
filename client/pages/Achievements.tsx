@@ -8,6 +8,63 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Award, Star, Flame, Target, Droplets, Dumbbell, Share2, Facebook, MessageCircle, Copy } from "lucide-react";
 import { useHabits } from "@/contexts/HabitsContext";
 
+function slugify(s: string) {
+  return s.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+}
+
+function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number){
+  const words = text.split(' '); let lines: string[] = []; let line='';
+  for(const w of words){ const test=line? line+' '+w : w; if (ctx.measureText(test).width <= maxWidth) line=test; else { if(line) lines.push(line); line=w; } }
+  if(line) lines.push(line); return { lines };
+}
+
+async function generateAchievementImage(title: string): Promise<Blob> {
+  const w = 800, h = 450;
+  const canvas = document.createElement('canvas');
+  canvas.width = w; canvas.height = h;
+  const ctx = canvas.getContext('2d')!;
+  const grad = ctx.createLinearGradient(0,0,w,h);
+  grad.addColorStop(0, '#0ea5e9');
+  grad.addColorStop(1, '#8b5cf6');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0,0,w,h);
+  ctx.fillStyle = 'rgba(255,255,255,0.12)';
+  for (let i=0;i<12;i++){ ctx.beginPath(); ctx.arc(100+i*60, 80+(i%3)*30, 20+(i%4)*6, 0, Math.PI*2); ctx.fill(); }
+  const cx=w/2, cy=180, r=80;
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.fillStyle = '#fde68a'; ctx.fill();
+  ctx.beginPath(); ctx.arc(cx, cy, r-16, 0, Math.PI*2); ctx.fillStyle = '#fbbf24'; ctx.fill();
+  ctx.fillStyle = '#78350f';
+  ctx.beginPath();
+  for (let i=0;i<5;i++){ const ang = -Math.PI/2 + i*2*Math.PI/5; const x = cx + Math.cos(ang)*40; const y = cy + Math.sin(ang)*40; if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); const ang2 = ang + Math.PI/5; const x2 = cx + Math.cos(ang2)*18; const y2 = cy + Math.sin(ang2)*18; ctx.lineTo(x2,y2); }
+  ctx.closePath(); ctx.fill();
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 32px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial';
+  ctx.fillText('¡Felicidades!', cx, cy+120);
+  ctx.font = 'bold 28px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial';
+  const wrapped = wrapText(ctx, title, w*0.8);
+  wrapped.lines.forEach((line, idx) => ctx.fillText(line, cx, cy+160 + idx*34));
+  const blob: Blob = await new Promise((resolve) => canvas.toBlob(b => resolve(b!), 'image/png', 0.95));
+  return blob;
+}
+
+async function blobToDataUrl(blob: Blob): Promise<string> {
+  return await new Promise((resolve, reject) => {
+    const fr = new FileReader();
+    fr.onload = () => resolve(String(fr.result));
+    fr.onerror = reject;
+    fr.readAsDataURL(blob);
+  });
+}
+
+async function downloadAchievementImage(title: string) {
+  const img = await generateAchievementImage(title);
+  const dataUrl = await blobToDataUrl(img);
+  const aEl = document.createElement('a');
+  aEl.href = dataUrl; aEl.download = `${slugify(title)}.png`;
+  document.body.appendChild(aEl); aEl.click(); aEl.remove();
+}
+
 export default function Achievements() {
   const { habits } = useHabits();
   const [showAll, setShowAll] = useState(false);
