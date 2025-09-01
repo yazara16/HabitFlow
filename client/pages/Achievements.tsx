@@ -35,7 +35,18 @@ export default function Achievements() {
       { title: 'Madrugador', icon: Award, desc: 'Completaste un hábito antes de las 8am', earned: false },
       { title: 'Constancia', icon: Award, desc: '30 días con actividad', earned: false },
     ];
-    return base;
+    return base.concat([
+      { title: '3 hábitos completados hoy', icon: Award, desc: 'Completa 3 hábitos en el mismo día', earned: habits.filter(h=>h.completedToday).length >= 3 },
+      { title: 'Día perfecto', icon: Award, desc: 'Completa todos tus hábitos hoy', earned: habits.length > 0 && habits.every(h=>h.completedToday || h.completed >= h.target) },
+      { title: 'Racha 7+', icon: Award, desc: 'Alcanza una racha de 7 días en cualquier hábito', earned: habits.some(h=>h.streak >= 7) },
+      { title: 'Racha 30+', icon: Award, desc: 'Alcanza una racha de 30 días en cualquier hábito', earned: habits.some(h=>h.streak >= 30) },
+      { title: 'Hidratación perfecta', icon: Award, desc: 'Completa tu meta de hidratación', earned: habits.some(h=>h.category==='hydration' && h.completed >= h.target) },
+      { title: 'Ejercicio constante', icon: Award, desc: 'Mantén ejercicio con racha de 5+', earned: habits.some(h=>h.category==='exercise' && h.streak >= 5) },
+      { title: 'Lectura enfocada', icon: Award, desc: 'Cumple tu objetivo de lectura de hoy', earned: habits.some(h=>h.category==='reading' && (h.completedToday || h.completed >= h.target)) },
+      { title: 'Estudio cumplido', icon: Award, desc: 'Cumple tu objetivo de estudio de hoy', earned: habits.some(h=>h.category==='study' && (h.completedToday || h.completed >= h.target)) },
+      { title: '5 hábitos activos', icon: Award, desc: 'Crea 5 hábitos en total', earned: habits.length >= 5 },
+      { title: '10 hábitos activos', icon: Award, desc: 'Crea 10 hábitos en total', earned: habits.length >= 10 },
+    ]);
   }, [habits, items]);
 
   return (
