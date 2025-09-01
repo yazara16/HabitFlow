@@ -34,7 +34,7 @@ type Habit = HabitType;
 interface CalendarHabit {
   id: string;
   name: string;
-  category: "exercise" | "hydration" | "finance" | "shopping" | "custom";
+  category: "exercise" | "hydration" | "finance" | "shopping" | "reading" | "study" | "custom";
   icon: any;
   color: string;
   time?: string;
