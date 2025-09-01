@@ -124,7 +124,31 @@ export default function Achievements() {
   };
 
   const copyText = async (text: string) => {
-    try { await navigator.clipboard.writeText(text); toast({ title: 'Copiado', description: 'Texto copiado al portapapeles' }); } catch {}
+    let ok = false;
+    try {
+      if (navigator.clipboard && 'writeText' in navigator.clipboard) {
+        await navigator.clipboard.writeText(text);
+        ok = true;
+      }
+    } catch {}
+    if (!ok) {
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+      } catch {}
+    }
+    if (ok) {
+      toast({ title: 'Copiado', description: 'Texto copiado al portapapeles' });
+    } else {
+      toast({ title: 'No se pudo copiar', description: 'Selecciona y copia manualmente' });
+    }
   };
 
   const allAchievements = useMemo(() => {
