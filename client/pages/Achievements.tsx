@@ -192,7 +192,7 @@ export default function Achievements() {
                             <DropdownMenuItem onClick={() => copyText(`${s.text} ${s.url}`)}>
                               <Copy className="h-4 w-4 mr-2" /> Copiar texto
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={async () => { const img = await generateAchievementImage(a.title); const urlObj = URL.createObjectURL(img); const aEl = document.createElement('a'); aEl.href = urlObj; aEl.download = `${slugify(a.title)}.png`; document.body.appendChild(aEl); aEl.click(); aEl.remove(); setTimeout(() => URL.revokeObjectURL(urlObj), 1000); }}>
+                            <DropdownMenuItem onClick={() => downloadAchievementImage(a.title)}>
                               <Copy className="h-4 w-4 mr-2" /> Descargar imagen
                             </DropdownMenuItem>
                           </DropdownMenuContent>
@@ -251,7 +251,7 @@ export default function Achievements() {
                             <DropdownMenuItem onClick={() => copyText(`${s.text} ${s.url}`)}>
                               <Copy className="h-4 w-4 mr-2" /> Copiar texto
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={async () => { const img = await generateAchievementImage(a.title); const urlObj = URL.createObjectURL(img); const aEl = document.createElement('a'); aEl.href = urlObj; aEl.download = `${slugify(a.title)}.png`; document.body.appendChild(aEl); aEl.click(); aEl.remove(); setTimeout(() => URL.revokeObjectURL(urlObj), 1000); }}>
+                            <DropdownMenuItem onClick={() => downloadAchievementImage(a.title)}>
                               <Copy className="h-4 w-4 mr-2" /> Descargar imagen
                             </DropdownMenuItem>
                             </DropdownMenuContent>
