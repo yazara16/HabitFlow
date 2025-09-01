@@ -46,6 +46,12 @@ export default function Achievements() {
           <Award className="h-6 w-6 text-primary" />
           <h1 className="text-2xl font-bold">Logros</h1>
           <Badge variant="secondary" className="ml-2">{totalAchievements} totales</Badge>
+          <Badge variant="outline" className="ml-2">{totalEarned} obtenidos</Badge>
+          <div className="ml-auto">
+            <Button size="sm" variant="outline" onClick={() => setShowAll(v=>!v)}>
+              {showAll ? 'Ocultar todos' : 'Ver todos los logros'}
+            </Button>
+          </div>
         </div>
 
         <Card>
