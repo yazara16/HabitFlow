@@ -3,7 +3,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useState, useMemo } from "react";
-import { Award, Star, Flame, Target, Droplets, Dumbbell } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
+import { Award, Star, Flame, Target, Droplets, Dumbbell, Share2, Facebook, Instagram, MessageCircle, Link2, Copy } from "lucide-react";
 import { useHabits } from "@/contexts/HabitsContext";
 
 export default function Achievements() {
@@ -22,6 +23,26 @@ export default function Achievements() {
   ];
 
   const totalEarned = items.filter(i => i.earned).length;
+
+  const buildShare = (title: string, desc: string) => {
+    const url = window.location.href;
+    const text = `${title} — ${desc}`;
+    const fb = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`;
+    const wa = `https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`;
+    return { url, text, fb, wa };
+  };
+
+  const tryWebShare = async (title: string, text: string, url: string) => {
+    if ((navigator as any).share) {
+      try { await (navigator as any).share({ title, text, url }); } catch {}
+    } else {
+      toast({ title: 'Compartir no disponible', description: 'Usa los botones de Facebook/WhatsApp o copia el enlace.' });
+    }
+  };
+
+  const copyText = async (text: string) => {
+    try { await navigator.clipboard.writeText(text); toast({ title: 'Copiado', description: 'Texto copiado al portapapeles' }); } catch {}
+  };
 
   const allAchievements = useMemo(() => {
     const base = [
@@ -83,6 +104,24 @@ export default function Achievements() {
                     {a.earned && <Badge variant="outline">Obtenido</Badge>}
                   </div>
                   <p className="text-sm text-muted-foreground">{a.desc}</p>
+                  <div className="flex items-center gap-2 mt-3">
+                    {(() => { const s = buildShare(a.title, a.desc); return (
+                      <>
+                        <Button variant="ghost" size="sm" onClick={() => tryWebShare(a.title, s.text, s.url)}>
+                          <Share2 className="h-4 w-4 mr-1" /> Compartir
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={() => window.open(s.fb, '_blank', 'noreferrer') }>
+                          <Facebook className="h-4 w-4 mr-1" /> Facebook
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={() => window.open(s.wa, '_blank', 'noreferrer') }>
+                          <MessageCircle className="h-4 w-4 mr-1" /> WhatsApp
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={() => copyText(`${s.text} ${s.url}`)}>
+                          <Copy className="h-4 w-4 mr-1" /> Copiar
+                        </Button>
+                      </>
+                    )})()}
+                  </div>
                 </div>
               );
             })}
@@ -112,6 +151,24 @@ export default function Achievements() {
                       )}
                     </div>
                     <p className="text-xs text-muted-foreground">{a.desc}</p>
+                    <div className="flex items-center gap-2 mt-3">
+                      {(() => { const s = buildShare(a.title, a.desc); return (
+                        <>
+                          <Button variant="ghost" size="sm" onClick={() => tryWebShare(a.title, s.text, s.url)}>
+                            <Share2 className="h-4 w-4 mr-1" /> Compartir
+                          </Button>
+                          <Button variant="ghost" size="sm" onClick={() => window.open(s.fb, '_blank', 'noreferrer') }>
+                            <Facebook className="h-4 w-4 mr-1" /> Facebook
+                          </Button>
+                          <Button variant="ghost" size="sm" onClick={() => window.open(s.wa, '_blank', 'noreferrer') }>
+                            <MessageCircle className="h-4 w-4 mr-1" /> WhatsApp
+                          </Button>
+                          <Button variant="ghost" size="sm" onClick={() => copyText(`${s.text} ${s.url}`)}>
+                            <Copy className="h-4 w-4 mr-1" /> Copiar
+                          </Button>
+                        </>
+                      )})()}
+                    </div>
                   </div>
                 );
               })}
