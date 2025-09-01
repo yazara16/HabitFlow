@@ -105,31 +105,33 @@ export default function Achievements() {
                     {a.earned && <Badge variant="outline">Obtenido</Badge>}
                   </div>
                   <p className="text-sm text-muted-foreground">{a.desc}</p>
-                  <div className="flex items-center gap-2 mt-3">
-                    {(() => { const s = buildShare(a.title, a.desc); return (
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm">
-                            <Share2 className="h-4 w-4 mr-1" /> Compartir
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start">
-                          <DropdownMenuItem onClick={() => tryWebShare(a.title, s.text, s.url)}>
-                            <Share2 className="h-4 w-4 mr-2" /> Compartir directo
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => window.open(s.fb, '_blank', 'noreferrer')}>
-                            <Facebook className="h-4 w-4 mr-2" /> Facebook
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => window.open(s.wa, '_blank', 'noreferrer')}>
-                            <MessageCircle className="h-4 w-4 mr-2" /> WhatsApp
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => copyText(`${s.text} ${s.url}`)}>
-                            <Copy className="h-4 w-4 mr-2" /> Copiar texto
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    )})()}
-                  </div>
+                  {a.earned && (
+                    <div className="flex items-center gap-2 mt-3">
+                      {(() => { const s = buildShare(a.title, a.desc); return (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm">
+                              <Share2 className="h-4 w-4 mr-1" /> Compartir
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="start">
+                            <DropdownMenuItem onClick={() => tryWebShare(a.title, s.text, s.url)}>
+                              <Share2 className="h-4 w-4 mr-2" /> Compartir directo
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => window.open(s.fb, '_blank', 'noreferrer')}>
+                              <Facebook className="h-4 w-4 mr-2" /> Facebook
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => window.open(s.wa, '_blank', 'noreferrer')}>
+                              <MessageCircle className="h-4 w-4 mr-2" /> WhatsApp
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => copyText(`${s.text} ${s.url}`)}>
+                              <Copy className="h-4 w-4 mr-2" /> Copiar texto
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )})()}
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -159,31 +161,33 @@ export default function Achievements() {
                       )}
                     </div>
                     <p className="text-xs text-muted-foreground">{a.desc}</p>
-                    <div className="flex items-center gap-2 mt-3">
-                      {(() => { const s = buildShare(a.title, a.desc); return (
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm">
-                              <Share2 className="h-4 w-4 mr-1" /> Compartir
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="start">
-                            <DropdownMenuItem onClick={() => tryWebShare(a.title, s.text, s.url)}>
-                              <Share2 className="h-4 w-4 mr-2" /> Compartir directo
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => window.open(s.fb, '_blank', 'noreferrer')}>
-                              <Facebook className="h-4 w-4 mr-2" /> Facebook
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => window.open(s.wa, '_blank', 'noreferrer')}>
-                              <MessageCircle className="h-4 w-4 mr-2" /> WhatsApp
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => copyText(`${s.text} ${s.url}`)}>
-                              <Copy className="h-4 w-4 mr-2" /> Copiar texto
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      )})()}
-                    </div>
+                    {a.earned && (
+                      <div className="flex items-center gap-2 mt-3">
+                        {(() => { const s = buildShare(a.title, a.desc); return (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm">
+                                <Share2 className="h-4 w-4 mr-1" /> Compartir
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start">
+                              <DropdownMenuItem onClick={() => tryWebShare(a.title, s.text, s.url)}>
+                                <Share2 className="h-4 w-4 mr-2" /> Compartir directo
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => window.open(s.fb, '_blank', 'noreferrer')}>
+                                <Facebook className="h-4 w-4 mr-2" /> Facebook
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => window.open(s.wa, '_blank', 'noreferrer')}>
+                                <MessageCircle className="h-4 w-4 mr-2" /> WhatsApp
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => copyText(`${s.text} ${s.url}`)}>
+                                <Copy className="h-4 w-4 mr-2" /> Copiar texto
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        )})()}
+                      </div>
+                    )}
                   </div>
                 );
               })}
