@@ -22,6 +22,8 @@ import {
   Star,
   Award,
   Zap,
+  Book,
+  BookOpen,
   Clock,
   ArrowUp,
   ArrowDown,
@@ -296,6 +298,8 @@ export default function Dashboard() {
                   { name: "Hidratación", icon: Droplets, count: habits.filter((h) => h.category === "hydration").length, color: "text-blue-500" },
                   { name: "Finanzas", icon: DollarSign, count: habits.filter((h) => h.category === "finance").length, color: "text-green-500" },
                   { name: "Compras", icon: ShoppingCart, count: habits.filter((h) => h.category === "shopping").length, color: "text-orange-500" },
+                  { name: "Lectura", icon: Book, count: habits.filter((h) => h.category === "reading").length, color: "text-indigo-600" },
+                  { name: "Estudio", icon: BookOpen, count: habits.filter((h) => h.category === "study").length, color: "text-cyan-600" },
                   { name: "Personal", icon: Star, count: habits.filter((h) => h.category === "custom").length, color: "text-purple-500" },
                 ].map((category, index) => (
                   <div key={index} className="flex items-center justify-between">
