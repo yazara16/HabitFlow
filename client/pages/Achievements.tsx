@@ -90,12 +90,20 @@ export default function Achievements() {
     return { url, text, fb, wa };
   };
 
-  const tryWebShare = async (title: string, text: string, url: string) => {
-    if ((navigator as any).share) {
-      try { await (navigator as any).share({ title, text, url }); } catch {}
-    } else {
-      toast({ title: 'Compartir no disponible', description: 'Usa los botones de Facebook/WhatsApp o copia el enlace.' });
+  const tryWebShare = async (title: string, text: string, url: string, imageBlob?: Blob) => {
+    const nav: any = navigator;
+    if (nav.share) {
+      try {
+        if (imageBlob && nav.canShare && nav.canShare({ files: [new File([imageBlob], `${slugify(title)}.png`, { type: 'image/png' })] })) {
+          const file = new File([imageBlob], `${slugify(title)}.png`, { type: 'image/png' });
+          await nav.share({ title, text, url, files: [file] });
+          return true;
+        }
+        await nav.share({ title, text, url });
+        return true;
+      } catch {}
     }
+    return false;
   };
 
   const copyText = async (text: string) => {
