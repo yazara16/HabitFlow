@@ -357,24 +357,20 @@ export default function Calendar() {
 
                     {day.isCurrentMonth && (
                       <div className="space-y-1">
-                        {isAlternateOn(day.date) && (
-                          <>
-                            {day.habits.slice(0, MAX_HABITS_PER_DAY).map((habit, habitIndex) => {
-                              const Icon = habit.icon;
-                              return (
-                                <div key={habitIndex} className={`flex items-center space-x-1 p-1 rounded text-xs ${habit.color}`}>
-                                  <Icon className="h-3 w-3" />
-                                  <span className="truncate">{habit.name}</span>
-                                  {habit.completed && <CheckCircle2 className="h-3 w-3 text-success ml-auto" />}
-                                </div>
-                              );
-                            })}
-                            {day.habits.length > MAX_HABITS_PER_DAY && (
-                              <div className="text-xs text-muted-foreground text-center">
-                                +{day.habits.length - MAX_HABITS_PER_DAY} más
-                              </div>
-                            )}
-                          </>
+                        {day.habits.slice(0, MAX_HABITS_PER_DAY).map((habit, habitIndex) => {
+                          const Icon = habit.icon;
+                          return (
+                            <div key={habitIndex} className={`flex items-center space-x-1 p-1 rounded text-xs ${habit.color}`}>
+                              <Icon className="h-3 w-3" />
+                              <span className="truncate">{habit.name}</span>
+                              {habit.completed && <CheckCircle2 className="h-3 w-3 text-success ml-auto" />}
+                            </div>
+                          );
+                        })}
+                        {day.habits.length > MAX_HABITS_PER_DAY && (
+                          <div className="text-xs text-muted-foreground text-center">
+                            +{day.habits.length - MAX_HABITS_PER_DAY} más
+                          </div>
                         )}
                       </div>
                     )}
