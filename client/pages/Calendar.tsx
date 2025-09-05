@@ -125,7 +125,7 @@ export default function Calendar() {
         ? getHabitsForDate(date).map(h => toCalHabit(h, date))
         : [];
 
-      const dayHabits = isCurrentMonth && isAlternateOn(date) ? realHabits : [];
+      const dayHabits = isCurrentMonth ? realHabits : [];
       const completionRate = dayHabits.length > 0 ? (dayHabits.filter((h) => h.completed).length / dayHabits.length) * 100 : 0;
 
       days.push({
@@ -157,7 +157,7 @@ export default function Calendar() {
   const buildCalendarDay = (date: Date): CalendarDay => {
     const isToday = date.toDateString() === new Date().toDateString();
     const all = getHabitsForDate(date).map(h => toCalHabit(h, date));
-    const hs = isAlternateOn(date) ? all : [];
+    const hs = all;
     const completionRate = hs.length > 0 ? (hs.filter(h => h.completed).length / hs.length) * 100 : 0;
     return { date, habits: hs, isCurrentMonth: true, isToday, completionRate };
   };
@@ -386,7 +386,7 @@ export default function Calendar() {
                 {fiveDays.map((date, idx) => {
                   const isToday = date.toDateString() === new Date().toDateString();
                   const realHabits: CalendarHabit[] = getHabitsForDate(date).map(h => toCalHabit(h, date));
-                  const displayHabits = isAlternateOn(date) ? realHabits : [];
+                  const displayHabits = realHabits;
                   return (
                     <div
                       key={idx}
