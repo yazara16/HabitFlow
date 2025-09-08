@@ -1,5 +1,11 @@
 import { useMemo, useRef, useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -34,7 +40,14 @@ type Habit = HabitType;
 interface CalendarHabit {
   id: string;
   name: string;
-  category: "exercise" | "hydration" | "finance" | "shopping" | "reading" | "study" | "custom";
+  category:
+    | "exercise"
+    | "hydration"
+    | "finance"
+    | "shopping"
+    | "reading"
+    | "study"
+    | "custom";
   icon: any;
   color: string;
   time?: string;
@@ -54,9 +67,19 @@ const MAX_HABITS_PER_DAY = 2;
 
 export default function Calendar() {
   useHabitReminders();
-  const { habits, addHabit, updateHabit, removeHabit, getHabitsForDate, hideHabitOnDate, updateHabitForDate } = useHabits();
+  const {
+    habits,
+    addHabit,
+    updateHabit,
+    removeHabit,
+    getHabitsForDate,
+    hideHabitOnDate,
+    updateHabitForDate,
+  } = useHabits();
   const isDraggingRef = useRef(false);
-  const [forceShowDates, setForceShowDates] = useState<Record<string, boolean>>({});
+  const [forceShowDates, setForceShowDates] = useState<Record<string, boolean>>(
+    {},
+  );
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<"month" | "week">("month");
   const [selectedDay, setSelectedDay] = useState<CalendarDay | null>(null);
@@ -65,7 +88,9 @@ export default function Calendar() {
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
 
   const isScheduledOn = (habit: Habit, date: Date) => {
-    const created = habit.createdAt ? new Date(habit.createdAt + "T00:00:00") : new Date(0);
+    const created = habit.createdAt
+      ? new Date(habit.createdAt + "T00:00:00")
+      : new Date(0);
     if (date < created) return false;
     switch (habit.frequency) {
       case "daily":
@@ -78,8 +103,14 @@ export default function Calendar() {
         const day = date.getDate();
         const defaultMonths = [created.getMonth() + 1];
         const defaultDays = [created.getDate()];
-        const months = habit.monthlyMonths && habit.monthlyMonths.length > 0 ? habit.monthlyMonths : defaultMonths;
-        const days = habit.monthlyDays && habit.monthlyDays.length > 0 ? habit.monthlyDays : defaultDays;
+        const months =
+          habit.monthlyMonths && habit.monthlyMonths.length > 0
+            ? habit.monthlyMonths
+            : defaultMonths;
+        const days =
+          habit.monthlyDays && habit.monthlyDays.length > 0
+            ? habit.monthlyDays
+            : defaultDays;
         return months.includes(month) && days.includes(day);
       }
       default:
@@ -122,11 +153,15 @@ export default function Calendar() {
       const isToday = date.toDateString() === today.toDateString();
 
       const realHabits: CalendarHabit[] = isCurrentMonth
-        ? getHabitsForDate(date).map(h => toCalHabit(h, date))
+        ? getHabitsForDate(date).map((h) => toCalHabit(h, date))
         : [];
 
       const dayHabits = isCurrentMonth ? realHabits : [];
-      const completionRate = dayHabits.length > 0 ? (dayHabits.filter((h) => h.completed).length / dayHabits.length) * 100 : 0;
+      const completionRate =
+        dayHabits.length > 0
+          ? (dayHabits.filter((h) => h.completed).length / dayHabits.length) *
+            100
+          : 0;
 
       days.push({
         date,
@@ -140,7 +175,10 @@ export default function Calendar() {
     return days;
   };
 
-  const calendarDays = useMemo(() => generateCalendarDays(), [currentDate, habits]);
+  const calendarDays = useMemo(
+    () => generateCalendarDays(),
+    [currentDate, habits],
+  );
 
   const navigate = (direction: "prev" | "next") => {
     setCurrentDate((prev) => {
@@ -156,9 +194,12 @@ export default function Calendar() {
 
   const buildCalendarDay = (date: Date): CalendarDay => {
     const isToday = date.toDateString() === new Date().toDateString();
-    const all = getHabitsForDate(date).map(h => toCalHabit(h, date));
+    const all = getHabitsForDate(date).map((h) => toCalHabit(h, date));
     const hs = all;
-    const completionRate = hs.length > 0 ? (hs.filter(h => h.completed).length / hs.length) * 100 : 0;
+    const completionRate =
+      hs.length > 0
+        ? (hs.filter((h) => h.completed).length / hs.length) * 100
+        : 0;
     return { date, habits: hs, isCurrentMonth: true, isToday, completionRate };
   };
 
@@ -167,24 +208,30 @@ export default function Calendar() {
   };
 
   const toggleHabitCompletion = (habitId: string, date: Date) => {
-    const iso = date.toISOString().split('T')[0];
-    const h = habits.find(hh => hh.id === habitId);
+    const iso = date.toISOString().split("T")[0];
+    const h = habits.find((hh) => hh.id === habitId);
     if (!h) return;
 
-    if (iso === new Date().toISOString().split('T')[0]) {
+    if (iso === new Date().toISOString().split("T")[0]) {
       // Toggle global today state
-      const newCompleted = h.completedToday ? Math.max(0, h.completed - 1) : Math.min(h.target, h.completed + 1);
+      const newCompleted = h.completedToday
+        ? Math.max(0, h.completed - 1)
+        : Math.min(h.target, h.completed + 1);
       updateHabit(habitId, {
         completed: newCompleted,
         completedToday: !h.completedToday,
         streak: !h.completedToday ? h.streak + 1 : h.streak,
         lastCompleted: !h.completedToday ? iso : h.lastCompleted,
       });
-      toast({ title: !h.completedToday ? 'Hábito marcado como completado' : 'Hábito desmarcado' });
+      toast({
+        title: !h.completedToday
+          ? "Hábito marcado como completado"
+          : "Hábito desmarcado",
+      });
     } else {
       // Per-day override for other dates
       const dayHabits = getHabitsForDate(date);
-      const dh = dayHabits.find(x => x.id === habitId) || h;
+      const dh = dayHabits.find((x) => x.id === habitId) || h;
       const isCompleted = dh.completed >= dh.target;
       const newCompleted = isCompleted ? 0 : dh.target;
       updateHabitForDate(habitId, date, {
@@ -192,7 +239,11 @@ export default function Calendar() {
         completedToday: newCompleted >= dh.target,
         lastCompleted: newCompleted >= dh.target ? iso : undefined,
       } as any);
-      toast({ title: isCompleted ? 'Hábito desmarcado en la fecha' : 'Hábito marcado en la fecha' });
+      toast({
+        title: isCompleted
+          ? "Hábito desmarcado en la fecha"
+          : "Hábito marcado en la fecha",
+      });
     }
 
     refreshSelectedDay(date);
@@ -234,13 +285,15 @@ export default function Calendar() {
     return d;
   }, [currentDate]);
 
-  const fiveDays = useMemo(() => (
-    Array.from({ length: 5 }, (_, i) => {
-      const d = new Date(windowStart);
-      d.setDate(d.getDate() + i);
-      return d;
-    })
-  ), [windowStart]);
+  const fiveDays = useMemo(
+    () =>
+      Array.from({ length: 5 }, (_, i) => {
+        const d = new Date(windowStart);
+        d.setDate(d.getDate() + i);
+        return d;
+      }),
+    [windowStart],
+  );
 
   const thisMonthStats = calendarDays
     .filter((day) => day.isCurrentMonth)
@@ -253,17 +306,25 @@ export default function Calendar() {
         }
         return acc;
       },
-      { totalDays: 0, perfectDays: 0, goodDays: 0 }
+      { totalDays: 0, perfectDays: 0, goodDays: 0 },
     );
 
   const handleDropHabit = (habitId: string, dropDate: Date) => {
     const h = habits.find((x) => x.id === habitId);
     if (!h) return;
-    const createdAt = dropDate.toISOString().split('T')[0];
+    const createdAt = dropDate.toISOString().split("T")[0];
     const m = dropDate.getMonth() + 1;
     const d = dropDate.getDate();
-    updateHabit(h.id, { createdAt, frequency: 'monthly' as any, monthlyMonths: [m], monthlyDays: [d] });
-    toast({ title: 'Hábito movido', description: `Programado el ${d} de ${monthNames[m - 1]}.` });
+    updateHabit(h.id, {
+      createdAt,
+      frequency: "monthly" as any,
+      monthlyMonths: [m],
+      monthlyDays: [d],
+    });
+    toast({
+      title: "Hábito movido",
+      description: `Programado el ${d} de ${monthNames[m - 1]}.`,
+    });
   };
 
   return (
@@ -274,17 +335,32 @@ export default function Calendar() {
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-foreground mb-2">Calendario de Hábitos</h1>
-              <p className="text-muted-foreground">Planifica y visualiza tus hábitos en el tiempo</p>
+              <h1 className="text-3xl font-bold text-foreground mb-2">
+                Calendario de Hábitos
+              </h1>
+              <p className="text-muted-foreground">
+                Planifica y visualiza tus hábitos en el tiempo
+              </p>
             </div>
             <div className="flex items-center space-x-2 mt-4 sm:mt-0">
-              <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as "month" | "week")}>
+              <Tabs
+                value={viewMode}
+                onValueChange={(value) =>
+                  setViewMode(value as "month" | "week")
+                }
+              >
                 <TabsList>
-                  <TabsTrigger value="month" className="flex items-center space-x-2">
+                  <TabsTrigger
+                    value="month"
+                    className="flex items-center space-x-2"
+                  >
                     <Grid3X3 className="h-4 w-4" />
                     <span>Mes</span>
                   </TabsTrigger>
-                  <TabsTrigger value="week" className="flex items-center space-x-2">
+                  <TabsTrigger
+                    value="week"
+                    className="flex items-center space-x-2"
+                  >
                     <List className="h-4 w-4" />
                     <span>Semana</span>
                   </TabsTrigger>
@@ -298,8 +374,12 @@ export default function Calendar() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">Días Perfectos</p>
-                    <p className="text-2xl font-bold">{thisMonthStats.perfectDays}</p>
+                    <p className="text-sm text-muted-foreground">
+                      Días Perfectos
+                    </p>
+                    <p className="text-2xl font-bold">
+                      {thisMonthStats.perfectDays}
+                    </p>
                   </div>
                   <Target className="h-8 w-8 text-success/60" />
                 </div>
@@ -310,8 +390,12 @@ export default function Calendar() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">Días Productivos</p>
-                    <p className="text-2xl font-bold">{thisMonthStats.goodDays}</p>
+                    <p className="text-sm text-muted-foreground">
+                      Días Productivos
+                    </p>
+                    <p className="text-2xl font-bold">
+                      {thisMonthStats.goodDays}
+                    </p>
                   </div>
                   <TrendingUp className="h-8 w-8 text-warning/60" />
                 </div>
@@ -322,8 +406,19 @@ export default function Calendar() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">Tasa de Éxito</p>
-                    <p className="text-2xl font-bold">{thisMonthStats.totalDays > 0 ? Math.round((thisMonthStats.goodDays / thisMonthStats.totalDays) * 100) : 0}%</p>
+                    <p className="text-sm text-muted-foreground">
+                      Tasa de Éxito
+                    </p>
+                    <p className="text-2xl font-bold">
+                      {thisMonthStats.totalDays > 0
+                        ? Math.round(
+                            (thisMonthStats.goodDays /
+                              thisMonthStats.totalDays) *
+                              100,
+                          )
+                        : 0}
+                      %
+                    </p>
                   </div>
                   <Flame className="h-8 w-8 text-orange-500/60" />
                 </div>
@@ -338,29 +433,47 @@ export default function Calendar() {
               <CardTitle className="flex items-center space-x-2">
                 <CalendarIcon className="h-5 w-5" />
                 <span>
-                  {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+                  {monthNames[currentDate.getMonth()]}{" "}
+                  {currentDate.getFullYear()}
                 </span>
               </CardTitle>
               <div className="flex items-center space-x-2">
-                <Button variant="outline" size="sm" onClick={() => navigate("prev") }>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate("prev")}
+                >
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => setCurrentDate(new Date())}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentDate(new Date())}
+                >
                   Hoy
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => navigate("next") }>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate("next")}
+                >
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </div>
             </div>
-            <CardDescription>Haz clic en cualquier día para ver y gestionar tus hábitos</CardDescription>
+            <CardDescription>
+              Haz clic en cualquier día para ver y gestionar tus hábitos
+            </CardDescription>
           </CardHeader>
 
           <CardContent>
             {viewMode === "month" ? (
               <div className="grid grid-cols-7 gap-2">
                 {dayNames.map((day) => (
-                  <div key={day} className="p-2 text-center text-sm font-medium text-muted-foreground">
+                  <div
+                    key={day}
+                    className="p-2 text-center text-sm font-medium text-muted-foreground"
+                  >
                     {day}
                   </div>
                 ))}
@@ -383,22 +496,31 @@ export default function Calendar() {
                         {day.date.getDate()}
                       </span>
                       {day.completionRate > 0 && day.isCurrentMonth && (
-                        <div className={`w-2 h-2 rounded-full ${getCompletionColor(day.completionRate)}`} />
+                        <div
+                          className={`w-2 h-2 rounded-full ${getCompletionColor(day.completionRate)}`}
+                        />
                       )}
                     </div>
 
                     {day.isCurrentMonth && (
                       <div className="space-y-1">
-                        {day.habits.slice(0, MAX_HABITS_PER_DAY).map((habit, habitIndex) => {
-                          const Icon = habit.icon;
-                          return (
-                            <div key={habitIndex} className={`flex items-center space-x-1 p-1 rounded text-xs ${habit.color}`}>
-                              <Icon className="h-3 w-3" />
-                              <span className="truncate">{habit.name}</span>
-                              {habit.completed && <CheckCircle2 className="h-3 w-3 text-success ml-auto" />}
-                            </div>
-                          );
-                        })}
+                        {day.habits
+                          .slice(0, MAX_HABITS_PER_DAY)
+                          .map((habit, habitIndex) => {
+                            const Icon = habit.icon;
+                            return (
+                              <div
+                                key={habitIndex}
+                                className={`flex items-center space-x-1 p-1 rounded text-xs ${habit.color}`}
+                              >
+                                <Icon className="h-3 w-3" />
+                                <span className="truncate">{habit.name}</span>
+                                {habit.completed && (
+                                  <CheckCircle2 className="h-3 w-3 text-success ml-auto" />
+                                )}
+                              </div>
+                            );
+                          })}
                         {day.habits.length > MAX_HABITS_PER_DAY && (
                           <div className="text-xs text-muted-foreground text-center">
                             +{day.habits.length - MAX_HABITS_PER_DAY} más
@@ -412,28 +534,46 @@ export default function Calendar() {
             ) : (
               <div className="grid grid-cols-5 gap-2">
                 {fiveDays.map((date, idx) => {
-                  const isToday = date.toDateString() === new Date().toDateString();
-                  const realHabits: CalendarHabit[] = getHabitsForDate(date).map(h => toCalHabit(h, date));
+                  const isToday =
+                    date.toDateString() === new Date().toDateString();
+                  const realHabits: CalendarHabit[] = getHabitsForDate(
+                    date,
+                  ).map((h) => toCalHabit(h, date));
                   const displayHabits = realHabits;
                   return (
                     <div
                       key={idx}
                       onClick={() => {
                         if (isDraggingRef.current) return;
-                        const completionRate = displayHabits.length > 0 ? (displayHabits.filter(h => h.completed).length / displayHabits.length) * 100 : 0;
-                        handleDayClick({ date, habits: displayHabits, isCurrentMonth: true, isToday, completionRate });
+                        const completionRate =
+                          displayHabits.length > 0
+                            ? (displayHabits.filter((h) => h.completed).length /
+                                displayHabits.length) *
+                              100
+                            : 0;
+                        handleDayClick({
+                          date,
+                          habits: displayHabits,
+                          isCurrentMonth: true,
+                          isToday,
+                          completionRate,
+                        });
                       }}
                       onDragOver={(e) => e.preventDefault()}
                       onDrop={(e) => {
                         e.preventDefault();
-                        const id = e.dataTransfer.getData('text/plain');
+                        const id = e.dataTransfer.getData("text/plain");
                         if (id) handleDropHabit(id, date);
-                        setTimeout(() => { isDraggingRef.current = false; }, 0);
+                        setTimeout(() => {
+                          isDraggingRef.current = false;
+                        }, 0);
                       }}
-                      className={`p-2 min-h-[140px] border border-border rounded-lg cursor-pointer transition-all hover:border-border/60 ${isToday ? 'ring-2 ring-primary' : ''}`}
+                      className={`p-2 min-h-[140px] border border-border rounded-lg cursor-pointer transition-all hover:border-border/60 ${isToday ? "ring-2 ring-primary" : ""}`}
                     >
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium">{dayNames[date.getDay()]} {date.getDate()}</span>
+                        <span className="text-sm font-medium">
+                          {dayNames[date.getDay()]} {date.getDate()}
+                        </span>
                       </div>
                       <div className="space-y-1">
                         {displayHabits.map((habit, hIdx) => {
@@ -446,10 +586,12 @@ export default function Calendar() {
                               onMouseDown={(e) => e.stopPropagation()}
                               onDragStart={(e) => {
                                 isDraggingRef.current = true;
-                                e.dataTransfer.setData('text/plain', habit.id);
+                                e.dataTransfer.setData("text/plain", habit.id);
                               }}
                               onDragEnd={() => {
-                                setTimeout(() => { isDraggingRef.current = false; }, 50);
+                                setTimeout(() => {
+                                  isDraggingRef.current = false;
+                                }, 50);
                               }}
                               className={`flex items-center space-x-1 p-2 rounded text-xs ${habit.color} cursor-move`}
                             >
@@ -517,7 +659,8 @@ export default function Calendar() {
               </span>
             </DialogTitle>
             <DialogDescription>
-              {(selectedDay?.habits.length || 0)} hábitos programados para este día
+              {selectedDay?.habits.length || 0} hábitos programados para este
+              día
             </DialogDescription>
           </DialogHeader>
 
@@ -525,8 +668,14 @@ export default function Calendar() {
             {selectedDay?.habits.length === 0 ? (
               <div className="text-center py-8">
                 <Target className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground">No hay hábitos programados para este día</p>
-                <Button className="mt-4" size="sm" onClick={() => setHabitDialogOpen(true)}>
+                <p className="text-muted-foreground">
+                  No hay hábitos programados para este día
+                </p>
+                <Button
+                  className="mt-4"
+                  size="sm"
+                  onClick={() => setHabitDialogOpen(true)}
+                >
                   <Plus className="h-4 w-4 mr-2" />
                   Agregar Hábito
                 </Button>
@@ -539,7 +688,7 @@ export default function Calendar() {
                     key={index}
                     className="flex items-center space-x-3 p-3 border border-border rounded-lg hover:border-border/60 cursor-pointer"
                     onClick={() => {
-                      const original = habits.find(h => h.id === habit.id);
+                      const original = habits.find((h) => h.id === habit.id);
                       if (original) {
                         setEditingHabit(original as any);
                         setHabitDialogOpen(true);
@@ -560,7 +709,11 @@ export default function Calendar() {
                             toggleHabitCompletion(habit.id, selectedDay.date);
                           }}
                           className="p-1 rounded"
-                          aria-label={habit.completed ? 'Marcar como no completado' : 'Marcar como completado'}
+                          aria-label={
+                            habit.completed
+                              ? "Marcar como no completado"
+                              : "Marcar como completado"
+                          }
                         >
                           {habit.completed ? (
                             <CheckCircle2 className="h-5 w-5 text-success" />
@@ -591,7 +744,7 @@ export default function Calendar() {
                             if (!selectedDay) return;
                             hideHabitOnDate(habit.id, selectedDay.date);
                             refreshSelectedDay(selectedDay.date);
-                            toast({ title: 'Hábito eliminado para este día' });
+                            toast({ title: "Hábito eliminado para este día" });
                           }}
                         >
                           Eliminar
@@ -606,12 +759,15 @@ export default function Calendar() {
             {selectedDay && selectedDay.habits.length > 0 && (
               <div className="p-3 bg-muted/50 rounded-lg">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Progreso del día:</span>
-                  <span className="font-medium">{Math.round(selectedDay.completionRate)}% completado</span>
+                  <span className="text-muted-foreground">
+                    Progreso del día:
+                  </span>
+                  <span className="font-medium">
+                    {Math.round(selectedDay.completionRate)}% completado
+                  </span>
                 </div>
               </div>
             )}
-
           </div>
         </DialogContent>
       </Dialog>
@@ -626,28 +782,32 @@ export default function Calendar() {
         habit={editingHabit as any}
         onSave={(newHabit) => {
           if (editingHabit && selectedDay) {
-            updateHabitForDate(editingHabit.id, selectedDay.date, newHabit as any);
+            updateHabitForDate(
+              editingHabit.id,
+              selectedDay.date,
+              newHabit as any,
+            );
             refreshSelectedDay(selectedDay.date);
-            toast({ title: 'Hábito actualizado para este día' });
+            toast({ title: "Hábito actualizado para este día" });
           } else if (editingHabit) {
             updateHabit(editingHabit.id, newHabit as any);
-            toast({ title: 'Hábito actualizado' });
+            toast({ title: "Hábito actualizado" });
           } else if (selectedDay) {
             const date = selectedDay.date;
             const m = date.getMonth() + 1;
             const d = date.getDate();
             const habitToSave = {
               ...newHabit,
-              frequency: 'monthly',
+              frequency: "monthly",
               monthlyMonths: [m],
               monthlyDays: [d],
             } as any;
             addHabit(habitToSave, { assignDate: date });
             refreshSelectedDay(date);
-            toast({ title: 'Hábito creado' });
+            toast({ title: "Hábito creado" });
           } else {
             addHabit(newHabit as any);
-            toast({ title: 'Hábito creado' });
+            toast({ title: "Hábito creado" });
           }
         }}
       />
