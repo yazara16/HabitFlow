@@ -95,7 +95,7 @@ export default function Calendar() {
       icon: h.icon,
       color: h.color,
       time: h.reminderTime,
-      completed: date.toDateString() === new Date().toDateString() ? h.completed >= h.target : false,
+      completed: h.completed >= h.target,
       streak: h.streak,
     };
   }
@@ -164,6 +164,38 @@ export default function Calendar() {
 
   const refreshSelectedDay = (date: Date) => {
     setSelectedDay(buildCalendarDay(date));
+  };
+
+  const toggleHabitCompletion = (habitId: string, date: Date) => {
+    const iso = date.toISOString().split('T')[0];
+    const h = habits.find(hh => hh.id === habitId);
+    if (!h) return;
+
+    if (iso === new Date().toISOString().split('T')[0]) {
+      // Toggle global today state
+      const newCompleted = h.completedToday ? Math.max(0, h.completed - 1) : Math.min(h.target, h.completed + 1);
+      updateHabit(habitId, {
+        completed: newCompleted,
+        completedToday: !h.completedToday,
+        streak: !h.completedToday ? h.streak + 1 : h.streak,
+        lastCompleted: !h.completedToday ? iso : h.lastCompleted,
+      });
+      toast({ title: !h.completedToday ? 'Hábito marcado como completado' : 'Hábito desmarcado' });
+    } else {
+      // Per-day override for other dates
+      const dayHabits = getHabitsForDate(date);
+      const dh = dayHabits.find(x => x.id === habitId) || h;
+      const isCompleted = dh.completed >= dh.target;
+      const newCompleted = isCompleted ? 0 : dh.target;
+      updateHabitForDate(habitId, date, {
+        completed: newCompleted,
+        completedToday: newCompleted >= dh.target,
+        lastCompleted: newCompleted >= dh.target ? iso : undefined,
+      } as any);
+      toast({ title: isCompleted ? 'Hábito desmarcado en la fecha' : 'Hábito marcado en la fecha' });
+    }
+
+    refreshSelectedDay(date);
   };
 
   const handleDayClick = (day: CalendarDay) => {
@@ -521,11 +553,21 @@ export default function Calendar() {
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
                         <h4 className="font-medium">{habit.name}</h4>
-                        {habit.completed ? (
-                          <CheckCircle2 className="h-5 w-5 text-success" />
-                        ) : (
-                          <Circle className="h-5 w-5 text-muted-foreground" />
-                        )}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (!selectedDay) return;
+                            toggleHabitCompletion(habit.id, selectedDay.date);
+                          }}
+                          className="p-1 rounded"
+                          aria-label={habit.completed ? 'Marcar como no completado' : 'Marcar como completado'}
+                        >
+                          {habit.completed ? (
+                            <CheckCircle2 className="h-5 w-5 text-success" />
+                          ) : (
+                            <Circle className="h-5 w-5 text-muted-foreground" />
+                          )}
+                        </button>
                       </div>
 
                       <div className="flex items-center justify-between mt-1">
