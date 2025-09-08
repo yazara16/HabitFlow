@@ -89,6 +89,10 @@ export default function Register() {
                 </div>
               </div>
               <div className="space-y-2">
+                <Label htmlFor="confirm">Confirmar contraseña</Label>
+                <Input id="confirm" type="password" placeholder="********" value={confirm} onChange={(e) => setConfirm(e.target.value)} />
+              </div>
+              <div className="space-y-2">
                 <Label htmlFor="photo">Foto (opcional)</Label>
                 <div className="relative">
                   <Input id="photo" type="file" accept="image/*" onChange={async (e) => {
@@ -105,10 +109,6 @@ export default function Register() {
                     <span>Foto cargada</span>
                   </div>
                 )}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="confirm">Confirmar contraseña</Label>
-                <Input id="confirm" type="password" placeholder="********" value={confirm} onChange={(e) => setConfirm(e.target.value)} />
               </div>
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? "Creando..." : "Registrarse"}
