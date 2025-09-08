@@ -1,12 +1,25 @@
 import { Link, useNavigate } from "react-router-dom";
 import AuthNav from "@/components/AuthNav";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/hooks/use-toast";
-import { UserPlus, Mail, Lock, Chrome, ShieldCheck, Image as ImageIcon } from "lucide-react";
+import {
+  UserPlus,
+  Mail,
+  Lock,
+  Chrome,
+  ShieldCheck,
+  Image as ImageIcon,
+} from "lucide-react";
 import { FormEvent, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -19,7 +32,9 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
 
   const { register: registerUser, loginWithGoogle } = useAuth();
-  const [photoDataUrl, setPhotoDataUrl] = useState<string | undefined>(undefined);
+  const [photoDataUrl, setPhotoDataUrl] = useState<string | undefined>(
+    undefined,
+  );
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -28,11 +43,17 @@ export default function Register() {
       return;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      toast({ title: "Correo inválido", description: "Ingresa un correo válido" });
+      toast({
+        title: "Correo inválido",
+        description: "Ingresa un correo válido",
+      });
       return;
     }
     if (password.length < 6) {
-      toast({ title: "Contraseña muy corta", description: "Mínimo 6 caracteres" });
+      toast({
+        title: "Contraseña muy corta",
+        description: "Mínimo 6 caracteres",
+      });
       return;
     }
     if (password !== confirm) {
@@ -45,7 +66,10 @@ export default function Register() {
       toast({ title: "Registro exitoso" });
       navigate("/dashboard");
     } catch (err: any) {
-      toast({ title: "Error", description: err?.message || "No se pudo registrar" });
+      toast({
+        title: "Error",
+        description: err?.message || "No se pudo registrar",
+      });
     } finally {
       setLoading(false);
     }
@@ -66,42 +90,78 @@ export default function Register() {
               <UserPlus className="h-5 w-5" />
               <span>Crear cuenta</span>
             </CardTitle>
-            <CardDescription>Crea tu cuenta o continúa con Google</CardDescription>
+            <CardDescription>
+              Crea tu cuenta o continúa con Google
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={onSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Nombre</Label>
-                <Input id="name" placeholder="Tu nombre" value={name} onChange={(e) => setName(e.target.value)} />
+                <Input
+                  id="name"
+                  placeholder="Tu nombre"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Correo</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input id="email" type="email" placeholder="tu@correo.com" value={email} onChange={(e) => setEmail(e.target.value)} className="pl-9" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="tu@correo.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="pl-9"
+                  />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Contraseña</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input id="password" type="password" placeholder="********" value={password} onChange={(e) => setPassword(e.target.value)} className="pl-9" />
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="********"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pl-9"
+                  />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="confirm">Confirmar contraseña</Label>
-                <Input id="confirm" type="password" placeholder="********" value={confirm} onChange={(e) => setConfirm(e.target.value)} />
+                <Input
+                  id="confirm"
+                  type="password"
+                  placeholder="********"
+                  value={confirm}
+                  onChange={(e) => setConfirm(e.target.value)}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="photo">Foto (opcional)</Label>
                 <div className="relative">
-                  <Input id="photo" type="file" accept="image/*" onChange={async (e) => {
-                    const file = e.target.files?.[0];
-                    if (!file) { setPhotoDataUrl(undefined); return; }
-                    const reader = new FileReader();
-                    reader.onload = () => setPhotoDataUrl(reader.result as string);
-                    reader.readAsDataURL(file);
-                  }} />
+                  <Input
+                    id="photo"
+                    type="file"
+                    accept="image/*"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) {
+                        setPhotoDataUrl(undefined);
+                        return;
+                      }
+                      const reader = new FileReader();
+                      reader.onload = () =>
+                        setPhotoDataUrl(reader.result as string);
+                      reader.readAsDataURL(file);
+                    }}
+                  />
                 </div>
                 {photoDataUrl && (
                   <div className="flex items-center space-x-2 text-xs text-muted-foreground">
@@ -121,13 +181,20 @@ export default function Register() {
               <Separator className="flex-1" />
             </div>
 
-            <Button variant="outline" className="w-full" onClick={signUpWithGoogle}>
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={signUpWithGoogle}
+            >
               <Chrome className="mr-2 h-4 w-4" />
               Continuar con Google
             </Button>
 
             <p className="text-sm text-muted-foreground mt-6 text-center">
-              ¿Ya tienes cuenta? <Link to="/login" className="text-primary hover:underline">Inicia sesión</Link>
+              ¿Ya tienes cuenta?{" "}
+              <Link to="/login" className="text-primary hover:underline">
+                Inicia sesión
+              </Link>
             </p>
           </CardContent>
         </Card>
