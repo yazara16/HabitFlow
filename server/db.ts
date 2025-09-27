@@ -52,6 +52,40 @@ CREATE TABLE IF NOT EXISTS notifications (
   createdAt TEXT,
   FOREIGN KEY (userId) REFERENCES users(id)
 );
+
+CREATE TABLE IF NOT EXISTS habit_logs (
+  id TEXT PRIMARY KEY,
+  habitId TEXT NOT NULL,
+  userId TEXT NOT NULL,
+  date TEXT NOT NULL,
+  completedAmount INTEGER DEFAULT 0,
+  completedBoolean INTEGER DEFAULT 0,
+  note TEXT,
+  createdAt TEXT,
+  updatedAt TEXT,
+  FOREIGN KEY (habitId) REFERENCES habits(id),
+  FOREIGN KEY (userId) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS habit_overrides (
+  id TEXT PRIMARY KEY,
+  habitId TEXT NOT NULL,
+  userId TEXT NOT NULL,
+  date TEXT NOT NULL,
+  hidden INTEGER DEFAULT 0,
+  patch TEXT,
+  createdAt TEXT,
+  updatedAt TEXT,
+  FOREIGN KEY (habitId) REFERENCES habits(id),
+  FOREIGN KEY (userId) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS user_settings (
+  userId TEXT PRIMARY KEY,
+  settings TEXT,
+  updatedAt TEXT,
+  FOREIGN KEY (userId) REFERENCES users(id)
+);
 `);
 
 export default db;
