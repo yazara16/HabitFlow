@@ -57,7 +57,7 @@ export function createServer() {
 
   // Notifications
   app.get('/api/users/:userId/notifications', requireAuth, listNotifications);
-  app.post('/api/users/:userId/notifications', createNotification);
+  app.post('/api/users/:userId/notifications', requireAuth, createNotification);
   app.post('/api/users/:userId/notifications/mark_all', markAllRead);
   app.put('/api/users/:userId/notifications/:id/read', markAsRead);
   app.delete('/api/users/:userId/notifications/:id', deleteNotification);
