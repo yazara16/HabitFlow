@@ -51,6 +51,21 @@ export function createServer() {
   app.put('/api/users/:userId/notifications/:id/read', markAsRead);
   app.delete('/api/users/:userId/notifications/:id', deleteNotification);
 
+  // Habit logs
+  app.get('/api/users/:userId/habits/:habitId/logs', listLogs);
+  app.post('/api/users/:userId/habits/:habitId/logs', createLog);
+  app.put('/api/users/:userId/habits/:habitId/logs/:logId', updateLog);
+  app.delete('/api/users/:userId/habits/:habitId/logs/:logId', deleteLog);
+
+  // Overrides
+  app.get('/api/users/:userId/habits/:habitId/overrides', listOverrides);
+  app.post('/api/users/:userId/habits/:habitId/overrides', createOverride);
+  app.delete('/api/users/:userId/habits/:habitId/overrides/:overrideId', deleteOverride);
+
+  // User settings
+  app.get('/api/users/:userId/settings', getSettings);
+  app.put('/api/users/:userId/settings', upsertSettings);
+
   return app;
 }
 
