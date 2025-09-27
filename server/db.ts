@@ -86,6 +86,50 @@ CREATE TABLE IF NOT EXISTS user_settings (
   updatedAt TEXT,
   FOREIGN KEY (userId) REFERENCES users(id)
 );
+
+CREATE TABLE IF NOT EXISTS achievements (
+  id TEXT PRIMARY KEY,
+  key TEXT UNIQUE,
+  title TEXT,
+  description TEXT,
+  criteria TEXT,
+  createdAt TEXT
+);
+
+CREATE TABLE IF NOT EXISTS user_achievements (
+  id TEXT PRIMARY KEY,
+  userId TEXT NOT NULL,
+  achievementId TEXT NOT NULL,
+  earnedAt TEXT,
+  meta TEXT,
+  FOREIGN KEY (userId) REFERENCES users(id),
+  FOREIGN KEY (achievementId) REFERENCES achievements(id)
+);
+
+CREATE TABLE IF NOT EXISTS reminders (
+  id TEXT PRIMARY KEY,
+  userId TEXT NOT NULL,
+  habitId TEXT,
+  timeOfDay TEXT,
+  enabled INTEGER DEFAULT 1,
+  timezone TEXT,
+  recurrence TEXT,
+  days TEXT,
+  nextRun TEXT,
+  createdAt TEXT,
+  FOREIGN KEY (userId) REFERENCES users(id),
+  FOREIGN KEY (habitId) REFERENCES habits(id)
+);
+
+CREATE TABLE IF NOT EXISTS devices (
+  id TEXT PRIMARY KEY,
+  userId TEXT NOT NULL,
+  platform TEXT,
+  pushToken TEXT,
+  lastSeenAt TEXT,
+  createdAt TEXT,
+  FOREIGN KEY (userId) REFERENCES users(id)
+);
 `);
 
 export default db;
