@@ -17,44 +17,49 @@ export const registerHandler: RequestHandler = (req, res) => {
   db.prepare('INSERT INTO users (id,name,email,password,photoUrl,createdAt) VALUES (?,?,?,?,?,?)')
     .run(id, name, email, hashed, photoUrl || null, createdAt);
 
-  // Seed default habits for new user
-  const defaultHabits = [
-    {
-      name: 'Correr 30 minutos',
-      description: 'Ejercicio cardiovascular matutino',
-      category: 'exercise',
-      icon: 'Dumbbell',
-      color: 'text-red-500 bg-red-500/10',
-      target: 1,
-      unit: 'sesión',
-      frequency: 'daily',
-      reminderTime: '07:00',
-      reminderEnabled: 1,
-    },
-    {
-      name: 'Beber 2 litros de agua',
-      description: 'Mantener hidratación óptima',
-      category: 'hydration',
-      icon: 'Droplets',
-      color: 'text-blue-500 bg-blue-500/10',
-      target: 8,
-      unit: 'vasos',
-      frequency: 'daily',
-      reminderTime: '09:00',
-      reminderEnabled: 1,
-    },
-    {
-      name: 'Ahorrar $50 semanales',
-      description: 'Meta de ahorro para emergencias',
-      category: 'finance',
-      icon: 'DollarSign',
-      color: 'text-green-500 bg-green-500/10',
-      target: 50,
-      unit: 'MXN',
-      frequency: 'weekly',
-      reminderEnabled: 0,
-    },
-  ];
+  // Seed default habits for new user based on preferences
+  const prefs: string[] = req.body?.preferredCategories || [];
+  const map: Record<string, any[]> = {
+    exercise: [
+      { name: 'Correr 30 minutos', description: 'Ejercicio cardiovascular matutino', category: 'exercise', icon: 'Dumbbell', color: 'text-red-500 bg-red-500/10', target: 1, unit: 'sesión', frequency: 'daily', reminderTime: '07:00', reminderEnabled: 1 },
+    ],
+    hydration: [
+      { name: 'Beber 2 litros de agua', description: 'Mantener hidratación óptima', category: 'hydration', icon: 'Droplets', color: 'text-blue-500 bg-blue-500/10', target: 8, unit: 'vasos', frequency: 'daily', reminderTime: '09:00', reminderEnabled: 1 },
+    ],
+    finance: [
+      { name: 'Ahorrar $50 semanales', description: 'Meta de ahorro para emergencias', category: 'finance', icon: 'DollarSign', color: 'text-green-500 bg-green-500/10', target: 50, unit: 'MXN', frequency: 'weekly', reminderEnabled: 0 },
+    ],
+    shopping: [
+      { name: 'Lista de compras semanal', description: 'Planificación de compras del hogar', category: 'shopping', icon: 'ShoppingCart', color: 'text-orange-500 bg-orange-500/10', target: 1, unit: 'lista', frequency: 'weekly', reminderTime: '18:00', reminderEnabled: 1 },
+    ],
+    reading: [
+      { name: 'Leer 20 páginas', description: 'Fomentar hábito de lectura', category: 'reading', icon: 'Book', color: 'text-purple-500 bg-purple-500/10', target: 20, unit: 'páginas', frequency: 'daily', reminderTime: '21:00', reminderEnabled: 0 },
+    ],
+    study: [
+      { name: 'Estudiar 1 hora', description: 'Tiempo de estudio concentrado', category: 'study', icon: 'BookOpen', color: 'text-indigo-500 bg-indigo-500/10', target: 1, unit: 'hora', frequency: 'daily', reminderTime: '20:00', reminderEnabled: 0 },
+    ],
+    meditation: [
+      { name: 'Meditar 15 minutos', description: 'Práctica de mindfulness', category: 'custom', icon: 'Star', color: 'text-teal-500 bg-teal-500/10', target: 1, unit: 'sesión', frequency: 'daily', reminderTime: '08:00', reminderEnabled: 0 },
+    ],
+    custom: [
+      { name: 'Hábito personal', description: 'Crea tu propio hábito', category: 'custom', icon: 'Star', color: 'text-gray-500 bg-gray-500/10', target: 1, unit: 'sesión', frequency: 'daily', reminderEnabled: 0 },
+    ],
+  };
+
+  let defaultHabits: any[] = [];
+  if (Array.isArray(prefs) && prefs.length > 0) {
+    for (const p of prefs) {
+      if (map[p]) defaultHabits = defaultHabits.concat(map[p]);
+    }
+  }
+  if (defaultHabits.length === 0) {
+    // fallback
+    defaultHabits = [
+      { name: 'Correr 30 minutos', description: 'Ejercicio cardiovascular matutino', category: 'exercise', icon: 'Dumbbell', color: 'text-red-500 bg-red-500/10', target: 1, unit: 'sesión', frequency: 'daily', reminderTime: '07:00', reminderEnabled: 1 },
+      { name: 'Beber 2 litros de agua', description: 'Mantener hidratación óptima', category: 'hydration', icon: 'Droplets', color: 'text-blue-500 bg-blue-500/10', target: 8, unit: 'vasos', frequency: 'daily', reminderTime: '09:00', reminderEnabled: 1 },
+      { name: 'Ahorrar $50 semanales', description: 'Meta de ahorro para emergencias', category: 'finance', icon: 'DollarSign', color: 'text-green-500 bg-green-500/10', target: 50, unit: 'MXN', frequency: 'weekly', reminderEnabled: 0 },
+    ];
+  }
 
   const insertStmt = db.prepare(`INSERT INTO habits (id,userId,name,description,category,color,icon,target,completed,streak,frequency,monthlyDays,monthlyMonths,reminderTime,reminderEnabled,createdAt,lastCompleted) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`);
   const now = new Date().toISOString();
