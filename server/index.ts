@@ -28,5 +28,11 @@ export function createServer() {
   app.get('/api/users/:id', getUserHandler);
   app.put('/api/users/:id', updateUserHandler);
 
+  // Habits
+  app.get('/api/users/:userId/habits', getHabitsHandler);
+  app.post('/api/users/:userId/habits', createHabitHandler);
+  app.put('/api/users/:userId/habits/:habitId', updateHabitHandler);
+  app.delete('/api/users/:userId/habits/:habitId', deleteHabitHandler);
+
   return app;
 }
