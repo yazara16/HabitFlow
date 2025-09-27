@@ -6,6 +6,9 @@ import { registerHandler, loginHandler, googleMockHandler, getUserHandler, updat
 import { getHabitsHandler, createHabitHandler, updateHabitHandler, deleteHabitHandler } from "./routes/habits";
 import { listUsers, listHabits, dbStats } from "./routes/debug";
 import { listNotifications, createNotification, markAsRead, markAllRead, deleteNotification } from "./routes/notifications";
+import { listLogs, createLog, updateLog, deleteLog } from "./routes/habit_logs";
+import { listOverrides, createOverride, deleteOverride } from "./routes/overrides";
+import { getSettings, upsertSettings } from "./routes/settings";
 
 export function createServer() {
   const app = express();
