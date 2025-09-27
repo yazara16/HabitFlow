@@ -27,10 +27,39 @@ const seed: Notification[] = [
 
 export default function NotificationsPage() {
   const navigate = useNavigate();
-  const [items, setItems] = useState<Notification[]>(seed);
+  const { user } = useAuth();
+  const [items, setItems] = useState<Notification[]>([]);
   const unread = useMemo(() => items.filter(i => !i.read).length, [items]);
 
-  const markAll = () => setItems(prev => prev.map(i => ({ ...i, read: true })));
+  useEffect(() => {
+    let mounted = true;
+    if (!user) { setItems([]); return; }
+    (async () => {
+      try {
+        const res = await fetch(`/api/users/${user.id}/notifications`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!mounted) return;
+        setItems(data.map((it: any) => ({
+          id: it.id,
+          type: it.type,
+          title: it.title,
+          message: it.message,
+          time: it.createdAt,
+          read: it.read,
+          icon: (it.type === 'achievement' ? Star : it.type === 'streak' ? Flame : it.type === 'reminder' ? Target : it.type === 'milestone' ? TrendingUp : Gift),
+          color: it.type === 'achievement' ? 'text-yellow-500 bg-yellow-500/10' : it.type === 'streak' ? 'text-orange-500 bg-orange-500/10' : it.type === 'reminder' ? 'text-blue-500 bg-blue-500/10' : it.type === 'milestone' ? 'text-green-500 bg-green-500/10' : 'text-purple-500 bg-purple-500/10'
+        })));
+      } catch (e) {}
+    })();
+    return () => { mounted = false; };
+  }, [user]);
+
+  const markAll = async () => {
+    if (!user) return;
+    await fetch(`/api/users/${user.id}/notifications/mark_all`, { method: 'POST' });
+    setItems(prev => prev.map(i => ({ ...i, read: true })));
+  };
   const getTarget = (n: Notification) => (
     n.type === "reminder" ? "/today" :
     n.type === "milestone" ? "/achievements" :
