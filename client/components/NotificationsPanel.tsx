@@ -75,18 +75,31 @@ export default function NotificationsPanel() {
   const [selected, setSelected] = useState<Notification | null>(null);
   const unreadCount = notifications.filter(n => !n.read).length;
 
-  const markAsRead = (id: string) => {
-    setNotifications(prev => prev.map(n => 
-      n.id === id ? { ...n, read: true } : n
-    ));
+  const markAsRead = async (id: string) => {
+    if (!user) return;
+    try {
+      const res = await fetch(`/api/users/${user.id}/notifications/${id}/read`, { method: 'PUT' });
+      if (!res.ok) return;
+      const updated = await res.json();
+      setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+    } catch (e) {}
   };
 
-  const markAllAsRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+  const markAllAsRead = async () => {
+    if (!user) return;
+    try {
+      const res = await fetch(`/api/users/${user.id}/notifications/mark_all`, { method: 'POST' });
+      if (!res.ok) return;
+      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    } catch (e) {}
   };
 
-  const deleteNotification = (id: string) => {
-    setNotifications(prev => prev.filter(n => n.id !== id));
+  const deleteNotification = async (id: string) => {
+    if (!user) return;
+    try {
+      const res = await fetch(`/api/users/${user.id}/notifications/${id}`, { method: 'DELETE' });
+      if (res.ok) setNotifications(prev => prev.filter(n => n.id !== id));
+    } catch (e) {}
   };
 
   const getTypeIcon = (type: string) => {
@@ -119,8 +132,9 @@ export default function NotificationsPanel() {
     n.type === "system" ? "/settings" : "/dashboard"
   );
 
-  const openNotification = (n: Notification) => {
-    setNotifications(prev => prev.map(x => x.id === n.id ? { ...x, read: true } : x));
+  const openNotification = async (n: Notification) => {
+    // mark read on open
+    if (!n.read) await markAsRead(n.id);
     setSelected(n);
     setDetailOpen(true);
   };
