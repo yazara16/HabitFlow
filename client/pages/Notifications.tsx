@@ -37,7 +37,8 @@ export default function NotificationsPage() {
     if (!user) { setItems([]); return; }
     (async () => {
       try {
-        const res = await fetch(`/api/users/${user.id}/notifications`);
+        const token = localStorage.getItem('auth:token');
+        const res = await fetch(`/api/users/${user.id}/notifications`, { headers: token ? { Authorization: `Bearer ${token}` } : undefined });
         if (!res.ok) return;
         const data = await res.json();
         if (!mounted) return;
