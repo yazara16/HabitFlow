@@ -27,12 +27,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
 
   useEffect(() => {
-    const currentEmail = localStorage.getItem(CURRENT_KEY);
-    const usersRaw = localStorage.getItem(USERS_KEY);
-    if (currentEmail && usersRaw) {
-      const users: Record<string, AuthUser> = JSON.parse(usersRaw);
-      const u = users[currentEmail];
-      if (u) setUser(u);
+    // Try to restore session
+    const currentId = localStorage.getItem(CURRENT_KEY);
+    if (currentId) {
+      fetch(`/api/users/${currentId}`).then(async (res) => {
+        if (res.ok) {
+          const u = await res.json();
+          setUser(u);
+        } else {
+          localStorage.removeItem(CURRENT_KEY);
+        }
+      }).catch(() => {
+        // ignore
+      });
     }
   }, []);
 
