@@ -75,8 +75,19 @@ export function createServer() {
   app.post('/api/users/:userId/devices', registerDevice);
   app.delete('/api/users/:userId/devices/:id', unregisterDevice);
 
-  // Worker (admin)
-  app.post('/api/admin/run_worker', (req, res) => { try { const { runWorker } = require('./routes/worker'); return runWorker(req, res); } catch (e) { res.status(500).json({ error: 'worker failed', details: String(e) }); } });
+  // Admin middleware (simple token check)
+  const adminToken = process.env.ADMIN_TOKEN || 'CHANGE_ME_ADMIN_TOKEN';
+  const requireAdmin = (req: any, res: any, next: any) => {
+    const auth = req.headers.authorization || req.query.admin_token;
+    if (!auth) return res.status(401).json({ message: 'Unauthorized' });
+    let token = auth;
+    if (auth.startsWith('Bearer ')) token = auth.slice(7);
+    if (token !== adminToken) return res.status(403).json({ message: 'Forbidden' });
+    next();
+  };
+
+  // Worker (admin) - protected
+  app.post('/api/admin/run_worker', requireAdmin, (req, res) => { try { const { runWorker } = require('./routes/worker'); return runWorker(req, res); } catch (e) { res.status(500).json({ error: 'worker failed', details: String(e) }); } });
 
   // Habit logs
   app.get('/api/users/:userId/habits/:habitId/logs', listLogs);
