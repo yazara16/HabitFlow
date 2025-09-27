@@ -147,10 +147,21 @@ export default function Settings() {
   ];
 
   useEffect(() => {
+    let mounted = true;
     if (user) {
       setSettings(prev => ({ ...prev, name: user.name, email: user.email }));
       setAvatar(user.photoUrl || null);
+      (async () => {
+        try {
+          const res = await fetch(`/api/users/${user.id}/settings`);
+          if (!res.ok) return;
+          const serverSettings = await res.json();
+          if (!mounted) return;
+          setSettings(prev => ({ ...prev, ...serverSettings } as any));
+        } catch (e) {}
+      })();
     }
+    return () => { mounted = false; };
   }, [user]);
 
   const timezones = [
