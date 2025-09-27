@@ -20,5 +20,12 @@ export function createServer() {
 
   app.get("/api/demo", handleDemo);
 
+  // Auth
+  app.post('/api/register', registerHandler);
+  app.post('/api/login', loginHandler);
+  app.post('/api/auth/google', googleMockHandler);
+  app.get('/api/users/:id', getUserHandler);
+  app.put('/api/users/:id', updateUserHandler);
+
   return app;
 }
