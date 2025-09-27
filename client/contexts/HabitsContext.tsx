@@ -244,6 +244,13 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
     if (!user) return;
     try {
       await fetch(`/api/users/${user.id}/habits/${id}/overrides`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ date: iso, patch }) });
+      // If completion info present in patch, create or update a habit log for that date
+      if (typeof patch.completed !== 'undefined' || typeof patch.completedToday !== 'undefined' || typeof patch.lastCompleted !== 'undefined') {
+        const completedAmount = (patch.completed as any) ?? undefined;
+        const completedBool = (typeof patch.completed !== 'undefined') ? (Number(Boolean((patch.completed as any) >= (prevFindTarget(patch) || 0))) ) : (patch.completedToday ? 1 : 0);
+        // Try to create a log for that date
+        await fetch(`/api/users/${user.id}/habits/${id}/logs`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ date: iso, completedAmount: completedAmount ?? 0, completedBoolean: completedBool }) });
+      }
     } catch (e) {}
   };
 
