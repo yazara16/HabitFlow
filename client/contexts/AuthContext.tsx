@@ -44,11 +44,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const persistUser = (u: AuthUser) => {
-    const usersRaw = localStorage.getItem(USERS_KEY);
-    const users: Record<string, AuthUser> = usersRaw ? JSON.parse(usersRaw) : {};
-    users[u.email] = u;
-    localStorage.setItem(USERS_KEY, JSON.stringify(users));
-    localStorage.setItem(CURRENT_KEY, u.email);
+    // Persist minimal session (user id) locally
+    localStorage.setItem(CURRENT_KEY, u.id);
     setUser(u);
   };
 
