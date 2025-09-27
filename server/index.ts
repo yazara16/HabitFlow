@@ -50,3 +50,13 @@ export function createServer() {
 
   return app;
 }
+
+// If executed directly (node tsx server/index.ts), start listening
+if (process.argv[1] && process.argv[1].endsWith('server/index.ts')) {
+  const app = createServer();
+  const port = process.env.PORT || 5173;
+  app.listen(port, () => {
+    // eslint-disable-next-line no-console
+    console.log(`Server listening on http://localhost:${port}`);
+  });
+}
