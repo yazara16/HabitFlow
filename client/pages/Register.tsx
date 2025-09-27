@@ -145,6 +145,44 @@ export default function Register() {
                 />
               </div>
               <div className="space-y-2">
+                <Label>Preferencias (elige lo que te interesa)</Label>
+                <div className="grid grid-cols-2 gap-2">
+                  <label className="flex items-center space-x-2">
+                    <Checkbox checked={preferred.includes('exercise')} onCheckedChange={() => togglePreferred('exercise')} />
+                    <span className="text-sm">Ejercicio</span>
+                  </label>
+                  <label className="flex items-center space-x-2">
+                    <Checkbox checked={preferred.includes('hydration')} onCheckedChange={() => togglePreferred('hydration')} />
+                    <span className="text-sm">Hidratación</span>
+                  </label>
+                  <label className="flex items-center space-x-2">
+                    <Checkbox checked={preferred.includes('finance')} onCheckedChange={() => togglePreferred('finance')} />
+                    <span className="text-sm">Finanzas</span>
+                  </label>
+                  <label className="flex items-center space-x-2">
+                    <Checkbox checked={preferred.includes('shopping')} onCheckedChange={() => togglePreferred('shopping')} />
+                    <span className="text-sm">Compras</span>
+                  </label>
+                  <label className="flex items-center space-x-2">
+                    <Checkbox checked={preferred.includes('reading')} onCheckedChange={() => togglePreferred('reading')} />
+                    <span className="text-sm">Lectura</span>
+                  </label>
+                  <label className="flex items-center space-x-2">
+                    <Checkbox checked={preferred.includes('study')} onCheckedChange={() => togglePreferred('study')} />
+                    <span className="text-sm">Estudio</span>
+                  </label>
+                  <label className="flex items-center space-x-2">
+                    <Checkbox checked={preferred.includes('meditation')} onCheckedChange={() => togglePreferred('meditation')} />
+                    <span className="text-sm">Meditación</span>
+                  </label>
+                  <label className="flex items-center space-x-2">
+                    <Checkbox checked={preferred.includes('custom')} onCheckedChange={() => togglePreferred('custom')} />
+                    <span className="text-sm">Personalizado</span>
+                  </label>
+                </div>
+              </div>
+
+              <div className="space-y-2">
                 <Label htmlFor="photo">Foto (opcional)</Label>
                 <div className="relative">
                   <Input
@@ -171,6 +209,7 @@ export default function Register() {
                   </div>
                 )}
               </div>
+
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? "Creando..." : "Registrarse"}
               </Button>
