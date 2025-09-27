@@ -71,8 +71,8 @@ export function createServer() {
   // Achievements
   app.get('/api/achievements', listCatalog);
   app.post('/api/achievements/seed', seedCatalog);
-  app.get('/api/users/:userId/achievements', getUserAchievements);
-  app.post('/api/users/:userId/achievements', unlockAchievement);
+  app.get('/api/users/:userId/achievements', requireAuth, getUserAchievements);
+  app.post('/api/users/:userId/achievements', requireAuth, unlockAchievement);
 
   // Devices
   app.get('/api/users/:userId/devices', listDevices);
