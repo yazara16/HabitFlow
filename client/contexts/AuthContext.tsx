@@ -29,15 +29,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
 
   useEffect(() => {
-    // Try to restore session
-    const currentId = localStorage.getItem(CURRENT_KEY);
-    if (currentId) {
-      fetch(`/api/users/${currentId}`).then(async (res) => {
+    // Try to restore session from token
+    const token = localStorage.getItem('auth:token');
+    if (token) {
+      fetch(`/api/me`, { headers: { Authorization: `Bearer ${token}` } }).then(async (res) => {
         if (res.ok) {
           const u = await res.json();
           setUser(u);
+          // persist token
+          localStorage.setItem('auth:token', token);
         } else {
-          localStorage.removeItem(CURRENT_KEY);
+          localStorage.removeItem('auth:token');
         }
       }).catch(() => {
         // ignore
