@@ -19,8 +19,14 @@ export const unlockAchievement: RequestHandler = (req, res) => {
   const { achievementKey, meta } = req.body || {};
   if (!achievementKey) return res.status(400).json({ message: 'Missing achievementKey' });
 
-  const ach = db.prepare('SELECT id FROM achievements WHERE key = ?').get(achievementKey);
-  if (!ach) return res.status(404).json({ message: 'Achievement not found' });
+  let ach = db.prepare('SELECT id FROM achievements WHERE key = ?').get(achievementKey);
+  if (!ach) {
+    // create a new achievement record on the fly
+    const aid = uuidv4();
+    const now = new Date().toISOString();
+    db.prepare('INSERT INTO achievements (id,key,title,description,criteria,createdAt) VALUES (?,?,?,?,?,?)').run(aid, achievementKey, achievementKey, achievementKey, JSON.stringify({ auto: true }), now);
+    ach = { id: aid };
+  }
   // prevent duplicates
   const existing = db.prepare('SELECT id FROM user_achievements WHERE userId = ? AND achievementId = ?').get(userId, ach.id);
   if (existing) return res.status(409).json({ message: 'Already unlocked' });
