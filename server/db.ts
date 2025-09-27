@@ -39,6 +39,19 @@ CREATE TABLE IF NOT EXISTS habits (
   lastCompleted TEXT,
   FOREIGN KEY (userId) REFERENCES users(id)
 );
+
+CREATE TABLE IF NOT EXISTS notifications (
+  id TEXT PRIMARY KEY,
+  userId TEXT NOT NULL,
+  type TEXT,
+  title TEXT,
+  message TEXT,
+  time TEXT,
+  read INTEGER DEFAULT 0,
+  metadata TEXT,
+  createdAt TEXT,
+  FOREIGN KEY (userId) REFERENCES users(id)
+);
 `);
 
 export default db;
