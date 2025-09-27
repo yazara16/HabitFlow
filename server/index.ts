@@ -94,19 +94,19 @@ export function createServer() {
   app.post('/api/admin/run_worker', requireAdmin, (req, res) => { try { const { runWorker } = require('./routes/worker'); return runWorker(req, res); } catch (e) { res.status(500).json({ error: 'worker failed', details: String(e) }); } });
 
   // Habit logs
-  app.get('/api/users/:userId/habits/:habitId/logs', listLogs);
-  app.post('/api/users/:userId/habits/:habitId/logs', createLog);
-  app.put('/api/users/:userId/habits/:habitId/logs/:logId', updateLog);
-  app.delete('/api/users/:userId/habits/:habitId/logs/:logId', deleteLog);
+  app.get('/api/users/:userId/habits/:habitId/logs', requireAuth, listLogs);
+  app.post('/api/users/:userId/habits/:habitId/logs', requireAuth, createLog);
+  app.put('/api/users/:userId/habits/:habitId/logs/:logId', requireAuth, updateLog);
+  app.delete('/api/users/:userId/habits/:habitId/logs/:logId', requireAuth, deleteLog);
 
   // Overrides
-  app.get('/api/users/:userId/habits/:habitId/overrides', listOverrides);
-  app.post('/api/users/:userId/habits/:habitId/overrides', createOverride);
-  app.delete('/api/users/:userId/habits/:habitId/overrides/:overrideId', deleteOverride);
+  app.get('/api/users/:userId/habits/:habitId/overrides', requireAuth, listOverrides);
+  app.post('/api/users/:userId/habits/:habitId/overrides', requireAuth, createOverride);
+  app.delete('/api/users/:userId/habits/:habitId/overrides/:overrideId', requireAuth, deleteOverride);
 
   // User settings
-  app.get('/api/users/:userId/settings', getSettings);
-  app.put('/api/users/:userId/settings', upsertSettings);
+  app.get('/api/users/:userId/settings', requireAuth, getSettings);
+  app.put('/api/users/:userId/settings', requireAuth, upsertSettings);
 
   return app;
 }
