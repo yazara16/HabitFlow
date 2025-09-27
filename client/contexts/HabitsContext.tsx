@@ -239,12 +239,11 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo<HabitsContextValue>(() => ({
     habits,
-    addHabit: (habit, options) => {
-      const id = habit.id ?? `habit_${Date.now()}`;
+    addHabit: async (habit, options) => {
+      if (!user) throw new Error('Not authenticated');
       const assignDate = options?.assignDate ?? new Date();
-      const createdAt = assignDate.toISOString().split('T')[0];
-      setHabits(prev => ([...prev, {
-        id,
+      const createdAt = assignDate.toISOString();
+      const body = {
         name: habit.name,
         description: habit.description,
         category: habit.category,
@@ -257,16 +256,24 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
         monthlyMonths: habit.monthlyMonths ?? [],
         reminderTime: habit.reminderTime,
         reminderEnabled: habit.reminderEnabled ?? false,
-        completed: 0,
-        completedToday: false,
-        streak: 0,
         createdAt,
-      } as Habit]));
+      };
+      const res = await fetch(`/api/users/${user.id}/habits`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      if (!res.ok) throw new Error('Failed to create habit');
+      const created: Habit = await res.json();
+      setHabits(prev => [...prev, created]);
     },
-    updateHabit: (id, patch) => {
-      setHabits(prev => prev.map(h => h.id === id ? { ...h, ...patch } : h));
+    updateHabit: async (id, patch) => {
+      if (!user) throw new Error('Not authenticated');
+      const res = await fetch(`/api/users/${user.id}/habits/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(patch) });
+      if (!res.ok) throw new Error('Failed to update habit');
+      const updated: Habit = await res.json();
+      setHabits(prev => prev.map(h => h.id === id ? updated : h));
     },
-    removeHabit: (id) => {
+    removeHabit: async (id) => {
+      if (!user) throw new Error('Not authenticated');
+      const res = await fetch(`/api/users/${user.id}/habits/${id}`, { method: 'DELETE' });
+      if (!res.ok && res.status !== 204) throw new Error('Failed to delete');
       setHabits(prev => prev.filter(h => h.id !== id));
       setPerDayHidden(prev => {
         const copy = { ...prev };
