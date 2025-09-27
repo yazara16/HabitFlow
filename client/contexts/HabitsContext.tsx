@@ -31,12 +31,12 @@ interface HabitsContextValue {
   addHabit: (
     habit: Omit<Habit, "id" | "completed" | "streak" | "completedToday" | "createdAt"> & { id?: string },
     options?: { assignDate?: Date }
-  ) => void;
-  updateHabit: (id: string, patch: Partial<Habit>) => void;
-  removeHabit: (id: string) => void;
+  ) => Promise<void>;
+  updateHabit: (id: string, patch: Partial<Habit>) => Promise<void>;
+  removeHabit: (id: string) => Promise<void>;
   getHabitsForDate: (date: Date) => Habit[];
-  hideHabitOnDate: (id: string, date: Date) => void;
-  updateHabitForDate: (id: string, date: Date, patch: Partial<Habit>) => void;
+  hideHabitOnDate: (id: string, date: Date) => Promise<void>;
+  updateHabitForDate: (id: string, date: Date, patch: Partial<Habit>) => Promise<void>;
 }
 
 const HabitsContext = createContext<HabitsContextValue | undefined>(undefined);
@@ -217,16 +217,21 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
       });
   };
 
-  const hideHabitOnDate = (id: string, date: Date) => {
+  const hideHabitOnDate = async (id: string, date: Date) => {
     const iso = toISO(date);
     setPerDayHidden(prev => {
       const existing = new Set(prev[id] ?? []);
       existing.add(iso);
       return { ...prev, [id]: existing };
     });
+
+    if (!user) return;
+    try {
+      await fetch(`/api/users/${user.id}/habits/${id}/overrides`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ date: iso, hidden: true }) });
+    } catch (e) {}
   };
 
-  const updateHabitForDate = (id: string, date: Date, patch: Partial<Habit>) => {
+  const updateHabitForDate = async (id: string, date: Date, patch: Partial<Habit>) => {
     const iso = toISO(date);
     setPerDayOverrides(prev => ({
       ...prev,
@@ -235,6 +240,11 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
         [iso]: { ...(prev[id]?.[iso] || {}), ...patch }
       }
     }));
+
+    if (!user) return;
+    try {
+      await fetch(`/api/users/${user.id}/habits/${id}/overrides`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ date: iso, patch }) });
+    } catch (e) {}
   };
 
   const value = useMemo<HabitsContextValue>(() => ({
@@ -269,6 +279,14 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
       if (!res.ok) throw new Error('Failed to update habit');
       const updated: Habit = await res.json();
       setHabits(prev => prev.map(h => h.id === id ? updated : h));
+
+      // If completed change, create a habit log for today
+      try {
+        if (typeof patch.completed !== 'undefined' || typeof patch.completedToday !== 'undefined' || typeof patch.lastCompleted !== 'undefined') {
+          const today = new Date().toISOString().split('T')[0];
+          await fetch(`/api/users/${user.id}/habits/${id}/logs`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ date: patch.lastCompleted || today, completedAmount: updated.completed, completedBoolean: updated.completed >= (updated.target || 0) }) });
+        }
+      } catch (e) {}
     },
     removeHabit: async (id) => {
       if (!user) throw new Error('Not authenticated');
