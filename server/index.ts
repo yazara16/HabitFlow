@@ -63,10 +63,10 @@ export function createServer() {
   app.delete('/api/users/:userId/notifications/:id', requireAuth, deleteNotification);
 
   // Reminders
-  app.get('/api/users/:userId/reminders', listReminders);
-  app.post('/api/users/:userId/reminders', createReminder);
-  app.put('/api/users/:userId/reminders/:id', updateReminder);
-  app.delete('/api/users/:userId/reminders/:id', deleteReminder);
+  app.get('/api/users/:userId/reminders', requireAuth, listReminders);
+  app.post('/api/users/:userId/reminders', requireAuth, createReminder);
+  app.put('/api/users/:userId/reminders/:id', requireAuth, updateReminder);
+  app.delete('/api/users/:userId/reminders/:id', requireAuth, deleteReminder);
 
   // Achievements
   app.get('/api/achievements', listCatalog);
