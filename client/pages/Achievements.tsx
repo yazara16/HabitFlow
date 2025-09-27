@@ -208,7 +208,8 @@ export default function Achievements() {
         const key = slugify(a.title);
         if (userAchievements.includes(key)) continue;
         try {
-          const res = await fetch(`/api/users/${user.id}/achievements`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ achievementKey: key, meta: { title: a.title, desc: a.desc } }) });
+          const token = localStorage.getItem('auth:token');
+          const res = await fetch(`/api/users/${user.id}/achievements`, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify({ achievementKey: key, meta: { title: a.title, desc: a.desc } }) });
           if (res.ok) {
             setUserAchievements(prev => [...prev, key]);
             toast({ title: 'Logro desbloqueado', description: a.title });
