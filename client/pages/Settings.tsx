@@ -157,7 +157,8 @@ export default function Settings() {
       setAvatar(user.photoUrl || null);
       (async () => {
         try {
-          const res = await fetch(`/api/users/${user.id}/settings`);
+          const token = localStorage.getItem('auth:token');
+      const res = await fetch(`/api/users/${user.id}/settings`, { headers: token ? { Authorization: `Bearer ${token}` } : undefined });
           if (!res.ok) return;
           const serverSettings = await res.json();
           if (!mounted) return;
