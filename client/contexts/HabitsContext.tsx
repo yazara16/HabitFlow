@@ -148,6 +148,36 @@ const initialHabits: Habit[] = [
 
 export function HabitsProvider({ children }: { children: React.ReactNode }) {
   const [habits, setHabits] = useState<Habit[]>(initialHabits);
+  const { user } = useAuth();
+
+  // Load habits when user changes. Each user has their own stored habits under key `habits:{userId}`
+  useEffect(() => {
+    if (!user) {
+      setHabits(initialHabits);
+      return;
+    }
+    const key = `habits:${user.id}`;
+    const raw = localStorage.getItem(key);
+    if (raw) {
+      try {
+        const parsed: Habit[] = JSON.parse(raw);
+        setHabits(parsed);
+      } catch (e) {
+        setHabits([]);
+      }
+    } else {
+      // New user: start empty
+      setHabits([]);
+    }
+  }, [user]);
+
+  // Persist habits to localStorage per user
+  useEffect(() => {
+    const key = user ? `habits:${user.id}` : 'habits:guest';
+    try {
+      localStorage.setItem(key, JSON.stringify(habits));
+    } catch (e) {}
+  }, [habits, user]);
   const [perDayHidden, setPerDayHidden] = useState<Record<string, Set<string>>>({});
   const [perDayOverrides, setPerDayOverrides] = useState<Record<string, Record<string, Partial<Habit>>>>({});
 
