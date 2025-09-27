@@ -55,8 +55,15 @@ export const getUserHandler: RequestHandler = (req, res) => {
 
 export const updateUserHandler: RequestHandler = (req, res) => {
   const id = req.params.id;
-  const { name, photoUrl } = req.body || {};
-  db.prepare('UPDATE users SET name = COALESCE(?, name), photoUrl = COALESCE(?, photoUrl) WHERE id = ?').run(name, photoUrl, id);
+  const { name, photoUrl, email } = req.body || {};
+
+  // If email is changing, ensure it's not already used
+  if (email) {
+    const existing = db.prepare('SELECT id FROM users WHERE email = ? AND id != ?').get(email, id);
+    if (existing) return res.status(400).json({ message: 'Email already in use' });
+  }
+
+  db.prepare('UPDATE users SET name = COALESCE(?, name), photoUrl = COALESCE(?, photoUrl), email = COALESCE(?, email) WHERE id = ?').run(name, photoUrl, email, id);
   const row = db.prepare('SELECT id,name,email,photoUrl,createdAt FROM users WHERE id = ?').get(id);
   res.json(row);
 };
