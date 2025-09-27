@@ -63,7 +63,7 @@ export default function Register() {
     }
     try {
       setLoading(true);
-      await registerUser({ name, email, password, photoUrl: photoDataUrl });
+      await registerUser({ name, email, password, photoUrl: photoDataUrl, preferredCategories: preferred });
       toast({ title: "Registro exitoso" });
       navigate("/dashboard");
     } catch (err: any) {
