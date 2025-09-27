@@ -113,7 +113,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const registerDevice = useCallback(async (payload: { platform?: string; pushToken: string }) => {
     if (!user) throw new Error('No user');
-    await fetch(`/api/users/${user.id}/devices`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    const token = localStorage.getItem('auth:token');
+    await fetch(`/api/users/${user.id}/devices`, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify(payload) });
   }, [user]);
 
   const unregisterDevice = useCallback(async (deviceId: string) => {
