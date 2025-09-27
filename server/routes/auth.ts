@@ -85,7 +85,9 @@ export const loginHandler: RequestHandler = (req, res) => {
   if (!ok) return res.status(401).json({ message: 'Invalid credentials' });
 
   const user = { id: row.id, name: row.name, email: row.email, photoUrl: row.photoUrl, createdAt: row.createdAt };
-  return res.status(200).json(user);
+  const { signToken } = require('../lib/jwt');
+  const token = signToken({ sub: user.id, email: user.email });
+  return res.status(200).json({ user, token });
 };
 
 export const googleMockHandler: RequestHandler = (req, res) => {
