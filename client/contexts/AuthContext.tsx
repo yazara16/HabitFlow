@@ -50,52 +50,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const register = useCallback(async (data: { name: string; email: string; password: string; photoUrl?: string }) => {
-    const usersRaw = localStorage.getItem(USERS_KEY);
-    const users: Record<string, AuthUser> = usersRaw ? JSON.parse(usersRaw) : {};
-    if (users[data.email]) {
-      throw new Error("El correo ya está registrado");
+    const res = await fetch('/api/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body?.message || 'Error registering');
     }
-    const u: AuthUser = {
-      id: `user_${Date.now()}`,
-      name: data.name,
-      email: data.email,
-      password: data.password,
-      photoUrl: data.photoUrl,
-      createdAt: new Date().toISOString(),
-    };
+    const u: AuthUser = await res.json();
     persistUser(u);
   }, []);
 
   const login = useCallback(async (data: { email: string; password: string }) => {
-    const usersRaw = localStorage.getItem(USERS_KEY);
-    const users: Record<string, AuthUser> = usersRaw ? JSON.parse(usersRaw) : {};
-    const found = users[data.email];
-    if (!found || (found.password && found.password !== data.password)) {
-      throw new Error("Credenciales inválidas");
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body?.message || 'Credenciales inválidas');
     }
-    localStorage.setItem(CURRENT_KEY, found.email);
-    setUser(found);
+    const u: AuthUser = await res.json();
+    persistUser(u);
   }, []);
 
   const loginWithGoogle = useCallback(async () => {
-    // Mock Google: create or load a demo user
-    const email = "demo-google@habitflow.app";
-    const usersRaw = localStorage.getItem(USERS_KEY);
-    const users: Record<string, AuthUser> = usersRaw ? JSON.parse(usersRaw) : {};
-    let u = users[email];
-    if (!u) {
-      u = {
-        id: `user_${Date.now()}`,
-        name: "Usuario Google",
-        email,
-        createdAt: new Date().toISOString(),
-        photoUrl: undefined,
-      };
-      users[email] = u;
-      localStorage.setItem(USERS_KEY, JSON.stringify(users));
-    }
-    localStorage.setItem(CURRENT_KEY, email);
-    setUser(u);
+    const res = await fetch('/api/auth/google');
+    if (!res.ok) throw new Error('No se pudo iniciar con Google');
+    const u: AuthUser = await res.json();
+    persistUser(u);
   }, []);
 
   const logout = useCallback(() => {
