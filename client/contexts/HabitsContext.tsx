@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useMemo, useState } from "react";
+import React, { createContext, useContext, useMemo, useState, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import { Dumbbell, Droplets, DollarSign, ShoppingCart, Star, Book, BookOpen } from "lucide-react";
 
 export type HabitCategory = "exercise" | "hydration" | "finance" | "shopping" | "reading" | "study" | "custom";
