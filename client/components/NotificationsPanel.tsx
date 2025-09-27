@@ -53,7 +53,8 @@ export default function NotificationsPanel() {
     }
     (async () => {
       try {
-        const res = await fetch(`/api/users/${user.id}/notifications`);
+        const token = localStorage.getItem('auth:token');
+        const res = await fetch(`/api/users/${user.id}/notifications`, { headers: token ? { Authorization: `Bearer ${token}` } : undefined });
         if (!res.ok) return;
         const items = await res.json();
         if (!mounted) return;
@@ -80,7 +81,8 @@ export default function NotificationsPanel() {
   const markAsRead = async (id: string) => {
     if (!user) return;
     try {
-      const res = await fetch(`/api/users/${user.id}/notifications/${id}/read`, { method: 'PUT' });
+      const token = localStorage.getItem('auth:token');
+      const res = await fetch(`/api/users/${user.id}/notifications/${id}/read`, { method: 'PUT', headers: token ? { Authorization: `Bearer ${token}` } : undefined });
       if (!res.ok) return;
       const updated = await res.json();
       setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
@@ -90,7 +92,8 @@ export default function NotificationsPanel() {
   const markAllAsRead = async () => {
     if (!user) return;
     try {
-      const res = await fetch(`/api/users/${user.id}/notifications/mark_all`, { method: 'POST' });
+      const token = localStorage.getItem('auth:token');
+      const res = await fetch(`/api/users/${user.id}/notifications/mark_all`, { method: 'POST', headers: token ? { Authorization: `Bearer ${token}` } : undefined });
       if (!res.ok) return;
       setNotifications(prev => prev.map(n => ({ ...n, read: true })));
     } catch (e) {}
@@ -99,7 +102,8 @@ export default function NotificationsPanel() {
   const deleteNotification = async (id: string) => {
     if (!user) return;
     try {
-      const res = await fetch(`/api/users/${user.id}/notifications/${id}`, { method: 'DELETE' });
+      const token = localStorage.getItem('auth:token');
+      const res = await fetch(`/api/users/${user.id}/notifications/${id}`, { method: 'DELETE', headers: token ? { Authorization: `Bearer ${token}` } : undefined });
       if (res.ok) setNotifications(prev => prev.filter(n => n.id !== id));
     } catch (e) {}
   };
