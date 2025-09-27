@@ -85,7 +85,22 @@ function iconToEmoji(Icon: any): string {
 
 export default function Achievements() {
   const { habits } = useHabits();
+  const { user } = useAuth();
   const [showAll, setShowAll] = useState(false);
+  const [userAchievements, setUserAchievements] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!user) return;
+    (async () => {
+      try {
+        const res = await fetch(`/api/users/${user.id}/achievements`);
+        if (!res.ok) return;
+        const data = await res.json();
+        setUserAchievements(data.map((d: any) => d.key));
+      } catch (e) {}
+    })();
+  }, [user]);
+
   const achievedHydration = habits.find(h => h.category === 'hydration' && h.completed >= h.target);
   const achievedExercise = habits.find(h => h.category === 'exercise' && h.completed >= h.target);
   const totalAchievements = [achievedHydration, achievedExercise].filter(Boolean).length + 10;
@@ -182,6 +197,25 @@ export default function Achievements() {
       { title: '10 hábitos activos', icon: Award, desc: 'Crea 10 hábitos en total', earned: habits.length >= 10 },
     ]);
   }, [habits, items]);
+
+  // When an achievement becomes earned and the user is logged, push it to server
+  useEffect(() => {
+    if (!user) return;
+    (async () => {
+      for (const a of allAchievements) {
+        if (!a.earned) continue;
+        const key = slugify(a.title);
+        if (userAchievements.includes(key)) continue;
+        try {
+          const res = await fetch(`/api/users/${user.id}/achievements`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ achievementKey: key, meta: { title: a.title, desc: a.desc } }) });
+          if (res.ok) {
+            setUserAchievements(prev => [...prev, key]);
+            toast({ title: 'Logro desbloqueado', description: a.title });
+          }
+        } catch (e) {}
+      }
+    })();
+  }, [allAchievements, user]);
 
   return (
     <div className="min-h-screen bg-background">
