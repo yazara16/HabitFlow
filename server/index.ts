@@ -41,5 +41,12 @@ export function createServer() {
   app.get('/api/debug/habits', listHabits);
   app.get('/api/debug/stats', dbStats);
 
+  // Notifications
+  app.get('/api/users/:userId/notifications', listNotifications);
+  app.post('/api/users/:userId/notifications', createNotification);
+  app.post('/api/users/:userId/notifications/mark_all', markAllRead);
+  app.put('/api/users/:userId/notifications/:id/read', markAsRead);
+  app.delete('/api/users/:userId/notifications/:id', deleteNotification);
+
   return app;
 }
