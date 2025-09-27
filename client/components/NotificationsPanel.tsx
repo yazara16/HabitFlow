@@ -40,58 +40,36 @@ interface Notification {
 
 export default function NotificationsPanel() {
   const navigate = useNavigate();
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: "1",
-      type: "achievement",
-      title: "¡Nuevo logro desbloqueado!",
-      message: "Has completado 7 días consecutivos de ejercicio",
-      time: "Hace 5 minutos",
-      read: false,
-      icon: Star,
-      color: "text-yellow-500 bg-yellow-500/10"
-    },
-    {
-      id: "2", 
-      type: "streak",
-      title: "¡Racha increíble!",
-      message: "Llevas 12 días seguidos meditando. ¡Sigue así!",
-      time: "Hace 2 horas",
-      read: false,
-      icon: Flame,
-      color: "text-orange-500 bg-orange-500/10"
-    },
-    {
-      id: "3",
-      type: "reminder",
-      title: "Recordatorio de hidratación",
-      message: "No olvides beber agua. Te quedan 3 vasos por completar.",
-      time: "Hace 3 horas",
-      read: true,
-      icon: Target,
-      color: "text-blue-500 bg-blue-500/10"
-    },
-    {
-      id: "4",
-      type: "milestone",
-      title: "Meta del mes alcanzada",
-      message: "Has ahorrado $200 este mes. ¡Excelente trabajo!",
-      time: "Ayer",
-      read: true,
-      icon: TrendingUp,
-      color: "text-green-500 bg-green-500/10"
-    },
-    {
-      id: "5",
-      type: "system",
-      title: "Nuevas funciones disponibles",
-      message: "Descubre las mejoras en el calendario y configuración",
-      time: "Hace 2 días",
-      read: true,
-      icon: Gift,
-      color: "text-purple-500 bg-purple-500/10"
+  const { user } = useAuth();
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+
+  useEffect(() => {
+    let mounted = true;
+    if (!user) {
+      setNotifications([]);
+      return;
     }
-  ]);
+    (async () => {
+      try {
+        const res = await fetch(`/api/users/${user.id}/notifications`);
+        if (!res.ok) return;
+        const items = await res.json();
+        if (!mounted) return;
+        // Map to local Notification shape (add icon/color based on type)
+        setNotifications(items.map((it: any) => ({
+          id: it.id,
+          type: it.type,
+          title: it.title,
+          message: it.message,
+          time: it.createdAt,
+          read: it.read,
+          icon: getTypeIcon(it.type),
+          color: getTypeColor(it.type) + ' bg-opacity-10',
+        })));
+      } catch (e) {}
+    })();
+    return () => { mounted = false; };
+  }, [user]);
 
   const [detailOpen, setDetailOpen] = useState(false);
   const [selected, setSelected] = useState<Notification | null>(null);
