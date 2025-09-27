@@ -75,6 +75,9 @@ export function createServer() {
   app.post('/api/users/:userId/devices', registerDevice);
   app.delete('/api/users/:userId/devices/:id', unregisterDevice);
 
+  // Worker (admin)
+  app.post('/api/admin/run_worker', (req, res) => { try { const { runWorker } = require('./routes/worker'); return runWorker(req, res); } catch (e) { res.status(500).json({ error: 'worker failed', details: String(e) }); } });
+
   // Habit logs
   app.get('/api/users/:userId/habits/:habitId/logs', listLogs);
   app.post('/api/users/:userId/habits/:habitId/logs', createLog);
