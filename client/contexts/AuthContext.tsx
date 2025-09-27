@@ -11,11 +11,13 @@ export interface AuthUser {
 
 interface AuthContextValue {
   user: AuthUser | null;
-  register: (data: { name: string; email: string; password: string; photoUrl?: string }) => Promise<void>;
+  register: (data: { name: string; email: string; password: string; photoUrl?: string, preferredCategories?: string[] }) => Promise<void>;
   login: (data: { email: string; password: string }) => Promise<void>;
   loginWithGoogle: () => Promise<void>;
   logout: () => void;
   updateProfile: (patch: Partial<AuthUser>) => Promise<void>;
+  registerDevice?: (payload: { platform?: string; pushToken: string }) => Promise<void>;
+  unregisterDevice?: (deviceId: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
