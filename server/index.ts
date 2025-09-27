@@ -6,6 +6,9 @@ import { registerHandler, loginHandler, googleMockHandler, getUserHandler, updat
 import { getHabitsHandler, createHabitHandler, updateHabitHandler, deleteHabitHandler } from "./routes/habits";
 import { listUsers, listHabits, dbStats } from "./routes/debug";
 import { listNotifications, createNotification, markAsRead, markAllRead, deleteNotification } from "./routes/notifications";
+import { listReminders, createReminder, updateReminder, deleteReminder } from "./routes/reminders";
+import { listCatalog, getUserAchievements, unlockAchievement, seedCatalog } from "./routes/achievements";
+import { registerDevice, unregisterDevice, listDevices } from "./routes/devices";
 import { listLogs, createLog, updateLog, deleteLog } from "./routes/habit_logs";
 import { listOverrides, createOverride, deleteOverride } from "./routes/overrides";
 import { getSettings, upsertSettings } from "./routes/settings";
@@ -50,6 +53,23 @@ export function createServer() {
   app.post('/api/users/:userId/notifications/mark_all', markAllRead);
   app.put('/api/users/:userId/notifications/:id/read', markAsRead);
   app.delete('/api/users/:userId/notifications/:id', deleteNotification);
+
+  // Reminders
+  app.get('/api/users/:userId/reminders', listReminders);
+  app.post('/api/users/:userId/reminders', createReminder);
+  app.put('/api/users/:userId/reminders/:id', updateReminder);
+  app.delete('/api/users/:userId/reminders/:id', deleteReminder);
+
+  // Achievements
+  app.get('/api/achievements', listCatalog);
+  app.post('/api/achievements/seed', seedCatalog);
+  app.get('/api/users/:userId/achievements', getUserAchievements);
+  app.post('/api/users/:userId/achievements', unlockAchievement);
+
+  // Devices
+  app.get('/api/users/:userId/devices', listDevices);
+  app.post('/api/users/:userId/devices', registerDevice);
+  app.delete('/api/users/:userId/devices/:id', unregisterDevice);
 
   // Habit logs
   app.get('/api/users/:userId/habits/:habitId/logs', listLogs);
