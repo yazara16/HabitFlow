@@ -69,7 +69,10 @@ export const registerHandler: RequestHandler = (req, res) => {
   }
 
   const user = db.prepare('SELECT id,name,email,photoUrl,createdAt FROM users WHERE id = ?').get(id);
-  return res.status(201).json(user);
+  // Sign JWT for session
+  const { signToken } = require('../lib/jwt');
+  const token = signToken({ sub: user.id, email: user.email });
+  return res.status(201).json({ user, token });
 };
 
 export const loginHandler: RequestHandler = (req, res) => {
