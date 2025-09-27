@@ -156,27 +156,27 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
       setHabits(initialHabits);
       return;
     }
-    const key = `habits:${user.id}`;
-    const raw = localStorage.getItem(key);
-    if (raw) {
+
+    // Fetch habits from server for this user
+    (async () => {
       try {
-        const parsed: Habit[] = JSON.parse(raw);
-        setHabits(parsed);
+        const res = await fetch(`/api/users/${user.id}/habits`);
+        if (!res.ok) {
+          setHabits([]);
+          return;
+        }
+        const hs: Habit[] = await res.json();
+        setHabits(hs);
       } catch (e) {
         setHabits([]);
       }
-    } else {
-      // New user: start empty
-      setHabits([]);
-    }
+    })();
   }, [user]);
 
-  // Persist habits to localStorage per user
+  // Persist to server on changes (debounced could be better but keep simple)
   useEffect(() => {
-    const key = user ? `habits:${user.id}` : 'habits:guest';
-    try {
-      localStorage.setItem(key, JSON.stringify(habits));
-    } catch (e) {}
+    if (!user) return;
+    // We keep client state as source of truth and sync on operations (add/update/remove)
   }, [habits, user]);
   const [perDayHidden, setPerDayHidden] = useState<Record<string, Set<string>>>({});
   const [perDayOverrides, setPerDayOverrides] = useState<Record<string, Record<string, Partial<Habit>>>>({});
