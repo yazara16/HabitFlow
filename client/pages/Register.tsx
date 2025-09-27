@@ -33,9 +33,9 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
 
   const { register: registerUser, loginWithGoogle } = useAuth();
-  const [photoDataUrl, setPhotoDataUrl] = useState<string | undefined>(
-    undefined,
-  );
+  const [photoDataUrl, setPhotoDataUrl] = useState<string | undefined>(undefined);
+  const [preferred, setPreferred] = useState<string[]>([]);
+  const togglePreferred = (key: string) => setPreferred(prev => prev.includes(key) ? prev.filter(p => p !== key) : [...prev, key]);
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
