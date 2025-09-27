@@ -5,6 +5,7 @@ import { handleDemo } from "./routes/demo";
 import { registerHandler, loginHandler, googleMockHandler, getUserHandler, updateUserHandler } from "./routes/auth";
 import { getHabitsHandler, createHabitHandler, updateHabitHandler, deleteHabitHandler } from "./routes/habits";
 import { listUsers, listHabits, dbStats } from "./routes/debug";
+import { listNotifications, createNotification, markAsRead, markAllRead, deleteNotification } from "./routes/notifications";
 
 export function createServer() {
   const app = express();
