@@ -47,7 +47,7 @@ export function createServer() {
   // Habits
   app.get('/api/users/:userId/habits', requireAuth, getHabitsHandler);
   app.post('/api/users/:userId/habits', requireAuth, createHabitHandler);
-  app.put('/api/users/:userId/habits/:habitId', updateHabitHandler);
+  app.put('/api/users/:userId/habits/:habitId', requireAuth, updateHabitHandler);
   app.delete('/api/users/:userId/habits/:habitId', deleteHabitHandler);
 
   // Debug (dev-only)
