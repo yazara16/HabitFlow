@@ -75,9 +75,9 @@ export function createServer() {
   app.post('/api/users/:userId/achievements', requireAuth, unlockAchievement);
 
   // Devices
-  app.get('/api/users/:userId/devices', listDevices);
-  app.post('/api/users/:userId/devices', registerDevice);
-  app.delete('/api/users/:userId/devices/:id', unregisterDevice);
+  app.get('/api/users/:userId/devices', requireAuth, listDevices);
+  app.post('/api/users/:userId/devices', requireAuth, registerDevice);
+  app.delete('/api/users/:userId/devices/:id', requireAuth, unregisterDevice);
 
   // Admin middleware (simple token check)
   const adminToken = process.env.ADMIN_TOKEN || 'CHANGE_ME_ADMIN_TOKEN';
