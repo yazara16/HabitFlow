@@ -103,6 +103,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(updated);
   }, [user]);
 
+  const registerDevice = useCallback(async (payload: { platform?: string; pushToken: string }) => {
+    if (!user) throw new Error('No user');
+    await fetch(`/api/users/${user.id}/devices`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+  }, [user]);
+
+  const unregisterDevice = useCallback(async (deviceId: string) => {
+    if (!user) throw new Error('No user');
+    await fetch(`/api/users/${user.id}/devices/${deviceId}`, { method: 'DELETE' });
+  }, [user]);
+
   const value = useMemo<AuthContextValue>(() => ({ user, register, login, loginWithGoogle, logout, updateProfile }), [user, register, login, loginWithGoogle, logout, updateProfile]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
