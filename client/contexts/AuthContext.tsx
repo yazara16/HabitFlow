@@ -90,16 +90,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const updateProfile = useCallback(async (patch: Partial<AuthUser>) => {
-    setUser(prev => {
-      if (!prev) return prev;
-      const updated = { ...prev, ...patch } as AuthUser;
-      const usersRaw = localStorage.getItem(USERS_KEY);
-      const users: Record<string, AuthUser> = usersRaw ? JSON.parse(usersRaw) : {};
-      users[updated.email] = updated;
-      localStorage.setItem(USERS_KEY, JSON.stringify(users));
-      return updated;
+    if (!user) throw new Error('No user');
+    const res = await fetch(`/api/users/${user.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(patch),
     });
-  }, []);
+    if (!res.ok) throw new Error('Failed to update');
+    const updated: AuthUser = await res.json();
+    setUser(updated);
+  }, [user]);
 
   const value = useMemo<AuthContextValue>(() => ({ user, register, login, loginWithGoogle, logout, updateProfile }), [user, register, login, loginWithGoogle, logout, updateProfile]);
 
