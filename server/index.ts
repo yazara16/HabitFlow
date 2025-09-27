@@ -9,6 +9,10 @@ import { listNotifications, createNotification, markAsRead, markAllRead, deleteN
 import { listReminders, createReminder, updateReminder, deleteReminder } from "./routes/reminders";
 import { listCatalog, getUserAchievements, unlockAchievement, seedCatalog } from "./routes/achievements";
 import { registerDevice, unregisterDevice, listDevices } from "./routes/devices";
+import { listNotifications, createNotification, markAsRead, markAllRead, deleteNotification } from "./routes/notifications";
+import { listReminders, createReminder, updateReminder, deleteReminder } from "./routes/reminders";
+import { listCatalog, getUserAchievements, unlockAchievement, seedCatalog } from "./routes/achievements";
+import { registerDevice, unregisterDevice, listDevices } from "./routes/devices";
 import { listLogs, createLog, updateLog, deleteLog } from "./routes/habit_logs";
 import { listOverrides, createOverride, deleteOverride } from "./routes/overrides";
 import { getSettings, upsertSettings } from "./routes/settings";
