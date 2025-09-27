@@ -53,7 +53,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(u);
   };
 
-  const register = useCallback(async (data: { name: string; email: string; password: string; photoUrl?: string }) => {
+  const register = useCallback(async (data: { name: string; email: string; password: string; photoUrl?: string, preferredCategories?: string[] }) => {
     const res = await fetch('/api/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -63,8 +63,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const body = await res.json().catch(() => ({}));
       throw new Error(body?.message || 'Error registering');
     }
-    const u: AuthUser = await res.json();
+    const body = await res.json();
+    const u: AuthUser = body.user || body;
+    const token: string | undefined = body.token;
     persistUser(u);
+    if (token) {
+      localStorage.setItem('auth:token', token);
+    }
   }, []);
 
   const login = useCallback(async (data: { email: string; password: string }) => {
@@ -77,15 +82,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const body = await res.json().catch(() => ({}));
       throw new Error(body?.message || 'Credenciales inválidas');
     }
-    const u: AuthUser = await res.json();
+    const body = await res.json();
+    const u: AuthUser = body.user || body;
+    const token: string | undefined = body.token;
     persistUser(u);
+    if (token) localStorage.setItem('auth:token', token);
   }, []);
 
   const loginWithGoogle = useCallback(async () => {
-    const res = await fetch('/api/auth/google');
-    if (!res.ok) throw new Error('No se pudo iniciar con Google');
-    const u: AuthUser = await res.json();
-    persistUser(u);
+    // Trigger Google OAuth redirect; frontend should handle callback token on return
+    window.location.href = '/api/auth/google';
   }, []);
 
   const logout = useCallback(() => {
