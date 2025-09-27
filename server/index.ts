@@ -35,5 +35,10 @@ export function createServer() {
   app.put('/api/users/:userId/habits/:habitId', updateHabitHandler);
   app.delete('/api/users/:userId/habits/:habitId', deleteHabitHandler);
 
+  // Debug (dev-only)
+  app.get('/api/debug/users', listUsers);
+  app.get('/api/debug/habits', listHabits);
+  app.get('/api/debug/stats', dbStats);
+
   return app;
 }
