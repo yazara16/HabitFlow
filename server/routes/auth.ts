@@ -17,6 +17,52 @@ export const registerHandler: RequestHandler = (req, res) => {
   db.prepare('INSERT INTO users (id,name,email,password,photoUrl,createdAt) VALUES (?,?,?,?,?,?)')
     .run(id, name, email, hashed, photoUrl || null, createdAt);
 
+  // Seed default habits for new user
+  const defaultHabits = [
+    {
+      name: 'Correr 30 minutos',
+      description: 'Ejercicio cardiovascular matutino',
+      category: 'exercise',
+      icon: 'Dumbbell',
+      color: 'text-red-500 bg-red-500/10',
+      target: 1,
+      unit: 'sesión',
+      frequency: 'daily',
+      reminderTime: '07:00',
+      reminderEnabled: 1,
+    },
+    {
+      name: 'Beber 2 litros de agua',
+      description: 'Mantener hidratación óptima',
+      category: 'hydration',
+      icon: 'Droplets',
+      color: 'text-blue-500 bg-blue-500/10',
+      target: 8,
+      unit: 'vasos',
+      frequency: 'daily',
+      reminderTime: '09:00',
+      reminderEnabled: 1,
+    },
+    {
+      name: 'Ahorrar $50 semanales',
+      description: 'Meta de ahorro para emergencias',
+      category: 'finance',
+      icon: 'DollarSign',
+      color: 'text-green-500 bg-green-500/10',
+      target: 50,
+      unit: 'MXN',
+      frequency: 'weekly',
+      reminderEnabled: 0,
+    },
+  ];
+
+  const insertStmt = db.prepare(`INSERT INTO habits (id,userId,name,description,category,color,icon,target,completed,streak,frequency,monthlyDays,monthlyMonths,reminderTime,reminderEnabled,createdAt,lastCompleted) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`);
+  const now = new Date().toISOString();
+  for (const h of defaultHabits) {
+    const hid = uuidv4();
+    insertStmt.run(hid, id, h.name, h.description || null, h.category || null, h.color || null, h.icon || null, h.target || 0, 0, 0, h.frequency || null, null, null, h.reminderTime || null, h.reminderEnabled ? 1 : 0, now, null);
+  }
+
   const user = db.prepare('SELECT id,name,email,photoUrl,createdAt FROM users WHERE id = ?').get(id);
   return res.status(201).json(user);
 };
