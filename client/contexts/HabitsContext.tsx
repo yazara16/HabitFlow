@@ -160,7 +160,8 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
     // Fetch habits from server for this user
     (async () => {
       try {
-        const res = await fetch(`/api/users/${user.id}/habits`);
+        const token = localStorage.getItem('auth:token');
+        const res = await fetch(`/api/users/${user.id}/habits`, { headers: token ? { Authorization: `Bearer ${token}` } : undefined });
         if (!res.ok) {
           setHabits([]);
           return;
@@ -227,7 +228,8 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
 
     if (!user) return;
     try {
-      await fetch(`/api/users/${user.id}/habits/${id}/overrides`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ date: iso, hidden: true }) });
+      const token = localStorage.getItem('auth:token');
+      await fetch(`/api/users/${user.id}/habits/${id}/overrides`, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify({ date: iso, hidden: true }) });
     } catch (e) {}
   };
 
@@ -243,7 +245,8 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
 
     if (!user) return;
     try {
-      await fetch(`/api/users/${user.id}/habits/${id}/overrides`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ date: iso, patch }) });
+      const token = localStorage.getItem('auth:token');
+      await fetch(`/api/users/${user.id}/habits/${id}/overrides`, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify({ date: iso, patch }) });
       // If completion info present in patch, create or update a habit log for that date
       if (typeof patch.completed !== 'undefined' || typeof patch.completedToday !== 'undefined' || typeof patch.lastCompleted !== 'undefined') {
         const completedAmount = (patch.completed as any) ?? undefined;
@@ -252,7 +255,8 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
         const target = currentHabit?.target ?? 0;
         const completedBool = (typeof patch.completed !== 'undefined') ? (patch.completed >= target ? 1 : 0) : (patch.completedToday ? 1 : 0);
         // Try to create a log for that date
-        await fetch(`/api/users/${user.id}/habits/${id}/logs`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ date: iso, completedAmount: completedAmount ?? 0, completedBoolean: completedBool }) });
+        const token = localStorage.getItem('auth:token');
+        await fetch(`/api/users/${user.id}/habits/${id}/logs`, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify({ date: iso, completedAmount: completedAmount ?? 0, completedBoolean: completedBool }) });
       }
     } catch (e) {}
   };
@@ -278,20 +282,23 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
         reminderEnabled: habit.reminderEnabled ?? false,
         createdAt,
       };
-      const res = await fetch(`/api/users/${user.id}/habits`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      const token = localStorage.getItem('auth:token');
+      const res = await fetch(`/api/users/${user.id}/habits`, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify(body) });
       if (!res.ok) throw new Error('Failed to create habit');
       const created: Habit = await res.json();
       setHabits(prev => [...prev, created]);
       // create reminder if needed
       if (created.reminderEnabled && created.reminderTime) {
         try {
-          await fetch(`/api/users/${user.id}/reminders`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ habitId: created.id, timeOfDay: created.reminderTime, enabled: true, recurrence: created.frequency }) });
+          const token = localStorage.getItem('auth:token');
+          await fetch(`/api/users/${user.id}/reminders`, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify({ habitId: created.id, timeOfDay: created.reminderTime, enabled: true, recurrence: created.frequency }) });
         } catch (e) {}
       }
     },
     updateHabit: async (id, patch) => {
       if (!user) throw new Error('Not authenticated');
-      const res = await fetch(`/api/users/${user.id}/habits/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(patch) });
+      const token = localStorage.getItem('auth:token');
+      const res = await fetch(`/api/users/${user.id}/habits/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify(patch) });
       if (!res.ok) throw new Error('Failed to update habit');
       const updated: Habit = await res.json();
       setHabits(prev => prev.map(h => h.id === id ? updated : h));
@@ -300,13 +307,15 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
       try {
         if (typeof patch.completed !== 'undefined' || typeof patch.completedToday !== 'undefined' || typeof patch.lastCompleted !== 'undefined') {
           const today = new Date().toISOString().split('T')[0];
-          await fetch(`/api/users/${user.id}/habits/${id}/logs`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ date: patch.lastCompleted || today, completedAmount: updated.completed, completedBoolean: updated.completed >= (updated.target || 0) }) });
+          const token = localStorage.getItem('auth:token');
+          await fetch(`/api/users/${user.id}/habits/${id}/logs`, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify({ date: patch.lastCompleted || today, completedAmount: updated.completed, completedBoolean: updated.completed >= (updated.target || 0) }) });
         }
       } catch (e) {}
 
       // Sync reminders: if reminderEnabled true, create reminder; otherwise delete existing reminders for this habit
       try {
-        const resList = await fetch(`/api/users/${user.id}/reminders`);
+        const token = localStorage.getItem('auth:token');
+        const resList = await fetch(`/api/users/${user.id}/reminders`, { headers: token ? { Authorization: `Bearer ${token}` } : undefined });
         if (resList.ok) {
           const rems = await resList.json();
           const existing = rems.find((r: any) => r.habitId === id);
@@ -317,14 +326,15 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
               await fetch(`/api/users/${user.id}/reminders`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ habitId: id, timeOfDay: updated.reminderTime, enabled: true, recurrence: updated.frequency }) });
             }
           } else {
-            if (existing) await fetch(`/api/users/${user.id}/reminders/${existing.id}`, { method: 'DELETE' });
+            if (existing) await fetch(`/api/users/${user.id}/reminders/${existing.id}`, { method: 'DELETE', headers: token ? { Authorization: `Bearer ${token}` } : undefined });
           }
         }
       } catch (e) {}
     },
     removeHabit: async (id) => {
       if (!user) throw new Error('Not authenticated');
-      const res = await fetch(`/api/users/${user.id}/habits/${id}`, { method: 'DELETE' });
+      const token = localStorage.getItem('auth:token');
+      const res = await fetch(`/api/users/${user.id}/habits/${id}`, { method: 'DELETE', headers: token ? { Authorization: `Bearer ${token}` } : undefined });
       if (!res.ok && res.status !== 204) throw new Error('Failed to delete');
       setHabits(prev => prev.filter(h => h.id !== id));
       setPerDayHidden(prev => {
