@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
 import { registerHandler, loginHandler, googleMockHandler, getUserHandler, updateUserHandler } from "./routes/auth";
+import { requireAuth } from './middleware/auth';
 import { getHabitsHandler, createHabitHandler, updateHabitHandler, deleteHabitHandler } from "./routes/habits";
 import { listUsers, listHabits, dbStats } from "./routes/debug";
 import { listNotifications, createNotification, markAsRead, markAllRead, deleteNotification } from "./routes/notifications";
@@ -36,9 +37,12 @@ export function createServer() {
   // Auth
   app.post('/api/register', registerHandler);
   app.post('/api/login', loginHandler);
-  app.post('/api/auth/google', googleMockHandler);
+  // OAuth (Google) - redirect to provider
+  app.get('/api/auth/google', (req,res)=>{ try { const { googleRedirect } = require('./routes/google_oauth'); return googleRedirect(req,res); } catch(e){ return res.status(500).json({error:String(e)}); } });
+  app.get('/api/auth/google/callback', (req,res)=>{ try { const { googleCallback } = require('./routes/google_oauth'); return googleCallback(req,res); } catch(e){ return res.status(500).json({error:String(e)}); } });
+  app.get('/api/me', requireAuth, (req,res)=>{ try { const uid = req.authUserId; const row = require('./db').default.prepare('SELECT id,name,email,photoUrl,createdAt FROM users WHERE id = ?').get(uid); return res.json(row); } catch(e){ return res.status(500).json({error:String(e)}); } });
   app.get('/api/users/:id', getUserHandler);
-  app.put('/api/users/:id', updateUserHandler);
+  app.put('/api/users/:id', requireAuth, updateUserHandler);
 
   // Habits
   app.get('/api/users/:userId/habits', getHabitsHandler);
