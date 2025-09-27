@@ -2,11 +2,12 @@ import Navigation from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Award, Star, Flame, Target, Droplets, Dumbbell, Share2, Copy, Book, BookOpen, DollarSign, ShoppingCart } from "lucide-react";
 import { useHabits } from "@/contexts/HabitsContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 function slugify(s: string) {
   return s.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
