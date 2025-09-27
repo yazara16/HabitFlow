@@ -126,7 +126,11 @@ export default function Settings() {
   };
 
   const saveSettings = async () => {
+    if (!user) return;
     await updateProfile({ name: settings.name, email: settings.email });
+    try {
+      await fetch(`/api/users/${user.id}/settings`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(settings) });
+    } catch (e) {}
     setHasUnsavedChanges(false);
   };
 
