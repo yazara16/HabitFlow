@@ -303,6 +303,24 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
           await fetch(`/api/users/${user.id}/habits/${id}/logs`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ date: patch.lastCompleted || today, completedAmount: updated.completed, completedBoolean: updated.completed >= (updated.target || 0) }) });
         }
       } catch (e) {}
+
+      // Sync reminders: if reminderEnabled true, create reminder; otherwise delete existing reminders for this habit
+      try {
+        const resList = await fetch(`/api/users/${user.id}/reminders`);
+        if (resList.ok) {
+          const rems = await resList.json();
+          const existing = rems.find((r: any) => r.habitId === id);
+          if (updated.reminderEnabled) {
+            if (existing) {
+              await fetch(`/api/users/${user.id}/reminders/${existing.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ timeOfDay: updated.reminderTime, enabled: true, recurrence: updated.frequency }) });
+            } else {
+              await fetch(`/api/users/${user.id}/reminders`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ habitId: id, timeOfDay: updated.reminderTime, enabled: true, recurrence: updated.frequency }) });
+            }
+          } else {
+            if (existing) await fetch(`/api/users/${user.id}/reminders/${existing.id}`, { method: 'DELETE' });
+          }
+        }
+      } catch (e) {}
     },
     removeHabit: async (id) => {
       if (!user) throw new Error('Not authenticated');
