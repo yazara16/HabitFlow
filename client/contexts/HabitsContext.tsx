@@ -282,6 +282,12 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
       if (!res.ok) throw new Error('Failed to create habit');
       const created: Habit = await res.json();
       setHabits(prev => [...prev, created]);
+      // create reminder if needed
+      if (created.reminderEnabled && created.reminderTime) {
+        try {
+          await fetch(`/api/users/${user.id}/reminders`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ habitId: created.id, timeOfDay: created.reminderTime, enabled: true, recurrence: created.frequency }) });
+        } catch (e) {}
+      }
     },
     updateHabit: async (id, patch) => {
       if (!user) throw new Error('Not authenticated');
