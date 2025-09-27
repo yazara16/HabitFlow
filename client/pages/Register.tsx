@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { FormEvent, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function Register() {
   const navigate = useNavigate();
