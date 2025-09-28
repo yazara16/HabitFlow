@@ -23,10 +23,11 @@
     "migrate:pg": "tsx server/scripts/migrate-to-postgres.ts"
   },
   "dependencies": {
+    "better-sqlite3": "^12.4.1",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
-    "zod": "^3.25.76",
-    "pg": "^8.10.0"
+    "pg": "^8.10.0",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@hookform/resolvers": "^5.2.1",
@@ -70,6 +71,7 @@
     "@types/three": "^0.176.0",
     "@vitejs/plugin-react-swc": "^4.0.0",
     "autoprefixer": "^10.4.21",
+    "bcryptjs": "^2.4.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
@@ -79,6 +81,7 @@
     "framer-motion": "^12.23.12",
     "globals": "^16.3.0",
     "input-otp": "^1.4.2",
+    "jsonwebtoken": "^9.0.0",
     "lucide-react": "^0.539.0",
     "next-themes": "^0.4.6",
     "postcss": "^8.5.6",
@@ -91,10 +94,6 @@
     "react-router-dom": "^6.30.1",
     "recharts": "^2.12.7",
     "serverless-http": "^3.2.0",
-    "better-sqlite3": "^8.4.0",
-    "bcryptjs": "^2.4.3",
-    "uuid": "^9.0.0",
-    "jsonwebtoken": "^9.0.0",
     "sonner": "^1.7.4",
     "tailwind-merge": "^2.6.0",
     "tailwindcss": "^3.4.17",
@@ -102,6 +101,7 @@
     "three": "^0.176.0",
     "tsx": "^4.20.3",
     "typescript": "^5.9.2",
+    "uuid": "^9.0.0",
     "vaul": "^1.1.2",
     "vite": "^7.1.2",
     "vitest": "^3.2.4"
