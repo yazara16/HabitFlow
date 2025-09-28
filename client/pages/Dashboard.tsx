@@ -48,21 +48,27 @@ export default function Dashboard() {
   const userName = user?.name ?? "";
   const navigate = useNavigate();
 
+  // Fetch dashboard stats via React Query
+  const { data: serverStats, isLoading: statsLoading, isError: statsError, error: statsErrorObj } = useQuery(
+    ['dashboard', user?.id],
+    async () => {
+      if (!user) throw new Error('Not authenticated');
+      const token = localStorage.getItem('auth:token');
+      const res = await fetch(`/api/users/${user.id}/dashboard`, { headers: token ? { Authorization: `Bearer ${token}` } : undefined });
+      if (!res.ok) {
+        const text = await res.text().catch(() => '');
+        throw new Error(text || 'Failed to load dashboard');
+      }
+      return res.json();
+    },
+    { enabled: !!user, staleTime: 60 * 1000, cacheTime: 5 * 60 * 1000 },
+  );
+
   useEffect(() => {
-    let mounted = true;
-    (async () => {
-      if (!user) return;
-      try {
-        const token = localStorage.getItem('auth:token');
-        const res = await fetch(`/api/users/${user.id}/dashboard`, { headers: token ? { Authorization: `Bearer ${token}` } : undefined });
-        if (!res.ok) return;
-        const data = await res.json();
-        if (!mounted) return;
-        setServerStats({ totalHabits: data.totalHabits || 0, completedToday: data.completedToday || 0, maxStreak: data.maxStreak || 0, achievementsCount: data.achievementsCount || 0, weekCompleted: data.weekCompleted || 0, categoryCounts: data.categoryCounts || null });
-      } catch (e) {}
-    })();
-    return () => { mounted = false; };
-  }, [user]);
+    if (statsError && statsErrorObj) {
+      try { toast({ title: 'Error cargando tablero', description: String((statsErrorObj as any).message || statsErrorObj) }); } catch (e) {}
+    }
+  }, [statsError, statsErrorObj]);
 
   const today = new Date().toLocaleDateString("es-ES", {
     weekday: "long",
@@ -70,8 +76,6 @@ export default function Dashboard() {
     month: "long",
     day: "numeric",
   });
-
-  const [serverStats, setServerStats] = useState<{ totalHabits: number; completedToday: number; maxStreak: number; achievementsCount: number; weekCompleted: number; categoryCounts: Record<string,number> | null; } | null>(null);
 
   const completedHabitsToday = serverStats?.completedToday ?? habits.filter((h) => h.completedToday).length;
   const totalHabits = serverStats?.totalHabits ?? (habits.length || 1);
