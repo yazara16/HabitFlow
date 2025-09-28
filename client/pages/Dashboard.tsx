@@ -47,6 +47,22 @@ export default function Dashboard() {
   const userName = user?.name ?? "";
   const navigate = useNavigate();
 
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      if (!user) return;
+      try {
+        const token = localStorage.getItem('auth:token');
+        const res = await fetch(`/api/users/${user.id}/dashboard`, { headers: token ? { Authorization: `Bearer ${token}` } : undefined });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!mounted) return;
+        setServerStats({ totalHabits: data.totalHabits || 0, completedToday: data.completedToday || 0, maxStreak: data.maxStreak || 0, achievementsCount: data.achievementsCount || 0, weekCompleted: data.weekCompleted || 0, categoryCounts: data.categoryCounts || null });
+      } catch (e) {}
+    })();
+    return () => { mounted = false; };
+  }, [user]);
+
   const today = new Date().toLocaleDateString("es-ES", {
     weekday: "long",
     year: "numeric",
