@@ -1,3 +1,3 @@
-// db loader: keep existing sqlite-based db implementation as default
-const db = require("./db.sqlite").default;
+// server/db.ts
+import db from './db.sqlite';
 export default db;
