@@ -33,35 +33,44 @@ export default function NotificationsPage() {
   const [items, setItems] = useState<Notification[]>([]);
   const unread = useMemo(() => items.filter(i => !i.read).length, [items]);
 
+  const queryClient = useQueryClient();
+  const { data: dataNotifications, isLoading: notifsLoading } = useQuery(
+    ['notifications', user?.id],
+    async () => {
+      if (!user) return [] as any[];
+      const token = localStorage.getItem('auth:token');
+      const res = await fetch(`/api/users/${user.id}/notifications`, { headers: token ? { Authorization: `Bearer ${token}` } : undefined });
+      if (!res.ok) throw new Error('Failed to load notifications');
+      return await res.json();
+    },
+    { enabled: !!user }
+  );
+
   useEffect(() => {
-    let mounted = true;
-    if (!user) { setItems([]); return; }
-    (async () => {
-      try {
-        const token = localStorage.getItem('auth:token');
-        const res = await fetch(`/api/users/${user.id}/notifications`, { headers: token ? { Authorization: `Bearer ${token}` } : undefined });
-        if (!res.ok) return;
-        const data = await res.json();
-        if (!mounted) return;
-        setItems(data.map((it: any) => ({
-          id: it.id,
-          type: it.type,
-          title: it.title,
-          message: it.message,
-          time: it.createdAt,
-          read: it.read,
-          icon: (it.type === 'achievement' ? Star : it.type === 'streak' ? Flame : it.type === 'reminder' ? Target : it.type === 'milestone' ? TrendingUp : Gift),
-          color: it.type === 'achievement' ? 'text-yellow-500 bg-yellow-500/10' : it.type === 'streak' ? 'text-orange-500 bg-orange-500/10' : it.type === 'reminder' ? 'text-blue-500 bg-blue-500/10' : it.type === 'milestone' ? 'text-green-500 bg-green-500/10' : 'text-purple-500 bg-purple-500/10'
-        })));
-      } catch (e) {}
-    })();
-    return () => { mounted = false; };
-  }, [user]);
+    if (!dataNotifications) { setItems([]); return; }
+    setItems(dataNotifications.map((it: any) => ({
+      id: it.id,
+      type: it.type,
+      title: it.title,
+      message: it.message,
+      time: it.createdAt,
+      read: it.read,
+      icon: (it.type === 'achievement' ? Star : it.type === 'streak' ? Flame : it.type === 'reminder' ? Target : it.type === 'milestone' ? TrendingUp : Gift),
+      color: it.type === 'achievement' ? 'text-yellow-500 bg-yellow-500/10' : it.type === 'streak' ? 'text-orange-500 bg-orange-500/10' : it.type === 'reminder' ? 'text-blue-500 bg-blue-500/10' : it.type === 'milestone' ? 'text-green-500 bg-green-500/10' : 'text-purple-500 bg-purple-500/10'
+    })));
+  }, [dataNotifications]);
+
+  const markAllMutation = useMutation(async () => {
+    if (!user) throw new Error('Not authenticated');
+    const token = localStorage.getItem('auth:token');
+    const res = await fetch(`/api/users/${user.id}/notifications/mark_all`, { method: 'POST', headers: token ? { Authorization: `Bearer ${token}` } : undefined });
+    if (!res.ok) throw new Error('Failed to mark all');
+    return true;
+  }, { onSuccess: () => queryClient.invalidateQueries(['notifications', user?.id]) });
 
   const markAll = async () => {
     if (!user) return;
-    await fetch(`/api/users/${user.id}/notifications/mark_all`, { method: 'POST' });
-    setItems(prev => prev.map(i => ({ ...i, read: true })));
+    try { await markAllMutation.mutateAsync(); } catch (e) {}
   };
   const getTarget = (n: Notification) => (
     n.type === "reminder" ? "/today" :
