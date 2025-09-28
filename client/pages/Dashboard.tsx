@@ -333,13 +333,13 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent className="space-y-3">
                 {[
-                  { name: "Ejercicio", icon: Dumbbell, count: habits.filter((h) => h.category === "exercise").length, color: "text-red-500" },
-                  { name: "Hidratación", icon: Droplets, count: habits.filter((h) => h.category === "hydration").length, color: "text-blue-500" },
-                  { name: "Finanzas", icon: DollarSign, count: habits.filter((h) => h.category === "finance").length, color: "text-green-500" },
-                  { name: "Compras", icon: ShoppingCart, count: habits.filter((h) => h.category === "shopping").length, color: "text-orange-500" },
-                  { name: "Lectura", icon: Book, count: habits.filter((h) => h.category === "reading").length, color: "text-indigo-600" },
-                  { name: "Estudio", icon: BookOpen, count: habits.filter((h) => h.category === "study").length, color: "text-cyan-600" },
-                  { name: "Personal", icon: Star, count: habits.filter((h) => h.category === "custom").length, color: "text-purple-500" },
+                  { key: 'exercise', name: "Ejercicio", icon: Dumbbell, count: serverStats?.categoryCounts?.exercise ?? habits.filter((h) => h.category === "exercise").length, color: "text-red-500" },
+                  { key: 'hydration', name: "Hidratación", icon: Droplets, count: serverStats?.categoryCounts?.hydration ?? habits.filter((h) => h.category === "hydration").length, color: "text-blue-500" },
+                  { key: 'finance', name: "Finanzas", icon: DollarSign, count: serverStats?.categoryCounts?.finance ?? habits.filter((h) => h.category === "finance").length, color: "text-green-500" },
+                  { key: 'shopping', name: "Compras", icon: ShoppingCart, count: serverStats?.categoryCounts?.shopping ?? habits.filter((h) => h.category === "shopping").length, color: "text-orange-500" },
+                  { key: 'reading', name: "Lectura", icon: Book, count: serverStats?.categoryCounts?.reading ?? habits.filter((h) => h.category === "reading").length, color: "text-indigo-600" },
+                  { key: 'study', name: "Estudio", icon: BookOpen, count: serverStats?.categoryCounts?.study ?? habits.filter((h) => h.category === "study").length, color: "text-cyan-600" },
+                  { key: 'custom', name: "Personal", icon: Star, count: serverStats?.categoryCounts?.custom ?? habits.filter((h) => h.category === "custom").length, color: "text-purple-500" },
                 ].map((category, index) => (
                   <div key={index} className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
@@ -347,7 +347,7 @@ export default function Dashboard() {
                       <span className="text-sm font-medium">{category.name}</span>
                     </div>
                     <Badge variant="secondary" className="text-xs">
-                      {category.count}
+                      {statsLoading ? <span className="inline-block w-6 h-4 bg-muted/30 rounded animate-pulse" /> : category.count}
                     </Badge>
                   </div>
                 ))}
