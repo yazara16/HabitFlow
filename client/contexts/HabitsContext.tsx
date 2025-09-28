@@ -151,35 +151,55 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
   const [habits, setHabits] = useState<Habit[]>(initialHabits);
   const { user } = useAuth();
 
-  // Load habits when user changes. Each user has their own stored habits under key `habits:{userId}`
+  const queryClient = useQueryClient();
+
+  // Fetch habits for the current user via React Query
+  const { data: fetchedHabits, isLoading: habitsLoading, isError: habitsError } = useQuery(
+    ['habits', user?.id],
+    async () => {
+      if (!user) return [] as Habit[];
+      const token = localStorage.getItem('auth:token');
+      const res = await fetch(`/api/users/${user.id}/habits`, { headers: token ? { Authorization: `Bearer ${token}` } : undefined });
+      if (!res.ok) throw new Error('Failed to load habits');
+      return (await res.json()) as Habit[];
+    },
+    { enabled: !!user, staleTime: 30 * 1000 }
+  );
+
+  // Replace local state when fetched
   useEffect(() => {
     if (!user) {
       setHabits(initialHabits);
       return;
     }
+    if (Array.isArray(fetchedHabits)) setHabits(fetchedHabits);
+    if (habitsError) setHabits([]);
+  }, [fetchedHabits, user, habitsError]);
 
-    // Fetch habits from server for this user
-    (async () => {
-      try {
-        const token = localStorage.getItem('auth:token');
-        const res = await fetch(`/api/users/${user.id}/habits`, { headers: token ? { Authorization: `Bearer ${token}` } : undefined });
-        if (!res.ok) {
-          setHabits([]);
-          return;
-        }
-        const hs: Habit[] = await res.json();
-        setHabits(hs);
-      } catch (e) {
-        setHabits([]);
-      }
-    })();
-  }, [user]);
+  // Mutations: create, update, delete
+  const createMutation = useMutation(async (body: any) => {
+    if (!user) throw new Error('Not authenticated');
+    const token = localStorage.getItem('auth:token');
+    const res = await fetch(`/api/users/${user.id}/habits`, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify(body) });
+    if (!res.ok) throw new Error('Failed to create habit');
+    return await res.json();
+  }, { onSuccess: (created: Habit) => { queryClient.invalidateQueries(['habits', user?.id]); } });
 
-  // Persist to server on changes (debounced could be better but keep simple)
-  useEffect(() => {
-    if (!user) return;
-    // We keep client state as source of truth and sync on operations (add/update/remove)
-  }, [habits, user]);
+  const updateMutation = useMutation(async ({ id, patch }: { id: string; patch: Partial<Habit> }) => {
+    if (!user) throw new Error('Not authenticated');
+    const token = localStorage.getItem('auth:token');
+    const res = await fetch(`/api/users/${user.id}/habits/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify(patch) });
+    if (!res.ok) throw new Error('Failed to update habit');
+    return await res.json();
+  }, { onSuccess: (_updated: Habit) => { queryClient.invalidateQueries(['habits', user?.id]); } });
+
+  const deleteMutation = useMutation(async (id: string) => {
+    if (!user) throw new Error('Not authenticated');
+    const token = localStorage.getItem('auth:token');
+    const res = await fetch(`/api/users/${user.id}/habits/${id}`, { method: 'DELETE', headers: token ? { Authorization: `Bearer ${token}` } : undefined });
+    if (!res.ok && res.status !== 204) throw new Error('Failed to delete');
+    return id;
+  }, { onSuccess: (_id) => { queryClient.invalidateQueries(['habits', user?.id]); } });
   const [perDayHidden, setPerDayHidden] = useState<Record<string, Set<string>>>({});
   const [perDayOverrides, setPerDayOverrides] = useState<Record<string, Record<string, Partial<Habit>>>>({});
 
