@@ -170,7 +170,7 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Racha Actual</p>
-                  <p className="text-2xl font-bold text-foreground">7 días</p>
+                  <p className="text-2xl font-bold text-foreground">{statsLoading ? <span className="inline-block w-20 h-6 bg-muted/30 rounded animate-pulse" /> : `${serverStats?.maxStreak ?? 0} días`}</p>
                 </div>
                 <div className="p-3 bg-orange-500/10 rounded-lg">
                   <Flame className="h-6 w-6 text-orange-500" />
@@ -178,7 +178,7 @@ export default function Dashboard() {
               </div>
               <div className="flex items-center mt-4 text-success">
                 <ArrowUp className="h-4 w-4 mr-1" />
-                <span className="text-sm font-medium">+2 desde ayer</span>
+                <span className="text-sm font-medium">{statsLoading ? <span className="inline-block w-14 h-4 bg-muted/30 rounded animate-pulse" /> : '+2 desde ayer'}</span>
               </div>
             </CardContent>
           </Card>
