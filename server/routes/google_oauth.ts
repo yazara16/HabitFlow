@@ -3,24 +3,36 @@ import fetch from 'node-fetch';
 import db from '../db';
 import { v4 as uuidv4 } from 'uuid';
 
-// NOTE: Set these environment variables in your .env or deployment settings:
-// - GOOGLE_CLIENT_ID
-// - GOOGLE_CLIENT_SECRET
-// - GOOGLE_REDIRECT_URI   (e.g. https://yourapp.com/api/auth/google/callback)
-// The values above should be provided by you in production.
+/*
+  Google OAuth2 configuration
+  Provide the following environment variables in your deployment or .env file:
+  - GOOGLE_CLIENT_ID:     The OAuth client ID obtained from Google Cloud Console
+  - GOOGLE_CLIENT_SECRET: The OAuth client secret from Google Cloud Console
+  - GOOGLE_REDIRECT_URI:  The redirect URI configured in Google Cloud (e.g. https://yourapp.com/api/auth/google/callback)
+  - FRONTEND_URL:         (optional) Your frontend origin where the user should be redirected after auth. If not set, the server will return JSON with the token.
 
-const CLIENT_ID = process.env.GOOGLE_CLIENT_ID || 'GOOGLE_CLIENT_ID_HERE';
-const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || 'GOOGLE_CLIENT_SECRET_HERE';
-const REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || 'http://localhost:5173/api/auth/google/callback';
+  Do NOT embed credentials in source control. Configure these values through your hosting provider or local environment.
+*/
+
+const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+const REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI;
 
 export const googleRedirect: RequestHandler = (req, res) => {
+  if (!CLIENT_ID || !REDIRECT_URI) {
+    return res.status(500).send('Google OAuth is not configured. Set GOOGLE_CLIENT_ID and GOOGLE_REDIRECT_URI in environment variables.');
+  }
   const state = req.query.state || '';
   const scope = encodeURIComponent('openid email profile');
-  const url = `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${scope}&state=${encodeURIComponent(String(state))}`;
+  const url = `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=${encodeURIComponent(CLIENT_ID)}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${scope}&state=${encodeURIComponent(String(state))}`;
   res.redirect(url);
 };
 
 export const googleCallback: RequestHandler = async (req, res) => {
+  if (!CLIENT_ID || !CLIENT_SECRET || !REDIRECT_URI) {
+    return res.status(500).send('Google OAuth is not configured. Set GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET and GOOGLE_REDIRECT_URI in environment variables.');
+  }
+
   const code = req.query.code as string | undefined;
   if (!code) return res.status(400).send('Missing code');
 
@@ -51,10 +63,22 @@ export const googleCallback: RequestHandler = async (req, res) => {
 
   // Sign JWT and redirect back to frontend with token (or return JSON)
   const { signToken } = require('../lib/jwt');
-  const token = signToken({ sub: row.id, email: row.email });
+  let token: string;
+  try {
+    token = signToken({ sub: row.id, email: row.email });
+  } catch (e: any) {
+    // If JWT isn't configured, return the user record and skip signing
+    const FRONTEND = process.env.FRONTEND_URL;
+    if (FRONTEND) return res.redirect(`${FRONTEND}/?error=${encodeURIComponent('JWT not configured')}`);
+    return res.status(500).json({ message: 'JWT not configured on server. Set JWT_SECRET to enable token generation.' });
+  }
 
-  // Redirect to frontend and include token. Replace FRONTEND_URL with your front-end origin in env.
-  const FRONTEND = process.env.FRONTEND_URL || 'http://localhost:5173';
-  // WARNING: including token in URL is simple for demo; consider secure cookie or POST response in production.
-  res.redirect(`${FRONTEND}/?token=${token}`);
+  const FRONTEND = process.env.FRONTEND_URL;
+  // WARNING: Including token in URL is simple for demo; consider using a secure cookie or a POST response in production.
+  if (FRONTEND) {
+    return res.redirect(`${FRONTEND}/?token=${encodeURIComponent(token)}`);
+  }
+
+  // If frontend URL not provided, return JSON containing token and user information.
+  return res.json({ token, user: row });
 };
