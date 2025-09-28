@@ -94,8 +94,15 @@ export const loginHandler: RequestHandler = (req, res) => {
   if (!ok) return res.status(401).json({ message: 'Invalid credentials' });
 
   const user = { id: row.id, name: row.name, email: row.email, photoUrl: row.photoUrl, createdAt: row.createdAt };
-  const { signToken } = require('../lib/jwt');
-  const token = signToken({ sub: user.id, email: user.email });
+  // Sign JWT for session (if configured)
+  let token: string | undefined = undefined;
+  try {
+    const { signToken } = require('../lib/jwt');
+    token = signToken({ sub: user.id, email: user.email });
+  } catch (e: any) {
+    // eslint-disable-next-line no-console
+    console.warn('Failed to sign JWT in loginHandler:', String(e));
+  }
   return res.status(200).json({ user, token });
 };
 
