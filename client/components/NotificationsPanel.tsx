@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Card,
@@ -199,202 +198,65 @@ export default function NotificationsPanel() {
   const getTypeColor = (type: string) => {
     switch (type) {
       case "achievement":
-        return "text-yellow-500";
+        return "text-yellow-400";
       case "streak":
-        return "text-orange-500";
+        return "text-red-500";
       case "reminder":
-        return "text-blue-500";
+        return "text-indigo-500";
       case "milestone":
         return "text-green-500";
       case "system":
-        return "text-purple-500";
+        return "text-gray-500";
       default:
         return "text-gray-500";
     }
   };
 
-  const getTarget = (n: Notification) =>
-    n.type === "reminder"
-      ? "/today"
-      : n.type === "milestone"
-        ? "/achievements"
-        : n.type === "achievement"
-          ? "/achievements"
-          : n.type === "streak"
-            ? "/streak"
-            : n.type === "system"
-              ? "/settings"
-              : "/dashboard";
-
-  const openNotification = async (n: Notification) => {
-    // mark read on open
-    if (!n.read) await markAsRead(n.id);
-    setSelected(n);
-    setDetailOpen(true);
-  };
-
   return (
-    <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm" className="relative">
-            <Bell className="h-4 w-4" />
-            {unreadCount > 0 && (
-              <Badge
-                variant="destructive"
-                className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center text-xs"
-              >
-                {unreadCount}
-              </Badge>
-            )}
+    <Card>
+      <CardHeader className="flex items-center justify-between">
+        <div className="flex items-center space-x-2">
+          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+            <Bell className="h-4 w-4 text-primary" />
+          </div>
+          <CardTitle>Notificaciones</CardTitle>
+          {unreadCount > 0 && <Badge className="ml-2">{unreadCount}</Badge>}
+        </div>
+        <div className="flex items-center space-x-2">
+          <Button variant="ghost" size="sm" onClick={markAllAsRead} disabled={unreadCount === 0}>
+            Marcar todas leídas
           </Button>
-        </DropdownMenuTrigger>
-
-        <DropdownMenuContent align="end" className="w-80">
-          <div className="flex items-center justify-between p-3 border-b">
-            <h3 className="font-semibold">Notificaciones</h3>
-            {unreadCount > 0 && (
-              <Button variant="ghost" size="sm" onClick={markAllAsRead}>
-                <Check className="h-4 w-4 mr-1" />
-                Marcar todas
-              </Button>
-            )}
-          </div>
-
-          <div className="max-h-80 overflow-y-auto">
-            {notifications.length === 0 ? (
-              <div className="p-6 text-center">
-                <Bell className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">
-                  No hay notificaciones
-                </p>
+        </div>
+      </CardHeader>
+      <CardContent>
+        {notifications.length === 0 && <div className="text-sm text-muted-foreground">Sin notificaciones</div>}
+        {notifications.map((n) => (
+          <div key={n.id} className="flex items-start justify-between py-3 border-b last:border-b-0">
+            <div className="flex items-start space-x-3">
+              <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${n.color}`}>
+                <n.icon className="h-5 w-5" />
               </div>
-            ) : (
-              <div className="divide-y">
-                {notifications.map((notification) => {
-                  const Icon = notification.icon;
-                  return (
-                    <div
-                      key={notification.id}
-                      onClick={() => openNotification(notification)}
-                      className={`p-3 hover:bg-muted/50 transition-colors cursor-pointer ${
-                        !notification.read ? "bg-primary/5" : ""
-                      }`}
-                    >
-                      <div className="flex items-start space-x-3">
-                        <div
-                          className={`p-2 rounded-lg ${notification.color} flex-shrink-0`}
-                        >
-                          <Icon className="h-4 w-4" />
-                        </div>
-
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <h4
-                                className={`text-sm font-medium ${
-                                  !notification.read
-                                    ? "text-foreground"
-                                    : "text-muted-foreground"
-                                }`}
-                              >
-                                {notification.title}
-                              </h4>
-                              <p className="text-xs text-muted-foreground mt-1">
-                                {notification.message}
-                              </p>
-                              <p className="text-xs text-muted-foreground mt-2">
-                                {notification.time}
-                              </p>
-                            </div>
-
-                            <div className="flex items-center space-x-1 ml-2">
-                              {!notification.read && (
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => markAsRead(notification.id)}
-                                  className="h-6 w-6 p-0"
-                                >
-                                  <Check className="h-3 w-3" />
-                                </Button>
-                              )}
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() =>
-                                  deleteNotification(notification.id)
-                                }
-                                className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
-                              >
-                                <X className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          </div>
-
-                          {!notification.read && (
-                            <div className="w-2 h-2 bg-primary rounded-full mt-2" />
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
+              <div>
+                <div className="font-semibold">{n.title}</div>
+                <div className="text-sm text-muted-foreground">{n.message}</div>
               </div>
-            )}
-          </div>
-
-          {notifications.length > 0 && (
-            <>
-              <DropdownMenuSeparator />
-              <div className="p-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="w-full text-center"
-                  onClick={() => navigate("/notifications")}
-                >
-                  Ver todas las notificaciones
-                </Button>
-              </div>
-            </>
-          )}
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
-        <DialogContent className="sm:max-w-[460px]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center space-x-2">
-              {selected && (
-                <span className={`p-2 rounded ${selected.color}`}>
-                  <selected.icon className="h-4 w-4" />
-                </span>
-              )}
-              <span>{selected?.title}</span>
-            </DialogTitle>
-            <DialogDescription>{selected?.time}</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <p className="text-sm text-foreground">{selected?.message}</p>
-            <div className="flex items-center justify-end space-x-2">
-              <Button variant="outline" onClick={() => setDetailOpen(false)}>
-                Cerrar
-              </Button>
-              {selected && (
-                <Button
-                  onClick={() => {
-                    setDetailOpen(false);
-                    navigate(getTarget(selected));
-                  }}
-                >
-                  Abrir
-                </Button>
-              )}
+            </div>
+            <div className="flex items-center space-x-2">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button size="sm" variant="ghost">
+                    <X className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onSelect={() => markAsRead(n.id)}>Marcar leída</DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => deleteNotification(n.id)}>Eliminar</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
-        </DialogContent>
-      </Dialog>
-    </>
+        ))}
+      </CardContent>
+    </Card>
   );
 }
