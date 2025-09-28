@@ -17,6 +17,7 @@ import { registerDevice, unregisterDevice, listDevices } from "./routes/devices"
 import { listLogs, createLog, updateLog, deleteLog } from "./routes/habit_logs";
 import { listOverrides, createOverride, deleteOverride } from "./routes/overrides";
 import { getSettings, upsertSettings } from "./routes/settings";
+import { getDashboardStats } from './routes/dashboard';
 
 export function createServer() {
   const app = express();
