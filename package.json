@@ -19,12 +19,14 @@
     "test": "vitest --run",
     "format.fix": "prettier --write .",
     "typecheck": "tsc",
-    "dev:server": "tsx server/index.ts"
+    "dev:server": "tsx server/index.ts",
+    "migrate:pg": "tsx server/scripts/migrate-to-postgres.ts"
   },
   "dependencies": {
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
-    "zod": "^3.25.76"
+    "zod": "^3.25.76",
+    "pg": "^8.10.0"
   },
   "devDependencies": {
     "@hookform/resolvers": "^5.2.1",
