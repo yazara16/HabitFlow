@@ -182,9 +182,47 @@ export default function Calendar() {
     return days;
   };
 
+  // Fetch calendar logs/overrides for the current month range
+  const monthStart = useMemo(() => {
+    const d = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    return d.toISOString().split('T')[0];
+  }, [currentDate]);
+  const monthEnd = useMemo(() => {
+    const d = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+    return d.toISOString().split('T')[0];
+  }, [currentDate]);
+
+  // useQuery: fetch calendar logs for visible month
+  const { data: calendarData, isLoading: calendarLoading } = (window as any).__reactQueryClient__
+    ? (window as any).__reactQueryClient__.getQueryData(['calendar', monthStart, monthEnd, /* user id included */])
+    : { data: null, isLoading: false };
+
+  // If not available via global, perform a local fetch (fallback)
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      if (!user) return;
+      try {
+        const token = localStorage.getItem('auth:token');
+        const res = await fetch(`/api/users/${user.id}/calendar?from=${monthStart}&to=${monthEnd}`, { headers: token ? { Authorization: `Bearer ${token}` } : undefined });
+        if (!res.ok) return;
+        const json = await res.json();
+        if (!mounted) return;
+        const map: Record<string, any> = {};
+        for (const l of (json.logs || [])) {
+          const key = `${l.date}_${l.habitId}`;
+          map[key] = { completedBoolean: !!l.completedBoolean, completedAmount: l.completedAmount };
+        }
+        // overrides not used directly here but could be merged
+        setCalendarLogsMap(map);
+      } catch (e) {}
+    })();
+    return () => { mounted = false; };
+  }, [monthStart, monthEnd, user]);
+
   const calendarDays = useMemo(
     () => generateCalendarDays(),
-    [currentDate, habits],
+    [currentDate, habits, calendarLogsMap],
   );
 
   const navigate = (direction: "prev" | "next") => {
