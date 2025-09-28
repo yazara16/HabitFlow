@@ -51,7 +51,11 @@ import {
 } from "./routes/devices";
 
 import { listLogs, createLog, updateLog, deleteLog } from "./routes/habit_logs";
-import { listOverrides, createOverride, deleteOverride } from "./routes/overrides";
+import {
+  listOverrides,
+  createOverride,
+  deleteOverride,
+} from "./routes/overrides";
 import { getSettings, upsertSettings } from "./routes/settings";
 import { getDashboardStats } from "./routes/dashboard";
 import { getCalendarData } from "./routes/calendar";
@@ -159,16 +163,46 @@ export function createServer() {
   app.put("/api/users/:id", requireAuth, requireOwner, updateUserHandler);
 
   // Habits
-  app.get("/api/users/:userId/habits", requireAuth, requireOwner, getHabitsHandler);
-  app.post("/api/users/:userId/habits", requireAuth, requireOwner, createHabitHandler);
-  app.put("/api/users/:userId/habits/:habitId", requireAuth, requireOwner, updateHabitHandler);
-  app.delete("/api/users/:userId/habits/:habitId", requireAuth, requireOwner, deleteHabitHandler);
+  app.get(
+    "/api/users/:userId/habits",
+    requireAuth,
+    requireOwner,
+    getHabitsHandler,
+  );
+  app.post(
+    "/api/users/:userId/habits",
+    requireAuth,
+    requireOwner,
+    createHabitHandler,
+  );
+  app.put(
+    "/api/users/:userId/habits/:habitId",
+    requireAuth,
+    requireOwner,
+    updateHabitHandler,
+  );
+  app.delete(
+    "/api/users/:userId/habits/:habitId",
+    requireAuth,
+    requireOwner,
+    deleteHabitHandler,
+  );
 
   // Dashboard
-  app.get("/api/users/:userId/dashboard", requireAuth, requireOwner, getDashboardStats);
+  app.get(
+    "/api/users/:userId/dashboard",
+    requireAuth,
+    requireOwner,
+    getDashboardStats,
+  );
 
   // Calendar
-  app.get("/api/users/:userId/calendar", requireAuth, requireOwner, getCalendarData);
+  app.get(
+    "/api/users/:userId/calendar",
+    requireAuth,
+    requireOwner,
+    getCalendarData,
+  );
 
   // Debug
   app.get("/api/debug/users", listUsers);
@@ -176,28 +210,93 @@ export function createServer() {
   app.get("/api/debug/stats", dbStats);
 
   // Notifications
-  app.get("/api/users/:userId/notifications", requireAuth, requireOwner, listNotifications);
-  app.post("/api/users/:userId/notifications", requireAuth, requireOwner, createNotification);
-  app.post("/api/users/:userId/notifications/mark_all", requireAuth, requireOwner, markAllRead);
-  app.put("/api/users/:userId/notifications/:id/read", requireAuth, requireOwner, markAsRead);
-  app.delete("/api/users/:userId/notifications/:id", requireAuth, requireOwner, deleteNotification);
+  app.get(
+    "/api/users/:userId/notifications",
+    requireAuth,
+    requireOwner,
+    listNotifications,
+  );
+  app.post(
+    "/api/users/:userId/notifications",
+    requireAuth,
+    requireOwner,
+    createNotification,
+  );
+  app.post(
+    "/api/users/:userId/notifications/mark_all",
+    requireAuth,
+    requireOwner,
+    markAllRead,
+  );
+  app.put(
+    "/api/users/:userId/notifications/:id/read",
+    requireAuth,
+    requireOwner,
+    markAsRead,
+  );
+  app.delete(
+    "/api/users/:userId/notifications/:id",
+    requireAuth,
+    requireOwner,
+    deleteNotification,
+  );
 
   // Reminders
-  app.get("/api/users/:userId/reminders", requireAuth, requireOwner, listReminders);
-  app.post("/api/users/:userId/reminders", requireAuth, requireOwner, createReminder);
-  app.put("/api/users/:userId/reminders/:id", requireAuth, requireOwner, updateReminder);
-  app.delete("/api/users/:userId/reminders/:id", requireAuth, requireOwner, deleteReminder);
+  app.get(
+    "/api/users/:userId/reminders",
+    requireAuth,
+    requireOwner,
+    listReminders,
+  );
+  app.post(
+    "/api/users/:userId/reminders",
+    requireAuth,
+    requireOwner,
+    createReminder,
+  );
+  app.put(
+    "/api/users/:userId/reminders/:id",
+    requireAuth,
+    requireOwner,
+    updateReminder,
+  );
+  app.delete(
+    "/api/users/:userId/reminders/:id",
+    requireAuth,
+    requireOwner,
+    deleteReminder,
+  );
 
   // Achievements
   app.get("/api/achievements", listCatalog);
   app.post("/api/achievements/seed", seedCatalog);
-  app.get("/api/users/:userId/achievements", requireAuth, requireOwner, getUserAchievements);
-  app.post("/api/users/:userId/achievements", requireAuth, requireOwner, unlockAchievement);
+  app.get(
+    "/api/users/:userId/achievements",
+    requireAuth,
+    requireOwner,
+    getUserAchievements,
+  );
+  app.post(
+    "/api/users/:userId/achievements",
+    requireAuth,
+    requireOwner,
+    unlockAchievement,
+  );
 
   // Devices
   app.get("/api/users/:userId/devices", requireAuth, requireOwner, listDevices);
-  app.post("/api/users/:userId/devices", requireAuth, requireOwner, registerDevice);
-  app.delete("/api/users/:userId/devices/:id", requireAuth, requireOwner, unregisterDevice);
+  app.post(
+    "/api/users/:userId/devices",
+    requireAuth,
+    requireOwner,
+    registerDevice,
+  );
+  app.delete(
+    "/api/users/:userId/devices/:id",
+    requireAuth,
+    requireOwner,
+    unregisterDevice,
+  );
 
   // Admin
   const adminToken = process.env.ADMIN_TOKEN || "CHANGE_ME_ADMIN_TOKEN";
@@ -206,7 +305,8 @@ export function createServer() {
     if (!auth) return res.status(401).json({ message: "Unauthorized" });
     let token = auth;
     if (auth.startsWith("Bearer ")) token = auth.slice(7);
-    if (token !== adminToken) return res.status(403).json({ message: "Forbidden" });
+    if (token !== adminToken)
+      return res.status(403).json({ message: "Forbidden" });
     next();
   };
   app.post("/api/admin/run_worker", requireAdmin, (req, res) => {
@@ -219,19 +319,64 @@ export function createServer() {
   });
 
   // Habit logs
-  app.get("/api/users/:userId/habits/:habitId/logs", requireAuth, requireOwner, listLogs);
-  app.post("/api/users/:userId/habits/:habitId/logs", requireAuth, requireOwner, createLog);
-  app.put("/api/users/:userId/habits/:habitId/logs/:logId", requireAuth, requireOwner, updateLog);
-  app.delete("/api/users/:userId/habits/:habitId/logs/:logId", requireAuth, requireOwner, deleteLog);
+  app.get(
+    "/api/users/:userId/habits/:habitId/logs",
+    requireAuth,
+    requireOwner,
+    listLogs,
+  );
+  app.post(
+    "/api/users/:userId/habits/:habitId/logs",
+    requireAuth,
+    requireOwner,
+    createLog,
+  );
+  app.put(
+    "/api/users/:userId/habits/:habitId/logs/:logId",
+    requireAuth,
+    requireOwner,
+    updateLog,
+  );
+  app.delete(
+    "/api/users/:userId/habits/:habitId/logs/:logId",
+    requireAuth,
+    requireOwner,
+    deleteLog,
+  );
 
   // Overrides
-  app.get("/api/users/:userId/habits/:habitId/overrides", requireAuth, requireOwner, listOverrides);
-  app.post("/api/users/:userId/habits/:habitId/overrides", requireAuth, requireOwner, createOverride);
-  app.delete("/api/users/:userId/habits/:habitId/overrides/:overrideId", requireAuth, requireOwner, deleteOverride);
+  app.get(
+    "/api/users/:userId/habits/:habitId/overrides",
+    requireAuth,
+    requireOwner,
+    listOverrides,
+  );
+  app.post(
+    "/api/users/:userId/habits/:habitId/overrides",
+    requireAuth,
+    requireOwner,
+    createOverride,
+  );
+  app.delete(
+    "/api/users/:userId/habits/:habitId/overrides/:overrideId",
+    requireAuth,
+    requireOwner,
+    deleteOverride,
+  );
 
   // User settings
-  app.get("/api/users/:userId/settings", requireAuth, requireOwner, getSettings);
-  app.put("/api/users/:userId/settings", requireAuth, requireOwner, upsertSettings);
+  app.get(
+    "/api/users/:userId/settings",
+    requireAuth,
+    requireOwner,
+    getSettings,
+  );
+  app.put(
+    "/api/users/:userId/settings",
+    requireAuth,
+    requireOwner,
+    upsertSettings,
+  );
 
   return app;
 }
