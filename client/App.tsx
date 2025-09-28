@@ -27,6 +27,44 @@ import Register from "./pages/Register";
 
 const queryClient = new QueryClient();
 
+// Patch global fetch to include XSRF token header (double-submit cookie) and include credentials
+(function patchFetch() {
+  try {
+    if (typeof window !== 'undefined' && !(window as any).__patched_fetch__) {
+      const original = window.fetch.bind(window);
+      function parseCookies(cookieHeader: string | undefined) {
+        const obj: Record<string,string> = {};
+        if (!cookieHeader) return obj;
+        for (const pair of cookieHeader.split(';')) {
+          const idx = pair.indexOf('=');
+          if (idx < 0) continue;
+          const key = pair.slice(0, idx).trim();
+          const val = pair.slice(idx+1).trim();
+          obj[key] = decodeURIComponent(val);
+        }
+        return obj;
+      }
+      window.fetch = (input: RequestInfo, init?: RequestInit) => {
+        const method = (init && init.method) || (typeof input === 'string' ? 'GET' : (input as Request).method) || 'GET';
+        const unsafe = ['POST','PUT','PATCH','DELETE'];
+        const headers = new Headers(init && init.headers ? init.headers as HeadersInit : undefined);
+        try {
+          const cookies = parseCookies(document.cookie);
+          const token = cookies['XSRF-TOKEN'];
+          if (token && unsafe.includes(method.toUpperCase())) {
+            headers.set('x-xsrf-token', token);
+          }
+        } catch (e) {}
+        const newInit = { ...(init||{}), credentials: 'include', headers } as RequestInit;
+        return original(input, newInit as any);
+      };
+      (window as any).__patched_fetch__ = true;
+    }
+  } catch (e) {
+    // ignore
+  }
+})();
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>
