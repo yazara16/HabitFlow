@@ -1,16 +1,17 @@
-import 'dotenv/config';
-import fs from 'fs';
-import path from 'path';
-import Database from 'better-sqlite3';
-import { Pool } from 'pg';
+import "dotenv/config";
+import fs from "fs";
+import path from "path";
+import Database from "better-sqlite3";
+import { Pool } from "pg";
 
-const DB_DIR = path.join(process.cwd(), 'server', 'data');
-const SQLITE_PATH = path.join(DB_DIR, 'app.sqlite');
+const DB_DIR = path.join(process.cwd(), "server", "data");
+const SQLITE_PATH = path.join(DB_DIR, "app.sqlite");
 
 function getPgConfig() {
-  if (process.env.DATABASE_URL) return { connectionString: process.env.DATABASE_URL };
+  if (process.env.DATABASE_URL)
+    return { connectionString: process.env.DATABASE_URL };
   const cfg: any = {
-    host: process.env.PGHOST || process.env.POSTGRES_HOST || 'localhost',
+    host: process.env.PGHOST || process.env.POSTGRES_HOST || "localhost",
     port: Number(process.env.PGPORT || process.env.POSTGRES_PORT || 5432),
     user: process.env.PGUSER || process.env.POSTGRES_USER,
     password: process.env.PGPASSWORD || process.env.POSTGRES_PASSWORD,
@@ -23,7 +24,7 @@ async function createTables(pool: Pool) {
   // Use transactional creation to be idempotent
   const client = await pool.connect();
   try {
-    await client.query('BEGIN');
+    await client.query("BEGIN");
 
     await client.query(`
       CREATE TABLE IF NOT EXISTS users (
@@ -154,9 +155,9 @@ async function createTables(pool: Pool) {
       );
     `);
 
-    await client.query('COMMIT');
+    await client.query("COMMIT");
   } catch (err) {
-    await client.query('ROLLBACK');
+    await client.query("ROLLBACK");
     throw err;
   } finally {
     client.release();
@@ -165,7 +166,7 @@ async function createTables(pool: Pool) {
 
 function parseMaybeJson(value: any) {
   if (value === null || value === undefined) return null;
-  if (typeof value === 'object') return value;
+  if (typeof value === "object") return value;
   try {
     return JSON.parse(value);
   } catch (e) {
@@ -174,7 +175,8 @@ function parseMaybeJson(value: any) {
 }
 
 async function migrate() {
-  if (!fs.existsSync(SQLITE_PATH)) throw new Error(`SQLite DB not found at ${SQLITE_PATH}`);
+  if (!fs.existsSync(SQLITE_PATH))
+    throw new Error(`SQLite DB not found at ${SQLITE_PATH}`);
 
   const sqlite = new Database(SQLITE_PATH, { readonly: true });
   const pool = new Pool(getPgConfig());
@@ -183,17 +185,28 @@ async function migrate() {
     await createTables(pool);
 
     // Users
-    const users = sqlite.prepare('SELECT id,name,email,password,photoUrl,createdAt FROM users').all();
+    const users = sqlite
+      .prepare("SELECT id,name,email,password,photoUrl,createdAt FROM users")
+      .all();
     for (const u of users) {
       await pool.query(
         `INSERT INTO users (id,name,email,password,photoUrl,createdAt) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, email = EXCLUDED.email, photoUrl = EXCLUDED.photourl`,
-        [u.id, u.name, u.email, u.password || null, u.photoUrl || null, u.createdAt ? new Date(u.createdAt) : null],
+        [
+          u.id,
+          u.name,
+          u.email,
+          u.password || null,
+          u.photoUrl || null,
+          u.createdAt ? new Date(u.createdAt) : null,
+        ],
       );
     }
 
     // Habits
     const habits = sqlite
-      .prepare('SELECT id,userId,name,description,category,color,icon,target,completed,streak,frequency,monthlyDays,monthlyMonths,reminderTime,reminderEnabled,createdAt,lastCompleted FROM habits')
+      .prepare(
+        "SELECT id,userId,name,description,category,color,icon,target,completed,streak,frequency,monthlyDays,monthlyMonths,reminderTime,reminderEnabled,createdAt,lastCompleted FROM habits",
+      )
       .all();
     for (const h of habits) {
       await pool.query(
@@ -208,7 +221,7 @@ async function migrate() {
           h.category || null,
           h.color || null,
           h.icon || null,
-          typeof h.target === 'number' ? h.target : null,
+          typeof h.target === "number" ? h.target : null,
           h.completed ? Number(h.completed) : 0,
           h.streak ? Number(h.streak) : 0,
           h.frequency || null,
@@ -223,63 +236,172 @@ async function migrate() {
     }
 
     // Notifications
-    const notifications = sqlite.prepare('SELECT id,userId,type,title,message,time,read,metadata,createdAt FROM notifications').all();
+    const notifications = sqlite
+      .prepare(
+        "SELECT id,userId,type,title,message,time,read,metadata,createdAt FROM notifications",
+      )
+      .all();
     for (const n of notifications) {
       await pool.query(
         `INSERT INTO notifications (id,userId,type,title,message,time,read,metadata,createdAt) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (id) DO NOTHING`,
-        [n.id, n.userId, n.type || null, n.title || null, n.message || null, n.time ? new Date(n.time) : null, !!n.read, parseMaybeJson(n.metadata), n.createdAt ? new Date(n.createdAt) : null],
+        [
+          n.id,
+          n.userId,
+          n.type || null,
+          n.title || null,
+          n.message || null,
+          n.time ? new Date(n.time) : null,
+          !!n.read,
+          parseMaybeJson(n.metadata),
+          n.createdAt ? new Date(n.createdAt) : null,
+        ],
       );
     }
 
     // Habit logs
-    const logs = sqlite.prepare('SELECT id,habitId,userId,date,completedAmount,completedBoolean,note,createdAt,updatedAt FROM habit_logs').all();
+    const logs = sqlite
+      .prepare(
+        "SELECT id,habitId,userId,date,completedAmount,completedBoolean,note,createdAt,updatedAt FROM habit_logs",
+      )
+      .all();
     for (const l of logs) {
       await pool.query(
         `INSERT INTO habit_logs (id,habitId,userId,date,completedAmount,completedBoolean,note,createdAt,updatedAt) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (id) DO NOTHING`,
-        [l.id, l.habitId, l.userId, l.date ? l.date : null, l.completedAmount || 0, !!l.completedBoolean, l.note || null, l.createdAt ? new Date(l.createdAt) : null, l.updatedAt ? new Date(l.updatedAt) : null],
+        [
+          l.id,
+          l.habitId,
+          l.userId,
+          l.date ? l.date : null,
+          l.completedAmount || 0,
+          !!l.completedBoolean,
+          l.note || null,
+          l.createdAt ? new Date(l.createdAt) : null,
+          l.updatedAt ? new Date(l.updatedAt) : null,
+        ],
       );
     }
 
     // Habit overrides
-    const overrides = sqlite.prepare('SELECT id,habitId,userId,date,hidden,patch,createdAt,updatedAt FROM habit_overrides').all();
+    const overrides = sqlite
+      .prepare(
+        "SELECT id,habitId,userId,date,hidden,patch,createdAt,updatedAt FROM habit_overrides",
+      )
+      .all();
     for (const o of overrides) {
       await pool.query(
         `INSERT INTO habit_overrides (id,habitId,userId,date,hidden,patch,createdAt,updatedAt) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (id) DO NOTHING`,
-        [o.id, o.habitId, o.userId, o.date ? o.date : null, !!o.hidden, parseMaybeJson(o.patch), o.createdAt ? new Date(o.createdAt) : null, o.updatedAt ? new Date(o.updatedAt) : null],
+        [
+          o.id,
+          o.habitId,
+          o.userId,
+          o.date ? o.date : null,
+          !!o.hidden,
+          parseMaybeJson(o.patch),
+          o.createdAt ? new Date(o.createdAt) : null,
+          o.updatedAt ? new Date(o.updatedAt) : null,
+        ],
       );
     }
 
     // User settings
-    const settings = sqlite.prepare('SELECT userId,settings,updatedAt FROM user_settings').all();
+    const settings = sqlite
+      .prepare("SELECT userId,settings,updatedAt FROM user_settings")
+      .all();
     for (const s of settings) {
-      await pool.query(`INSERT INTO user_settings (userId,settings,updatedAt) VALUES ($1,$2,$3) ON CONFLICT (userId) DO UPDATE SET settings = EXCLUDED.settings, updatedAt = EXCLUDED.updatedat`, [s.userId, parseMaybeJson(s.settings), s.updatedAt ? new Date(s.updatedAt) : null]);
+      await pool.query(
+        `INSERT INTO user_settings (userId,settings,updatedAt) VALUES ($1,$2,$3) ON CONFLICT (userId) DO UPDATE SET settings = EXCLUDED.settings, updatedAt = EXCLUDED.updatedat`,
+        [
+          s.userId,
+          parseMaybeJson(s.settings),
+          s.updatedAt ? new Date(s.updatedAt) : null,
+        ],
+      );
     }
 
     // Achievements
-    const achievements = sqlite.prepare('SELECT id,key,title,description,criteria,createdAt FROM achievements').all();
+    const achievements = sqlite
+      .prepare(
+        "SELECT id,key,title,description,criteria,createdAt FROM achievements",
+      )
+      .all();
     for (const a of achievements) {
-      await pool.query(`INSERT INTO achievements (id,key,title,description,criteria,createdAt) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (id) DO NOTHING`, [a.id, a.key, a.title || null, a.description || null, parseMaybeJson(a.criteria), a.createdAt ? new Date(a.createdAt) : null]);
+      await pool.query(
+        `INSERT INTO achievements (id,key,title,description,criteria,createdAt) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (id) DO NOTHING`,
+        [
+          a.id,
+          a.key,
+          a.title || null,
+          a.description || null,
+          parseMaybeJson(a.criteria),
+          a.createdAt ? new Date(a.createdAt) : null,
+        ],
+      );
     }
 
     // User achievements
-    const userAchievements = sqlite.prepare('SELECT id,userId,achievementId,earnedAt,meta FROM user_achievements').all();
+    const userAchievements = sqlite
+      .prepare(
+        "SELECT id,userId,achievementId,earnedAt,meta FROM user_achievements",
+      )
+      .all();
     for (const ua of userAchievements) {
-      await pool.query(`INSERT INTO user_achievements (id,userId,achievementId,earnedAt,meta) VALUES ($1,$2,$3,$4,$5) ON CONFLICT (id) DO NOTHING`, [ua.id, ua.userId, ua.achievementId, ua.earnedAt ? new Date(ua.earnedAt) : null, parseMaybeJson(ua.meta)]);
+      await pool.query(
+        `INSERT INTO user_achievements (id,userId,achievementId,earnedAt,meta) VALUES ($1,$2,$3,$4,$5) ON CONFLICT (id) DO NOTHING`,
+        [
+          ua.id,
+          ua.userId,
+          ua.achievementId,
+          ua.earnedAt ? new Date(ua.earnedAt) : null,
+          parseMaybeJson(ua.meta),
+        ],
+      );
     }
 
     // Reminders
-    const reminders = sqlite.prepare('SELECT id,userId,habitId,timeOfDay,enabled,timezone,recurrence,days,nextRun,createdAt FROM reminders').all();
+    const reminders = sqlite
+      .prepare(
+        "SELECT id,userId,habitId,timeOfDay,enabled,timezone,recurrence,days,nextRun,createdAt FROM reminders",
+      )
+      .all();
     for (const r of reminders) {
-      await pool.query(`INSERT INTO reminders (id,userId,habitId,timeOfDay,enabled,timezone,recurrence,days,nextRun,createdAt) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) ON CONFLICT (id) DO NOTHING`, [r.id, r.userId, r.habitId || null, r.timeOfDay || null, typeof r.enabled === 'number' ? !!r.enabled : !!r.enabled, r.timezone || null, r.recurrence || null, parseMaybeJson(r.days), r.nextRun ? new Date(r.nextRun) : null, r.createdAt ? new Date(r.createdAt) : null]);
+      await pool.query(
+        `INSERT INTO reminders (id,userId,habitId,timeOfDay,enabled,timezone,recurrence,days,nextRun,createdAt) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) ON CONFLICT (id) DO NOTHING`,
+        [
+          r.id,
+          r.userId,
+          r.habitId || null,
+          r.timeOfDay || null,
+          typeof r.enabled === "number" ? !!r.enabled : !!r.enabled,
+          r.timezone || null,
+          r.recurrence || null,
+          parseMaybeJson(r.days),
+          r.nextRun ? new Date(r.nextRun) : null,
+          r.createdAt ? new Date(r.createdAt) : null,
+        ],
+      );
     }
 
     // Devices
-    const devices = sqlite.prepare('SELECT id,userId,platform,pushToken,lastSeenAt,createdAt FROM devices').all();
+    const devices = sqlite
+      .prepare(
+        "SELECT id,userId,platform,pushToken,lastSeenAt,createdAt FROM devices",
+      )
+      .all();
     for (const d of devices) {
-      await pool.query(`INSERT INTO devices (id,userId,platform,pushToken,lastSeenAt,createdAt) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (id) DO NOTHING`, [d.id, d.userId, d.platform || null, d.pushToken || null, d.lastSeenAt ? new Date(d.lastSeenAt) : null, d.createdAt ? new Date(d.createdAt) : null]);
+      await pool.query(
+        `INSERT INTO devices (id,userId,platform,pushToken,lastSeenAt,createdAt) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (id) DO NOTHING`,
+        [
+          d.id,
+          d.userId,
+          d.platform || null,
+          d.pushToken || null,
+          d.lastSeenAt ? new Date(d.lastSeenAt) : null,
+          d.createdAt ? new Date(d.createdAt) : null,
+        ],
+      );
     }
 
-    console.log('Migration to Postgres completed successfully');
+    console.log("Migration to Postgres completed successfully");
   } finally {
     await pool.end();
   }
@@ -289,6 +411,6 @@ migrate()
   .then(() => process.exit(0))
   .catch((err) => {
     // eslint-disable-next-line no-console
-    console.error('Migration failed:', err);
+    console.error("Migration failed:", err);
     process.exit(1);
   });
