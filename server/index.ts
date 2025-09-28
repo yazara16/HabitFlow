@@ -18,6 +18,7 @@ import { listLogs, createLog, updateLog, deleteLog } from "./routes/habit_logs";
 import { listOverrides, createOverride, deleteOverride } from "./routes/overrides";
 import { getSettings, upsertSettings } from "./routes/settings";
 import { getDashboardStats } from './routes/dashboard';
+import { getCalendarData } from './routes/calendar';
 
 export function createServer() {
   const app = express();
