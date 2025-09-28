@@ -188,7 +188,7 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Esta Semana</p>
-                  <p className="text-2xl font-bold text-foreground">23/35</p>
+                  <p className="text-2xl font-bold text-foreground">{statsLoading ? <span className="inline-block w-20 h-6 bg-muted/30 rounded animate-pulse" /> : `${serverStats?.weekCompleted ?? 0}`}</p>
                 </div>
                 <div className="p-3 bg-blue-500/10 rounded-lg">
                   <CalendarIcon className="h-6 w-6 text-blue-500" />
@@ -196,7 +196,7 @@ export default function Dashboard() {
               </div>
               <div className="flex items-center mt-4 text-success">
                 <TrendingUp className="h-4 w-4 mr-1" />
-                <span className="text-sm font-medium">66% completado</span>
+                <span className="text-sm font-medium">{statsLoading ? <span className="inline-block w-16 h-4 bg-muted/30 rounded animate-pulse" /> : '66% completado'}</span>
               </div>
             </CardContent>
           </Card>
