@@ -47,7 +47,7 @@ export default function NotificationsPanel() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
   // Use React Query to fetch notifications
-  const queryClient = (window as any).__reactQueryClient__ || null;
+  const queryClient = useQueryClient();
   const { data: notifsData, isLoading: notifsLoading } = useQuery(
     ['notifications', user?.id],
     async () => {
