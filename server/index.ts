@@ -73,7 +73,7 @@ export function createServer() {
   app.use((req, res, next) => {
     res.setHeader(
       "Content-Security-Policy",
-      "default-src 'self'; img-src 'self' data: https://www.google-analytics.com https://www.googletagmanager.com; script-src 'self' 'unsafe-inline' https://www.google-analytics.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; frame-ancestors 'none'; base-uri 'self';",
+      "default-src 'self'; img-src 'self' data: https://www.google-analytics.com https://www.googletagmanager.com; script-src 'self' 'unsafe-inline' https://www.google-analytics.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-elem 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-ancestors 'none'; base-uri 'self';",
     );
     res.setHeader("X-Content-Type-Options", "nosniff");
     res.setHeader("X-Frame-Options", "DENY");
