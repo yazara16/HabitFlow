@@ -90,6 +90,9 @@ export function createServer() {
   app.put('/api/users/:userId/habits/:habitId', requireAuth, requireOwner, updateHabitHandler);
   app.delete('/api/users/:userId/habits/:habitId', requireAuth, requireOwner, deleteHabitHandler);
 
+  // Dashboard stats
+  app.get('/api/users/:userId/dashboard', requireAuth, requireOwner, getDashboardStats);
+
   // Debug (dev-only)
   app.get('/api/debug/users', listUsers);
   app.get('/api/debug/habits', listHabits);
