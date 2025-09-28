@@ -45,67 +45,76 @@ export default function NotificationsPanel() {
   const { user } = useAuth();
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
+  // Use React Query to fetch notifications
+  const queryClient = (window as any).__reactQueryClient__ || null;
+  const { data: notifsData, isLoading: notifsLoading } = useQuery(
+    ['notifications', user?.id],
+    async () => {
+      if (!user) return [] as any[];
+      const token = localStorage.getItem('auth:token');
+      const res = await fetch(`/api/users/${user.id}/notifications`, { headers: token ? { Authorization: `Bearer ${token}` } : undefined });
+      if (!res.ok) throw new Error('Failed fetching notifications');
+      return await res.json();
+    },
+    { enabled: !!user }
+  );
+
+  // derive local notifications shape
   useEffect(() => {
-    let mounted = true;
-    if (!user) {
-      setNotifications([]);
-      return;
-    }
-    (async () => {
-      try {
-        const token = localStorage.getItem('auth:token');
-        const res = await fetch(`/api/users/${user.id}/notifications`, { headers: token ? { Authorization: `Bearer ${token}` } : undefined });
-        if (!res.ok) return;
-        const items = await res.json();
-        if (!mounted) return;
-        // Map to local Notification shape (add icon/color based on type)
-        setNotifications(items.map((it: any) => ({
-          id: it.id,
-          type: it.type,
-          title: it.title,
-          message: it.message,
-          time: it.createdAt,
-          read: it.read,
-          icon: getTypeIcon(it.type),
-          color: getTypeColor(it.type) + ' bg-opacity-10',
-        })));
-      } catch (e) {}
-    })();
-    return () => { mounted = false; };
-  }, [user]);
+    if (!notifsData) { setNotifications([]); return; }
+    setNotifications(notifsData.map((it: any) => ({
+      id: it.id,
+      type: it.type,
+      title: it.title,
+      message: it.message,
+      time: it.createdAt,
+      read: it.read,
+      icon: getTypeIcon(it.type),
+      color: getTypeColor(it.type) + ' bg-opacity-10',
+    })));
+  }, [notifsData]);
 
   const [detailOpen, setDetailOpen] = useState(false);
   const [selected, setSelected] = useState<Notification | null>(null);
   const unreadCount = notifications.filter(n => !n.read).length;
 
+  const markAsReadMutation = useMutation(async (id: string) => {
+    if (!user) throw new Error('Not authenticated');
+    const token = localStorage.getItem('auth:token');
+    const res = await fetch(`/api/users/${user.id}/notifications/${id}/read`, { method: 'PUT', headers: token ? { Authorization: `Bearer ${token}` } : undefined });
+    if (!res.ok) throw new Error('Failed to mark read');
+    return await res.json();
+  }, { onSuccess: () => { if (queryClient) queryClient.invalidateQueries(['notifications', user?.id]); } });
+
+  const markAllMutation = useMutation(async () => {
+    if (!user) throw new Error('Not authenticated');
+    const token = localStorage.getItem('auth:token');
+    const res = await fetch(`/api/users/${user.id}/notifications/mark_all`, { method: 'POST', headers: token ? { Authorization: `Bearer ${token}` } : undefined });
+    if (!res.ok) throw new Error('Failed to mark all');
+    return true;
+  }, { onSuccess: () => { if (queryClient) queryClient.invalidateQueries(['notifications', user?.id]); } });
+
+  const deleteMutation = useMutation(async (id: string) => {
+    if (!user) throw new Error('Not authenticated');
+    const token = localStorage.getItem('auth:token');
+    const res = await fetch(`/api/users/${user.id}/notifications/${id}`, { method: 'DELETE', headers: token ? { Authorization: `Bearer ${token}` } : undefined });
+    if (!res.ok && res.status !== 204) throw new Error('Failed to delete');
+    return id;
+  }, { onSuccess: () => { if (queryClient) queryClient.invalidateQueries(['notifications', user?.id]); } });
+
   const markAsRead = async (id: string) => {
     if (!user) return;
-    try {
-      const token = localStorage.getItem('auth:token');
-      const res = await fetch(`/api/users/${user.id}/notifications/${id}/read`, { method: 'PUT', headers: token ? { Authorization: `Bearer ${token}` } : undefined });
-      if (!res.ok) return;
-      const updated = await res.json();
-      setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
-    } catch (e) {}
+    try { await markAsReadMutation.mutateAsync(id); } catch (e) {}
   };
 
   const markAllAsRead = async () => {
     if (!user) return;
-    try {
-      const token = localStorage.getItem('auth:token');
-      const res = await fetch(`/api/users/${user.id}/notifications/mark_all`, { method: 'POST', headers: token ? { Authorization: `Bearer ${token}` } : undefined });
-      if (!res.ok) return;
-      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-    } catch (e) {}
+    try { await markAllMutation.mutateAsync(); } catch (e) {}
   };
 
   const deleteNotification = async (id: string) => {
     if (!user) return;
-    try {
-      const token = localStorage.getItem('auth:token');
-      const res = await fetch(`/api/users/${user.id}/notifications/${id}`, { method: 'DELETE', headers: token ? { Authorization: `Bearer ${token}` } : undefined });
-      if (res.ok) setNotifications(prev => prev.filter(n => n.id !== id));
-    } catch (e) {}
+    try { await deleteMutation.mutateAsync(id); } catch (e) {}
   };
 
   const getTypeIcon = (type: string) => {
