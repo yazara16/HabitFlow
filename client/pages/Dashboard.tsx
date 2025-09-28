@@ -206,7 +206,7 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Logros</p>
-                  <p className="text-2xl font-bold text-foreground">12</p>
+                  <p className="text-2xl font-bold text-foreground">{statsLoading ? <span className="inline-block w-12 h-6 bg-muted/30 rounded animate-pulse" /> : `${serverStats?.achievementsCount ?? 0}`}</p>
                 </div>
                 <div className="p-3 bg-yellow-500/10 rounded-lg">
                   <Award className="h-6 w-6 text-yellow-500" />
@@ -214,7 +214,7 @@ export default function Dashboard() {
               </div>
               <div className="flex items-center mt-4 text-warning">
                 <Zap className="h-4 w-4 mr-1" />
-                <span className="text-sm font-medium">¡3 nuevos!</span>
+                <span className="text-sm font-medium">{statsLoading ? <span className="inline-block w-16 h-4 bg-muted/30 rounded animate-pulse" /> : '¡3 nuevos!'}</span>
               </div>
             </CardContent>
           </Card>
