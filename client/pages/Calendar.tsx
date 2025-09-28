@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState, useEffect } from "react";
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from "@tanstack/react-query";
 import {
   Card,
   CardContent,
@@ -120,13 +120,17 @@ export default function Calendar() {
   };
 
   // calendarLogsMap: key `${date}_${habitId}` -> { completedBoolean, completedAmount }
-  const [calendarLogsMap, setCalendarLogsMap] = useState<Record<string, any>>({});
+  const [calendarLogsMap, setCalendarLogsMap] = useState<Record<string, any>>(
+    {},
+  );
 
   function toCalHabit(h: Habit, date: Date): CalendarHabit {
-    const iso = date.toISOString().split('T')[0];
+    const iso = date.toISOString().split("T")[0];
     const key = `${iso}_${h.id}`;
     const serverEntry = calendarLogsMap[key];
-    const completed = serverEntry ? !!serverEntry.completedBoolean : (h.completed >= h.target);
+    const completed = serverEntry
+      ? !!serverEntry.completedBoolean
+      : h.completed >= h.target;
     return {
       id: h.id,
       name: h.name,
@@ -186,16 +190,25 @@ export default function Calendar() {
   // Fetch calendar logs/overrides for the current month range
   const monthStart = useMemo(() => {
     const d = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-    return d.toISOString().split('T')[0];
+    return d.toISOString().split("T")[0];
   }, [currentDate]);
   const monthEnd = useMemo(() => {
-    const d = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-    return d.toISOString().split('T')[0];
+    const d = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() + 1,
+      0,
+    );
+    return d.toISOString().split("T")[0];
   }, [currentDate]);
 
   // useQuery: fetch calendar logs for visible month
-  const { data: calendarData, isLoading: calendarLoading } = (window as any).__reactQueryClient__
-    ? (window as any).__reactQueryClient__.getQueryData(['calendar', monthStart, monthEnd, /* user id included */])
+  const { data: calendarData, isLoading: calendarLoading } = (window as any)
+    .__reactQueryClient__
+    ? (window as any).__reactQueryClient__.getQueryData([
+        "calendar",
+        monthStart,
+        monthEnd /* user id included */,
+      ])
     : { data: null, isLoading: false };
 
   // If not available via global, perform a local fetch (fallback)
@@ -204,21 +217,29 @@ export default function Calendar() {
     (async () => {
       if (!user) return;
       try {
-        const token = localStorage.getItem('auth:token');
-        const res = await fetch(`/api/users/${user.id}/calendar?from=${monthStart}&to=${monthEnd}`, { headers: token ? { Authorization: `Bearer ${token}` } : undefined });
+        const token = localStorage.getItem("auth:token");
+        const res = await fetch(
+          `/api/users/${user.id}/calendar?from=${monthStart}&to=${monthEnd}`,
+          { headers: token ? { Authorization: `Bearer ${token}` } : undefined },
+        );
         if (!res.ok) return;
         const json = await res.json();
         if (!mounted) return;
         const map: Record<string, any> = {};
-        for (const l of (json.logs || [])) {
+        for (const l of json.logs || []) {
           const key = `${l.date}_${l.habitId}`;
-          map[key] = { completedBoolean: !!l.completedBoolean, completedAmount: l.completedAmount };
+          map[key] = {
+            completedBoolean: !!l.completedBoolean,
+            completedAmount: l.completedAmount,
+          };
         }
         // overrides not used directly here but could be merged
         setCalendarLogsMap(map);
       } catch (e) {}
     })();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, [monthStart, monthEnd, user]);
 
   const calendarDays = useMemo(

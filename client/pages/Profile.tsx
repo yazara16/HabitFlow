@@ -1,5 +1,11 @@
 import Navigation from "@/components/Navigation";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState } from "react";
@@ -17,10 +23,10 @@ export default function Profile() {
   const save = async () => {
     try {
       await updateProfile({ name, photoUrl });
-      toast({ title: 'Perfil actualizado' });
+      toast({ title: "Perfil actualizado" });
       setEditing(false);
     } catch (e: any) {
-      toast({ title: 'Error', description: String(e?.message || e) });
+      toast({ title: "Error", description: String(e?.message || e) });
     }
   };
 
@@ -44,21 +50,40 @@ export default function Profile() {
                   <div className="space-y-2">
                     <div>
                       <Label>Nombre</Label>
-                      <Input value={name} onChange={(e) => setName(e.target.value)} />
+                      <Input
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                      />
                     </div>
                     <div>
                       <Label>Foto (URL)</Label>
-                      <Input value={photoUrl} onChange={(e) => setPhotoUrl(e.target.value)} />
+                      <Input
+                        value={photoUrl}
+                        onChange={(e) => setPhotoUrl(e.target.value)}
+                      />
                     </div>
                     <div className="flex items-center space-x-2 mt-2">
                       <Button onClick={save}>Guardar</Button>
-                      <Button variant="ghost" onClick={() => { setEditing(false); setName(user?.name || ''); setPhotoUrl(user?.photoUrl || ''); }}>Cancelar</Button>
+                      <Button
+                        variant="ghost"
+                        onClick={() => {
+                          setEditing(false);
+                          setName(user?.name || "");
+                          setPhotoUrl(user?.photoUrl || "");
+                        }}
+                      >
+                        Cancelar
+                      </Button>
                     </div>
                   </div>
                 ) : (
                   <div>
-                    <p className="text-lg font-semibold">{user?.name || "Usuario"}</p>
-                    <p className="text-sm text-muted-foreground">{user?.email || ""}</p>
+                    <p className="text-lg font-semibold">
+                      {user?.name || "Usuario"}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {user?.email || ""}
+                    </p>
                   </div>
                 )}
               </div>

@@ -75,29 +75,31 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
   }
 
   function sanitizeCssValue(v: any) {
-    if (v == null) return '';
+    if (v == null) return "";
     const s = String(v);
     // Allow only a safe subset of characters commonly used in CSS color values and variables
     // permit: letters, numbers, #, (), %, commas, spaces, dots, hyphens, underscores, var(), rgba, hsla
     const allowed = /^[a-zA-Z0-9#()%,.\s:\-_%$\u002d]+$/;
-    if (allowed.test(s)) return s.replace(/\n/g, '').replace(/\r/g, '');
+    if (allowed.test(s)) return s.replace(/\n/g, "").replace(/\r/g, "");
     // Fallback: escape quotes and remove suspicious chars
-    return s.replace(/["'\n\r{}<>;]/g, '');
+    return s.replace(/["'\n\r{}<>;]/g, "");
   }
 
   const css = Object.entries(THEMES)
     .map(([theme, prefix]) => {
       const body = colorConfig
         .map(([key, itemConfig]) => {
-          const raw = itemConfig.theme?.[theme as keyof typeof itemConfig.theme] || itemConfig.color;
+          const raw =
+            itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
+            itemConfig.color;
           const color = sanitizeCssValue(raw);
           return color ? `  --color-${key}: ${color};` : null;
         })
         .filter(Boolean)
-        .join('\n');
+        .join("\n");
       return `${prefix} [data-chart=${id}] {\n${body}\n}`;
     })
-    .join('\n');
+    .join("\n");
 
   return <style dangerouslySetInnerHTML={{ __html: css }} />;
 };

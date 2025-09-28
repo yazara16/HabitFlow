@@ -2,8 +2,14 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -13,8 +19,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   Bell,
   X,
   Check,
@@ -27,7 +39,7 @@ import {
   AlertTriangle,
   Info,
   Heart,
-  Zap
+  Zap,
 } from "lucide-react";
 
 interface Notification {
@@ -49,104 +61,170 @@ export default function NotificationsPanel() {
   // Use React Query to fetch notifications
   const queryClient = useQueryClient();
   const { data: notifsData, isLoading: notifsLoading } = useQuery(
-    ['notifications', user?.id],
+    ["notifications", user?.id],
     async () => {
       if (!user) return [] as any[];
-      const token = localStorage.getItem('auth:token');
-      const res = await fetch(`/api/users/${user.id}/notifications`, { headers: token ? { Authorization: `Bearer ${token}` } : undefined });
-      if (!res.ok) throw new Error('Failed fetching notifications');
+      const token = localStorage.getItem("auth:token");
+      const res = await fetch(`/api/users/${user.id}/notifications`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
+      if (!res.ok) throw new Error("Failed fetching notifications");
       return await res.json();
     },
-    { enabled: !!user }
+    { enabled: !!user },
   );
 
   // derive local notifications shape
   useEffect(() => {
-    if (!notifsData) { setNotifications([]); return; }
-    setNotifications(notifsData.map((it: any) => ({
-      id: it.id,
-      type: it.type,
-      title: it.title,
-      message: it.message,
-      time: it.createdAt,
-      read: it.read,
-      icon: getTypeIcon(it.type),
-      color: getTypeColor(it.type) + ' bg-opacity-10',
-    })));
+    if (!notifsData) {
+      setNotifications([]);
+      return;
+    }
+    setNotifications(
+      notifsData.map((it: any) => ({
+        id: it.id,
+        type: it.type,
+        title: it.title,
+        message: it.message,
+        time: it.createdAt,
+        read: it.read,
+        icon: getTypeIcon(it.type),
+        color: getTypeColor(it.type) + " bg-opacity-10",
+      })),
+    );
   }, [notifsData]);
 
   const [detailOpen, setDetailOpen] = useState(false);
   const [selected, setSelected] = useState<Notification | null>(null);
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
-  const markAsReadMutation = useMutation(async (id: string) => {
-    if (!user) throw new Error('Not authenticated');
-    const token = localStorage.getItem('auth:token');
-    const res = await fetch(`/api/users/${user.id}/notifications/${id}/read`, { method: 'PUT', headers: token ? { Authorization: `Bearer ${token}` } : undefined });
-    if (!res.ok) throw new Error('Failed to mark read');
-    return await res.json();
-  }, { onSuccess: () => { if (queryClient) queryClient.invalidateQueries(['notifications', user?.id]); } });
+  const markAsReadMutation = useMutation(
+    async (id: string) => {
+      if (!user) throw new Error("Not authenticated");
+      const token = localStorage.getItem("auth:token");
+      const res = await fetch(
+        `/api/users/${user.id}/notifications/${id}/read`,
+        {
+          method: "PUT",
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        },
+      );
+      if (!res.ok) throw new Error("Failed to mark read");
+      return await res.json();
+    },
+    {
+      onSuccess: () => {
+        if (queryClient)
+          queryClient.invalidateQueries(["notifications", user?.id]);
+      },
+    },
+  );
 
-  const markAllMutation = useMutation(async () => {
-    if (!user) throw new Error('Not authenticated');
-    const token = localStorage.getItem('auth:token');
-    const res = await fetch(`/api/users/${user.id}/notifications/mark_all`, { method: 'POST', headers: token ? { Authorization: `Bearer ${token}` } : undefined });
-    if (!res.ok) throw new Error('Failed to mark all');
-    return true;
-  }, { onSuccess: () => { if (queryClient) queryClient.invalidateQueries(['notifications', user?.id]); } });
+  const markAllMutation = useMutation(
+    async () => {
+      if (!user) throw new Error("Not authenticated");
+      const token = localStorage.getItem("auth:token");
+      const res = await fetch(`/api/users/${user.id}/notifications/mark_all`, {
+        method: "POST",
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
+      if (!res.ok) throw new Error("Failed to mark all");
+      return true;
+    },
+    {
+      onSuccess: () => {
+        if (queryClient)
+          queryClient.invalidateQueries(["notifications", user?.id]);
+      },
+    },
+  );
 
-  const deleteMutation = useMutation(async (id: string) => {
-    if (!user) throw new Error('Not authenticated');
-    const token = localStorage.getItem('auth:token');
-    const res = await fetch(`/api/users/${user.id}/notifications/${id}`, { method: 'DELETE', headers: token ? { Authorization: `Bearer ${token}` } : undefined });
-    if (!res.ok && res.status !== 204) throw new Error('Failed to delete');
-    return id;
-  }, { onSuccess: () => { if (queryClient) queryClient.invalidateQueries(['notifications', user?.id]); } });
+  const deleteMutation = useMutation(
+    async (id: string) => {
+      if (!user) throw new Error("Not authenticated");
+      const token = localStorage.getItem("auth:token");
+      const res = await fetch(`/api/users/${user.id}/notifications/${id}`, {
+        method: "DELETE",
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
+      if (!res.ok && res.status !== 204) throw new Error("Failed to delete");
+      return id;
+    },
+    {
+      onSuccess: () => {
+        if (queryClient)
+          queryClient.invalidateQueries(["notifications", user?.id]);
+      },
+    },
+  );
 
   const markAsRead = async (id: string) => {
     if (!user) return;
-    try { await markAsReadMutation.mutateAsync(id); } catch (e) {}
+    try {
+      await markAsReadMutation.mutateAsync(id);
+    } catch (e) {}
   };
 
   const markAllAsRead = async () => {
     if (!user) return;
-    try { await markAllMutation.mutateAsync(); } catch (e) {}
+    try {
+      await markAllMutation.mutateAsync();
+    } catch (e) {}
   };
 
   const deleteNotification = async (id: string) => {
     if (!user) return;
-    try { await deleteMutation.mutateAsync(id); } catch (e) {}
+    try {
+      await deleteMutation.mutateAsync(id);
+    } catch (e) {}
   };
 
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case "achievement": return Star;
-      case "streak": return Flame;
-      case "reminder": return Bell;
-      case "milestone": return Target;
-      case "system": return Info;
-      default: return Bell;
+      case "achievement":
+        return Star;
+      case "streak":
+        return Flame;
+      case "reminder":
+        return Bell;
+      case "milestone":
+        return Target;
+      case "system":
+        return Info;
+      default:
+        return Bell;
     }
   };
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case "achievement": return "text-yellow-500";
-      case "streak": return "text-orange-500";
-      case "reminder": return "text-blue-500";
-      case "milestone": return "text-green-500";
-      case "system": return "text-purple-500";
-      default: return "text-gray-500";
+      case "achievement":
+        return "text-yellow-500";
+      case "streak":
+        return "text-orange-500";
+      case "reminder":
+        return "text-blue-500";
+      case "milestone":
+        return "text-green-500";
+      case "system":
+        return "text-purple-500";
+      default:
+        return "text-gray-500";
     }
   };
 
-  const getTarget = (n: Notification) => (
-    n.type === "reminder" ? "/today" :
-    n.type === "milestone" ? "/achievements" :
-    n.type === "achievement" ? "/achievements" :
-    n.type === "streak" ? "/streak" :
-    n.type === "system" ? "/settings" : "/dashboard"
-  );
+  const getTarget = (n: Notification) =>
+    n.type === "reminder"
+      ? "/today"
+      : n.type === "milestone"
+        ? "/achievements"
+        : n.type === "achievement"
+          ? "/achievements"
+          : n.type === "streak"
+            ? "/streak"
+            : n.type === "system"
+              ? "/settings"
+              : "/dashboard";
 
   const openNotification = async (n: Notification) => {
     // mark read on open
@@ -157,144 +235,166 @@ export default function NotificationsPanel() {
 
   return (
     <>
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="relative">
-          <Bell className="h-4 w-4" />
-          {unreadCount > 0 && (
-            <Badge 
-              variant="destructive" 
-              className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center text-xs"
-            >
-              {unreadCount}
-            </Badge>
-          )}
-        </Button>
-      </DropdownMenuTrigger>
-      
-      <DropdownMenuContent align="end" className="w-80">
-        <div className="flex items-center justify-between p-3 border-b">
-          <h3 className="font-semibold">Notificaciones</h3>
-          {unreadCount > 0 && (
-            <Button variant="ghost" size="sm" onClick={markAllAsRead}>
-              <Check className="h-4 w-4 mr-1" />
-              Marcar todas
-            </Button>
-          )}
-        </div>
-        
-        <div className="max-h-80 overflow-y-auto">
-          {notifications.length === 0 ? (
-            <div className="p-6 text-center">
-              <Bell className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-              <p className="text-sm text-muted-foreground">No hay notificaciones</p>
-            </div>
-          ) : (
-            <div className="divide-y">
-              {notifications.map((notification) => {
-                const Icon = notification.icon;
-                return (
-                  <div
-                    key={notification.id}
-                    onClick={() => openNotification(notification)}
-                    className={`p-3 hover:bg-muted/50 transition-colors cursor-pointer ${
-                      !notification.read ? 'bg-primary/5' : ''
-                    }`}
-                  >
-                    <div className="flex items-start space-x-3">
-                      <div className={`p-2 rounded-lg ${notification.color} flex-shrink-0`}>
-                        <Icon className="h-4 w-4" />
-                      </div>
-                      
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <h4 className={`text-sm font-medium ${
-                              !notification.read ? 'text-foreground' : 'text-muted-foreground'
-                            }`}>
-                              {notification.title}
-                            </h4>
-                            <p className="text-xs text-muted-foreground mt-1">
-                              {notification.message}
-                            </p>
-                            <p className="text-xs text-muted-foreground mt-2">
-                              {notification.time}
-                            </p>
-                          </div>
-                          
-                          <div className="flex items-center space-x-1 ml-2">
-                            {!notification.read && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => markAsRead(notification.id)}
-                                className="h-6 w-6 p-0"
-                              >
-                                <Check className="h-3 w-3" />
-                              </Button>
-                            )}
-                            <Button
-                              variant="ghost" 
-                              size="sm"
-                              onClick={() => deleteNotification(notification.id)}
-                              className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
-                            >
-                              <X className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        </div>
-                        
-                        {!notification.read && (
-                          <div className="w-2 h-2 bg-primary rounded-full mt-2" />
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-        
-        {notifications.length > 0 && (
-          <>
-            <DropdownMenuSeparator />
-            <div className="p-2">
-              <Button variant="ghost" size="sm" className="w-full text-center" onClick={() => navigate('/notifications')}>
-                Ver todas las notificaciones
-              </Button>
-            </div>
-          </>
-        )}
-      </DropdownMenuContent>
-    </DropdownMenu>
-
-    <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
-      <DialogContent className="sm:max-w-[460px]">
-        <DialogHeader>
-          <DialogTitle className="flex items-center space-x-2">
-            {selected && (
-              <span className={`p-2 rounded ${selected.color}`}>
-                <selected.icon className="h-4 w-4" />
-              </span>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="sm" className="relative">
+            <Bell className="h-4 w-4" />
+            {unreadCount > 0 && (
+              <Badge
+                variant="destructive"
+                className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center text-xs"
+              >
+                {unreadCount}
+              </Badge>
             )}
-            <span>{selected?.title}</span>
-          </DialogTitle>
-          <DialogDescription>{selected?.time}</DialogDescription>
-        </DialogHeader>
-        <div className="space-y-4">
-          <p className="text-sm text-foreground">{selected?.message}</p>
-          <div className="flex items-center justify-end space-x-2">
-            <Button variant="outline" onClick={() => setDetailOpen(false)}>Cerrar</Button>
-            {selected && (
-              <Button onClick={() => { setDetailOpen(false); navigate(getTarget(selected)); }}>
-                Abrir
+          </Button>
+        </DropdownMenuTrigger>
+
+        <DropdownMenuContent align="end" className="w-80">
+          <div className="flex items-center justify-between p-3 border-b">
+            <h3 className="font-semibold">Notificaciones</h3>
+            {unreadCount > 0 && (
+              <Button variant="ghost" size="sm" onClick={markAllAsRead}>
+                <Check className="h-4 w-4 mr-1" />
+                Marcar todas
               </Button>
             )}
           </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+
+          <div className="max-h-80 overflow-y-auto">
+            {notifications.length === 0 ? (
+              <div className="p-6 text-center">
+                <Bell className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                <p className="text-sm text-muted-foreground">
+                  No hay notificaciones
+                </p>
+              </div>
+            ) : (
+              <div className="divide-y">
+                {notifications.map((notification) => {
+                  const Icon = notification.icon;
+                  return (
+                    <div
+                      key={notification.id}
+                      onClick={() => openNotification(notification)}
+                      className={`p-3 hover:bg-muted/50 transition-colors cursor-pointer ${
+                        !notification.read ? "bg-primary/5" : ""
+                      }`}
+                    >
+                      <div className="flex items-start space-x-3">
+                        <div
+                          className={`p-2 rounded-lg ${notification.color} flex-shrink-0`}
+                        >
+                          <Icon className="h-4 w-4" />
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <h4
+                                className={`text-sm font-medium ${
+                                  !notification.read
+                                    ? "text-foreground"
+                                    : "text-muted-foreground"
+                                }`}
+                              >
+                                {notification.title}
+                              </h4>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {notification.message}
+                              </p>
+                              <p className="text-xs text-muted-foreground mt-2">
+                                {notification.time}
+                              </p>
+                            </div>
+
+                            <div className="flex items-center space-x-1 ml-2">
+                              {!notification.read && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => markAsRead(notification.id)}
+                                  className="h-6 w-6 p-0"
+                                >
+                                  <Check className="h-3 w-3" />
+                                </Button>
+                              )}
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() =>
+                                  deleteNotification(notification.id)
+                                }
+                                className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+                              >
+                                <X className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          </div>
+
+                          {!notification.read && (
+                            <div className="w-2 h-2 bg-primary rounded-full mt-2" />
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {notifications.length > 0 && (
+            <>
+              <DropdownMenuSeparator />
+              <div className="p-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full text-center"
+                  onClick={() => navigate("/notifications")}
+                >
+                  Ver todas las notificaciones
+                </Button>
+              </div>
+            </>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
+        <DialogContent className="sm:max-w-[460px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center space-x-2">
+              {selected && (
+                <span className={`p-2 rounded ${selected.color}`}>
+                  <selected.icon className="h-4 w-4" />
+                </span>
+              )}
+              <span>{selected?.title}</span>
+            </DialogTitle>
+            <DialogDescription>{selected?.time}</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-foreground">{selected?.message}</p>
+            <div className="flex items-center justify-end space-x-2">
+              <Button variant="outline" onClick={() => setDetailOpen(false)}>
+                Cerrar
+              </Button>
+              {selected && (
+                <Button
+                  onClick={() => {
+                    setDetailOpen(false);
+                    navigate(getTarget(selected));
+                  }}
+                >
+                  Abrir
+                </Button>
+              )}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

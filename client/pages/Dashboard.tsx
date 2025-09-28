@@ -1,9 +1,15 @@
 import { useState, useEffect } from "react";
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import HabitDialog from "@/components/HabitDialog";
 import ProgressCharts from "@/components/ProgressCharts";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -44,20 +50,29 @@ export default function Dashboard() {
   const { user } = useAuth();
   const [habitDialogOpen, setHabitDialogOpen] = useState(false);
   const [celebrate, setCelebrate] = useState(false);
-  const [editingHabit, setEditingHabit] = useState<Habit | undefined>(undefined);
+  const [editingHabit, setEditingHabit] = useState<Habit | undefined>(
+    undefined,
+  );
   const userName = user?.name ?? "";
   const navigate = useNavigate();
 
   // Fetch dashboard stats via React Query
-  const { data: serverStats, isLoading: statsLoading, isError: statsError, error: statsErrorObj } = useQuery(
-    ['dashboard', user?.id],
+  const {
+    data: serverStats,
+    isLoading: statsLoading,
+    isError: statsError,
+    error: statsErrorObj,
+  } = useQuery(
+    ["dashboard", user?.id],
     async () => {
-      if (!user) throw new Error('Not authenticated');
-      const token = localStorage.getItem('auth:token');
-      const res = await fetch(`/api/users/${user.id}/dashboard`, { headers: token ? { Authorization: `Bearer ${token}` } : undefined });
+      if (!user) throw new Error("Not authenticated");
+      const token = localStorage.getItem("auth:token");
+      const res = await fetch(`/api/users/${user.id}/dashboard`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
       if (!res.ok) {
-        const text = await res.text().catch(() => '');
-        throw new Error(text || 'Failed to load dashboard');
+        const text = await res.text().catch(() => "");
+        throw new Error(text || "Failed to load dashboard");
       }
       return res.json();
     },
@@ -66,7 +81,12 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (statsError && statsErrorObj) {
-      try { toast({ title: 'Error cargando tablero', description: String((statsErrorObj as any).message || statsErrorObj) }); } catch (e) {}
+      try {
+        toast({
+          title: "Error cargando tablero",
+          description: String((statsErrorObj as any).message || statsErrorObj),
+        });
+      } catch (e) {}
     }
   }, [statsError, statsErrorObj]);
 
@@ -77,20 +97,27 @@ export default function Dashboard() {
     day: "numeric",
   });
 
-  const completedHabitsToday = serverStats?.completedToday ?? habits.filter((h) => h.completedToday).length;
+  const completedHabitsToday =
+    serverStats?.completedToday ??
+    habits.filter((h) => h.completedToday).length;
   const totalHabits = serverStats?.totalHabits ?? (habits.length || 1);
-  const completionPercentage = (totalHabits === 0) ? 0 : (completedHabitsToday / totalHabits) * 100;
+  const completionPercentage =
+    totalHabits === 0 ? 0 : (completedHabitsToday / totalHabits) * 100;
 
   const toggleHabit = (habitId: string) => {
     const h = habits.find((x) => x.id === habitId);
     if (!h) return;
-    const newCompleted = h.completedToday ? Math.max(0, h.completed - 1) : Math.min(h.target, h.completed + 1);
+    const newCompleted = h.completedToday
+      ? Math.max(0, h.completed - 1)
+      : Math.min(h.target, h.completed + 1);
     const willBeCompleted = !h.completedToday && newCompleted >= h.target;
     updateHabit(habitId, {
       completed: newCompleted,
       completedToday: !h.completedToday,
       streak: !h.completedToday ? h.streak + 1 : h.streak,
-      lastCompleted: !h.completedToday ? new Date().toISOString().split("T")[0] : h.lastCompleted,
+      lastCompleted: !h.completedToday
+        ? new Date().toISOString().split("T")[0]
+        : h.lastCompleted,
     });
     if (willBeCompleted) {
       setCelebrate(true);
@@ -106,7 +133,10 @@ export default function Dashboard() {
     updateHabit(habitId, {
       completed: newCompleted,
       completedToday: newCompleted >= h.target,
-      lastCompleted: newCompleted >= h.target ? new Date().toISOString().split("T")[0] : h.lastCompleted,
+      lastCompleted:
+        newCompleted >= h.target
+          ? new Date().toISOString().split("T")[0]
+          : h.lastCompleted,
     });
     if (willBeCompleted) {
       setCelebrate(true);
@@ -122,7 +152,10 @@ export default function Dashboard() {
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-foreground mb-2">¡Buen día{userName ? ", " : ""}{userName}! 👋</h1>
+              <h1 className="text-3xl font-bold text-foreground mb-2">
+                ¡Buen día{userName ? ", " : ""}
+                {userName}! 👋
+              </h1>
               <p className="text-muted-foreground capitalize">{today}</p>
             </div>
             <div className="flex items-center space-x-3 mt-4 sm:mt-0">
@@ -141,11 +174,16 @@ export default function Dashboard() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card onClick={() => navigate('/today')} className="cursor-pointer hover:shadow-md">
+          <Card
+            onClick={() => navigate("/today")}
+            className="cursor-pointer hover:shadow-md"
+          >
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Hoy Completados</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Hoy Completados
+                  </p>
                   <p className="text-2xl font-bold text-foreground">
                     {statsLoading ? (
                       <span className="inline-block w-24 h-6 bg-muted/30 rounded animate-pulse" />
@@ -160,17 +198,34 @@ export default function Dashboard() {
               </div>
               <div className="mt-4">
                 <Progress value={completionPercentage} className="h-2" />
-                <p className="text-xs text-muted-foreground mt-2">{statsLoading ? <span className="inline-block w-8 h-4 bg-muted/30 rounded animate-pulse" /> : `${Math.round(completionPercentage)}% completado`}</p>
+                <p className="text-xs text-muted-foreground mt-2">
+                  {statsLoading ? (
+                    <span className="inline-block w-8 h-4 bg-muted/30 rounded animate-pulse" />
+                  ) : (
+                    `${Math.round(completionPercentage)}% completado`
+                  )}
+                </p>
               </div>
             </CardContent>
           </Card>
 
-          <Card onClick={() => navigate('/streak')} className="cursor-pointer hover:shadow-md">
+          <Card
+            onClick={() => navigate("/streak")}
+            className="cursor-pointer hover:shadow-md"
+          >
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Racha Actual</p>
-                  <p className="text-2xl font-bold text-foreground">{statsLoading ? <span className="inline-block w-20 h-6 bg-muted/30 rounded animate-pulse" /> : `${serverStats?.maxStreak ?? 0} días`}</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Racha Actual
+                  </p>
+                  <p className="text-2xl font-bold text-foreground">
+                    {statsLoading ? (
+                      <span className="inline-block w-20 h-6 bg-muted/30 rounded animate-pulse" />
+                    ) : (
+                      `${serverStats?.maxStreak ?? 0} días`
+                    )}
+                  </p>
                 </div>
                 <div className="p-3 bg-orange-500/10 rounded-lg">
                   <Flame className="h-6 w-6 text-orange-500" />
@@ -178,17 +233,34 @@ export default function Dashboard() {
               </div>
               <div className="flex items-center mt-4 text-success">
                 <ArrowUp className="h-4 w-4 mr-1" />
-                <span className="text-sm font-medium">{statsLoading ? <span className="inline-block w-14 h-4 bg-muted/30 rounded animate-pulse" /> : '+2 desde ayer'}</span>
+                <span className="text-sm font-medium">
+                  {statsLoading ? (
+                    <span className="inline-block w-14 h-4 bg-muted/30 rounded animate-pulse" />
+                  ) : (
+                    "+2 desde ayer"
+                  )}
+                </span>
               </div>
             </CardContent>
           </Card>
 
-          <Card onClick={() => navigate('/week')} className="cursor-pointer hover:shadow-md">
+          <Card
+            onClick={() => navigate("/week")}
+            className="cursor-pointer hover:shadow-md"
+          >
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Esta Semana</p>
-                  <p className="text-2xl font-bold text-foreground">{statsLoading ? <span className="inline-block w-20 h-6 bg-muted/30 rounded animate-pulse" /> : `${serverStats?.weekCompleted ?? 0}`}</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Esta Semana
+                  </p>
+                  <p className="text-2xl font-bold text-foreground">
+                    {statsLoading ? (
+                      <span className="inline-block w-20 h-6 bg-muted/30 rounded animate-pulse" />
+                    ) : (
+                      `${serverStats?.weekCompleted ?? 0}`
+                    )}
+                  </p>
                 </div>
                 <div className="p-3 bg-blue-500/10 rounded-lg">
                   <CalendarIcon className="h-6 w-6 text-blue-500" />
@@ -196,17 +268,34 @@ export default function Dashboard() {
               </div>
               <div className="flex items-center mt-4 text-success">
                 <TrendingUp className="h-4 w-4 mr-1" />
-                <span className="text-sm font-medium">{statsLoading ? <span className="inline-block w-16 h-4 bg-muted/30 rounded animate-pulse" /> : '66% completado'}</span>
+                <span className="text-sm font-medium">
+                  {statsLoading ? (
+                    <span className="inline-block w-16 h-4 bg-muted/30 rounded animate-pulse" />
+                  ) : (
+                    "66% completado"
+                  )}
+                </span>
               </div>
             </CardContent>
           </Card>
 
-          <Card onClick={() => navigate('/achievements')} className="cursor-pointer hover:shadow-md">
+          <Card
+            onClick={() => navigate("/achievements")}
+            className="cursor-pointer hover:shadow-md"
+          >
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Logros</p>
-                  <p className="text-2xl font-bold text-foreground">{statsLoading ? <span className="inline-block w-12 h-6 bg-muted/30 rounded animate-pulse" /> : `${serverStats?.achievementsCount ?? 0}`}</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Logros
+                  </p>
+                  <p className="text-2xl font-bold text-foreground">
+                    {statsLoading ? (
+                      <span className="inline-block w-12 h-6 bg-muted/30 rounded animate-pulse" />
+                    ) : (
+                      `${serverStats?.achievementsCount ?? 0}`
+                    )}
+                  </p>
                 </div>
                 <div className="p-3 bg-yellow-500/10 rounded-lg">
                   <Award className="h-6 w-6 text-yellow-500" />
@@ -214,7 +303,13 @@ export default function Dashboard() {
               </div>
               <div className="flex items-center mt-4 text-warning">
                 <Zap className="h-4 w-4 mr-1" />
-                <span className="text-sm font-medium">{statsLoading ? <span className="inline-block w-16 h-4 bg-muted/30 rounded animate-pulse" /> : '¡3 nuevos!'}</span>
+                <span className="text-sm font-medium">
+                  {statsLoading ? (
+                    <span className="inline-block w-16 h-4 bg-muted/30 rounded animate-pulse" />
+                  ) : (
+                    "¡3 nuevos!"
+                  )}
+                </span>
               </div>
             </CardContent>
           </Card>
@@ -226,12 +321,20 @@ export default function Dashboard() {
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
                   <span>Hábitos de Hoy</span>
-                  <Badge variant="secondary" className="flex items-center space-x-1">
+                  <Badge
+                    variant="secondary"
+                    className="flex items-center space-x-1"
+                  >
                     <Clock className="h-3 w-3" />
-                    <span>{Math.max(habits.length - completedHabitsToday, 0)} pendientes</span>
+                    <span>
+                      {Math.max(habits.length - completedHabitsToday, 0)}{" "}
+                      pendientes
+                    </span>
                   </Badge>
                 </CardTitle>
-                <CardDescription>Mantén tu momento y completa tus hábitos diarios</CardDescription>
+                <CardDescription>
+                  Mantén tu momento y completa tus hábitos diarios
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {habits.map((habit) => {
@@ -250,7 +353,11 @@ export default function Dashboard() {
                         onClick={() => toggleHabit(habit.id)}
                         className={`p-2 rounded-full ${isCompleted ? "text-success bg-success/10" : "text-muted-foreground hover:text-foreground"}`}
                       >
-                        {isCompleted ? <CheckCircle2 className="h-5 w-5" /> : <Circle className="h-5 w-5" />}
+                        {isCompleted ? (
+                          <CheckCircle2 className="h-5 w-5" />
+                        ) : (
+                          <Circle className="h-5 w-5" />
+                        )}
                       </Button>
 
                       <div className={`p-2 rounded-lg ${habit.color}`}>
@@ -259,12 +366,17 @@ export default function Dashboard() {
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between mb-2">
-                          <h3 className={`font-medium ${isCompleted ? "line-through text-muted-foreground" : "text-foreground"}`}>
+                          <h3
+                            className={`font-medium ${isCompleted ? "line-through text-muted-foreground" : "text-foreground"}`}
+                          >
                             {habit.name}
                           </h3>
                           <div className="flex items-center space-x-2">
                             {habit.streak > 0 && (
-                              <Badge variant="outline" className="text-xs flex items-center space-x-1">
+                              <Badge
+                                variant="outline"
+                                className="text-xs flex items-center space-x-1"
+                              >
                                 <Flame className="h-3 w-3 text-orange-500" />
                                 <span>{habit.streak}</span>
                               </Badge>
@@ -277,16 +389,17 @@ export default function Dashboard() {
 
                         <div className="flex items-center space-x-2">
                           <Progress value={progress} className="flex-1 h-2" />
-                          {habit.category === "hydration" && habit.completed < habit.target && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => incrementHabit(habit.id)}
-                              className="text-xs px-2 py-1 h-6"
-                            >
-                              +1
-                            </Button>
-                          )}
+                          {habit.category === "hydration" &&
+                            habit.completed < habit.target && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => incrementHabit(habit.id)}
+                                className="text-xs px-2 py-1 h-6"
+                              >
+                                +1
+                              </Button>
+                            )}
                         </div>
                       </div>
 
@@ -317,11 +430,16 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <p className="text-foreground font-medium mb-4">
-                  "¡Vas excelente! Has completado {completedHabitsToday} hábitos hoy. ¡Sigue así!"
+                  "¡Vas excelente! Has completado {completedHabitsToday} hábitos
+                  hoy. ¡Sigue así!"
                 </p>
                 <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                   <Target className="h-4 w-4" />
-                  <span>Solo quedan {Math.max(habits.length - completedHabitsToday, 0)} para completar el día</span>
+                  <span>
+                    Solo quedan{" "}
+                    {Math.max(habits.length - completedHabitsToday, 0)} para
+                    completar el día
+                  </span>
                 </div>
               </CardContent>
             </Card>
@@ -333,21 +451,86 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent className="space-y-3">
                 {[
-                  { key: 'exercise', name: "Ejercicio", icon: Dumbbell, count: serverStats?.categoryCounts?.exercise ?? habits.filter((h) => h.category === "exercise").length, color: "text-red-500" },
-                  { key: 'hydration', name: "Hidratación", icon: Droplets, count: serverStats?.categoryCounts?.hydration ?? habits.filter((h) => h.category === "hydration").length, color: "text-blue-500" },
-                  { key: 'finance', name: "Finanzas", icon: DollarSign, count: serverStats?.categoryCounts?.finance ?? habits.filter((h) => h.category === "finance").length, color: "text-green-500" },
-                  { key: 'shopping', name: "Compras", icon: ShoppingCart, count: serverStats?.categoryCounts?.shopping ?? habits.filter((h) => h.category === "shopping").length, color: "text-orange-500" },
-                  { key: 'reading', name: "Lectura", icon: Book, count: serverStats?.categoryCounts?.reading ?? habits.filter((h) => h.category === "reading").length, color: "text-indigo-600" },
-                  { key: 'study', name: "Estudio", icon: BookOpen, count: serverStats?.categoryCounts?.study ?? habits.filter((h) => h.category === "study").length, color: "text-cyan-600" },
-                  { key: 'custom', name: "Personal", icon: Star, count: serverStats?.categoryCounts?.custom ?? habits.filter((h) => h.category === "custom").length, color: "text-purple-500" },
+                  {
+                    key: "exercise",
+                    name: "Ejercicio",
+                    icon: Dumbbell,
+                    count:
+                      serverStats?.categoryCounts?.exercise ??
+                      habits.filter((h) => h.category === "exercise").length,
+                    color: "text-red-500",
+                  },
+                  {
+                    key: "hydration",
+                    name: "Hidratación",
+                    icon: Droplets,
+                    count:
+                      serverStats?.categoryCounts?.hydration ??
+                      habits.filter((h) => h.category === "hydration").length,
+                    color: "text-blue-500",
+                  },
+                  {
+                    key: "finance",
+                    name: "Finanzas",
+                    icon: DollarSign,
+                    count:
+                      serverStats?.categoryCounts?.finance ??
+                      habits.filter((h) => h.category === "finance").length,
+                    color: "text-green-500",
+                  },
+                  {
+                    key: "shopping",
+                    name: "Compras",
+                    icon: ShoppingCart,
+                    count:
+                      serverStats?.categoryCounts?.shopping ??
+                      habits.filter((h) => h.category === "shopping").length,
+                    color: "text-orange-500",
+                  },
+                  {
+                    key: "reading",
+                    name: "Lectura",
+                    icon: Book,
+                    count:
+                      serverStats?.categoryCounts?.reading ??
+                      habits.filter((h) => h.category === "reading").length,
+                    color: "text-indigo-600",
+                  },
+                  {
+                    key: "study",
+                    name: "Estudio",
+                    icon: BookOpen,
+                    count:
+                      serverStats?.categoryCounts?.study ??
+                      habits.filter((h) => h.category === "study").length,
+                    color: "text-cyan-600",
+                  },
+                  {
+                    key: "custom",
+                    name: "Personal",
+                    icon: Star,
+                    count:
+                      serverStats?.categoryCounts?.custom ??
+                      habits.filter((h) => h.category === "custom").length,
+                    color: "text-purple-500",
+                  },
                 ].map((category, index) => (
-                  <div key={index} className="flex items-center justify-between">
+                  <div
+                    key={index}
+                    className="flex items-center justify-between"
+                  >
                     <div className="flex items-center space-x-3">
                       <category.icon className={`h-4 w-4 ${category.color}`} />
-                      <span className="text-sm font-medium">{category.name}</span>
+                      <span className="text-sm font-medium">
+                        {category.name}
+                      </span>
                     </div>
                     <Badge variant="secondary" className="text-xs">
-                      {statsLoading ? <span className="inline-block w-6 h-4 bg-muted/30 rounded animate-pulse" /> : category.count}
+                      {statsLoading ? (
+                        <span className="inline-block w-6 h-4 bg-muted/30 rounded animate-pulse" />
+                      ) : (
+                        category.count
+                      )}
                     </Badge>
                   </div>
                 ))}
@@ -377,7 +560,9 @@ export default function Dashboard() {
                   </div>
                   <div>
                     <p className="text-sm font-medium">Primera semana</p>
-                    <p className="text-xs text-muted-foreground">¡Buen comienzo!</p>
+                    <p className="text-xs text-muted-foreground">
+                      ¡Buen comienzo!
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -387,8 +572,12 @@ export default function Dashboard() {
 
         <div className="mt-8">
           <div className="mb-6">
-            <h2 className="text-2xl font-bold text-foreground mb-2">Análisis y Progreso</h2>
-            <p className="text-muted-foreground">Visualiza tu rendimiento y identifica patrones para mejorar</p>
+            <h2 className="text-2xl font-bold text-foreground mb-2">
+              Análisis y Progreso
+            </h2>
+            <p className="text-muted-foreground">
+              Visualiza tu rendimiento y identifica patrones para mejorar
+            </p>
           </div>
           <ProgressCharts />
         </div>
@@ -402,10 +591,10 @@ export default function Dashboard() {
         onSave={(newHabit) => {
           if (editingHabit) {
             updateHabit(editingHabit.id, newHabit as any);
-            toast({ title: 'Hábito actualizado' });
+            toast({ title: "Hábito actualizado" });
           } else {
             addHabit(newHabit as any);
-            toast({ title: 'Hábito creado' });
+            toast({ title: "Hábito creado" });
           }
         }}
       />
