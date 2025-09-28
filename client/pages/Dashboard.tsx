@@ -54,9 +54,11 @@ export default function Dashboard() {
     day: "numeric",
   });
 
-  const completedHabitsToday = habits.filter((h) => h.completedToday).length;
-  const totalHabits = habits.length || 1;
-  const completionPercentage = (completedHabitsToday / totalHabits) * 100;
+  const [serverStats, setServerStats] = useState<{ totalHabits: number; completedToday: number; maxStreak: number; achievementsCount: number; weekCompleted: number; categoryCounts: Record<string,number> | null; } | null>(null);
+
+  const completedHabitsToday = serverStats?.completedToday ?? habits.filter((h) => h.completedToday).length;
+  const totalHabits = serverStats?.totalHabits ?? (habits.length || 1);
+  const completionPercentage = (totalHabits === 0) ? 0 : (completedHabitsToday / totalHabits) * 100;
 
   const toggleHabit = (habitId: string) => {
     const h = habits.find((x) => x.id === habitId);
