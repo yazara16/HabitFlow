@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useMemo, useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Dumbbell, Droplets, DollarSign, ShoppingCart, Star, Book, BookOpen } from "lucide-react";
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 
 export type HabitCategory = "exercise" | "hydration" | "finance" | "shopping" | "reading" | "study" | "custom";
 export type HabitFrequency = "daily" | "weekly" | "monthly" | "custom";
