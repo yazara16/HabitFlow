@@ -69,9 +69,18 @@ export const registerHandler: RequestHandler = (req, res) => {
   }
 
   const user = db.prepare('SELECT id,name,email,photoUrl,createdAt FROM users WHERE id = ?').get(id);
-  // Sign JWT for session
-  const { signToken } = require('../lib/jwt');
-  const token = signToken({ sub: user.id, email: user.email });
+  // Sign JWT for session (if configured)
+  let token: string | undefined = undefined;
+  try {
+    const { signToken } = require('../lib/jwt');
+    token = signToken({ sub: user.id, email: user.email });
+  } catch (e: any) {
+    // JWT not configured or failed to sign. Proceed without token so the API remains usable in dev.
+    // The client should detect missing token and prompt for configuration or use non-authenticated flows.
+    // Log a warning to help debugging.
+    // eslint-disable-next-line no-console
+    console.warn('Failed to sign JWT in registerHandler:', String(e));
+  }
   return res.status(201).json({ user, token });
 };
 
