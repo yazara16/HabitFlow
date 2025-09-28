@@ -94,6 +94,9 @@ export function createServer() {
   // Dashboard stats
   app.get('/api/users/:userId/dashboard', requireAuth, requireOwner, getDashboardStats);
 
+  // Calendar data (logs & overrides for range)
+  app.get('/api/users/:userId/calendar', requireAuth, requireOwner, getCalendarData);
+
   // Debug (dev-only)
   app.get('/api/debug/users', listUsers);
   app.get('/api/debug/habits', listHabits);
