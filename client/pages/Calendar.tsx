@@ -118,7 +118,14 @@ export default function Calendar() {
     }
   };
 
+  // calendarLogsMap: key `${date}_${habitId}` -> { completedBoolean, completedAmount }
+  const [calendarLogsMap, setCalendarLogsMap] = useState<Record<string, any>>({});
+
   function toCalHabit(h: Habit, date: Date): CalendarHabit {
+    const iso = date.toISOString().split('T')[0];
+    const key = `${iso}_${h.id}`;
+    const serverEntry = calendarLogsMap[key];
+    const completed = serverEntry ? !!serverEntry.completedBoolean : (h.completed >= h.target);
     return {
       id: h.id,
       name: h.name,
@@ -126,7 +133,7 @@ export default function Calendar() {
       icon: h.icon,
       color: h.color,
       time: h.reminderTime,
-      completed: h.completed >= h.target,
+      completed,
       streak: h.streak,
     };
   }
