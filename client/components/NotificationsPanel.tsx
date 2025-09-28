@@ -223,17 +223,31 @@ export default function NotificationsPanel() {
           {unreadCount > 0 && <Badge className="ml-2">{unreadCount}</Badge>}
         </div>
         <div className="flex items-center space-x-2">
-          <Button variant="ghost" size="sm" onClick={markAllAsRead} disabled={unreadCount === 0}>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={markAllAsRead}
+            disabled={unreadCount === 0}
+          >
             Marcar todas leídas
           </Button>
         </div>
       </CardHeader>
       <CardContent>
-        {notifications.length === 0 && <div className="text-sm text-muted-foreground">Sin notificaciones</div>}
+        {notifications.length === 0 && (
+          <div className="text-sm text-muted-foreground">
+            Sin notificaciones
+          </div>
+        )}
         {notifications.map((n) => (
-          <div key={n.id} className="flex items-start justify-between py-3 border-b last:border-b-0">
+          <div
+            key={n.id}
+            className="flex items-start justify-between py-3 border-b last:border-b-0"
+          >
             <div className="flex items-start space-x-3">
-              <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${n.color}`}>
+              <div
+                className={`w-10 h-10 rounded-lg flex items-center justify-center ${n.color}`}
+              >
                 <n.icon className="h-5 w-5" />
               </div>
               <div>
@@ -249,8 +263,12 @@ export default function NotificationsPanel() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuItem onSelect={() => markAsRead(n.id)}>Marcar leída</DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => deleteNotification(n.id)}>Eliminar</DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => markAsRead(n.id)}>
+                    Marcar leída
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => deleteNotification(n.id)}>
+                    Eliminar
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
