@@ -186,9 +186,9 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
     data: fetchedHabits,
     isLoading: habitsLoading,
     isError: habitsError,
-  } = useQuery(
-    ["habits", user?.id],
-    async () => {
+  } = useQuery({
+    queryKey: ["habits", user?.id],
+    queryFn: async () => {
       if (!user) return [] as Habit[];
       const token = localStorage.getItem("auth:token");
       const res = await fetch(`/api/users/${user.id}/habits`, {
@@ -197,8 +197,9 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
       if (!res.ok) throw new Error("Failed to load habits");
       return (await res.json()) as Habit[];
     },
-    { enabled: !!user, staleTime: 30 * 1000 },
-  );
+    enabled: !!user,
+    staleTime: 30 * 1000,
+  });
 
   // Replace local state when fetched
   useEffect(() => {
@@ -211,8 +212,8 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
   }, [fetchedHabits, user, habitsError]);
 
   // Mutations: create, update, delete
-  const createMutation = useMutation(
-    async (body: any) => {
+  const createMutation = useMutation({
+    mutationFn: async (body: any) => {
       if (!user) throw new Error("Not authenticated");
       const token = localStorage.getItem("auth:token");
       const res = await fetch(`/api/users/${user.id}/habits`, {
@@ -226,15 +227,13 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
       if (!res.ok) throw new Error("Failed to create habit");
       return await res.json();
     },
-    {
-      onSuccess: (created: Habit) => {
-        queryClient.invalidateQueries(["habits", user?.id]);
-      },
+    onSuccess: (created: Habit) => {
+      queryClient.invalidateQueries({ queryKey: ["habits", user?.id] });
     },
-  );
+  });
 
-  const updateMutation = useMutation(
-    async ({ id, patch }: { id: string; patch: Partial<Habit> }) => {
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, patch }: { id: string; patch: Partial<Habit> }) => {
       if (!user) throw new Error("Not authenticated");
       const token = localStorage.getItem("auth:token");
       const res = await fetch(`/api/users/${user.id}/habits/${id}`, {
@@ -248,15 +247,13 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
       if (!res.ok) throw new Error("Failed to update habit");
       return await res.json();
     },
-    {
-      onSuccess: (_updated: Habit) => {
-        queryClient.invalidateQueries(["habits", user?.id]);
-      },
+    onSuccess: (_updated: Habit) => {
+      queryClient.invalidateQueries({ queryKey: ["habits", user?.id] });
     },
-  );
+  });
 
-  const deleteMutation = useMutation(
-    async (id: string) => {
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
       if (!user) throw new Error("Not authenticated");
       const token = localStorage.getItem("auth:token");
       const res = await fetch(`/api/users/${user.id}/habits/${id}`, {
@@ -266,12 +263,10 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
       if (!res.ok && res.status !== 204) throw new Error("Failed to delete");
       return id;
     },
-    {
-      onSuccess: (_id) => {
-        queryClient.invalidateQueries(["habits", user?.id]);
-      },
+    onSuccess: (_id) => {
+      queryClient.invalidateQueries({ queryKey: ["habits", user?.id] });
     },
-  );
+  });
   const [perDayHidden, setPerDayHidden] = useState<Record<string, Set<string>>>(
     {},
   );
