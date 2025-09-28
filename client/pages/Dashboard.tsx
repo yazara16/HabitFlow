@@ -62,9 +62,9 @@ export default function Dashboard() {
     isLoading: statsLoading,
     isError: statsError,
     error: statsErrorObj,
-  } = useQuery(
-    ["dashboard", user?.id],
-    async () => {
+  } = useQuery({
+    queryKey: ["dashboard", user?.id],
+    queryFn: async () => {
       if (!user) throw new Error("Not authenticated");
       const token = localStorage.getItem("auth:token");
       const res = await fetch(`/api/users/${user.id}/dashboard`, {
@@ -76,8 +76,10 @@ export default function Dashboard() {
       }
       return res.json();
     },
-    { enabled: !!user, staleTime: 60 * 1000, cacheTime: 5 * 60 * 1000 },
-  );
+    enabled: !!user,
+    staleTime: 60 * 1000,
+    cacheTime: 5 * 60 * 1000,
+  });
 
   useEffect(() => {
     if (statsError && statsErrorObj) {
