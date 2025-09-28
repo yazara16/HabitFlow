@@ -233,7 +233,13 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, patch }: { id: string; patch: Partial<Habit> }) => {
+    mutationFn: async ({
+      id,
+      patch,
+    }: {
+      id: string;
+      patch: Partial<Habit>;
+    }) => {
       if (!user) throw new Error("Not authenticated");
       const token = localStorage.getItem("auth:token");
       const res = await fetch(`/api/users/${user.id}/habits/${id}`, {
