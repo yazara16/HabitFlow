@@ -147,7 +147,11 @@ export default function Dashboard() {
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Hoy Completados</p>
                   <p className="text-2xl font-bold text-foreground">
-                    {completedHabitsToday}/{habits.length}
+                    {statsLoading ? (
+                      <span className="inline-block w-24 h-6 bg-muted/30 rounded animate-pulse" />
+                    ) : (
+                      `${completedHabitsToday}/${totalHabits}`
+                    )}
                   </p>
                 </div>
                 <div className="p-3 bg-primary/10 rounded-lg">
@@ -156,7 +160,7 @@ export default function Dashboard() {
               </div>
               <div className="mt-4">
                 <Progress value={completionPercentage} className="h-2" />
-                <p className="text-xs text-muted-foreground mt-2">{Math.round(completionPercentage)}% completado</p>
+                <p className="text-xs text-muted-foreground mt-2">{statsLoading ? <span className="inline-block w-8 h-4 bg-muted/30 rounded animate-pulse" /> : `${Math.round(completionPercentage)}% completado`}</p>
               </div>
             </CardContent>
           </Card>
