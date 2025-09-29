@@ -11,6 +11,7 @@ import {
   googleMockHandler,
   getUserHandler,
   updateUserHandler,
+  deleteUserHandler,
 } from "./routes/auth.prisma";
 
 import {
@@ -38,36 +39,18 @@ import {
   deleteReminder,
 } from "./routes/reminders.prisma";
 
-// Temporarily disabled - using achievements.prisma instead
-// import {
-//   listCatalog,
-//   getUserAchievements,
-//   unlockAchievement,
-//   seedCatalog,
-// } from "./routes/achievements";
-
-// Temporarily disabled devices - not critical for basic functionality
-// import {
-//   registerDevice,
-//   unregisterDevice,
-//   listDevices,
-// } from "./routes/devices";
-
-// Temporarily disabled habit_logs - using habit-logs.prisma instead
-// import { listLogs, createLog, updateLog, deleteLog } from "./routes/habit_logs";
-// Temporarily disabled overrides - not critical for basic functionality
-// import {
-//   listOverrides,
-//   createOverride,
-//   deleteOverride,
-// } from "./routes/overrides";
-import { getSettings, upsertSettings } from "./routes/settings.prisma";
+import {
+  getSettings,
+  upsertSettings
+} from "./routes/settings.prisma";
 import { getDashboardStats } from "./routes/dashboard.prisma";
 import { getCalendarData } from "./routes/calendar.prisma";
 import { getGoals, createGoal, updateGoal, deleteGoal, getGoalProgress } from "./routes/goals.prisma";
 import { getAchievements, unlockAchievement, checkAchievements } from "./routes/achievements.prisma";
 import { getStreaks, updateStreak } from "./routes/streak.prisma";
 import { createHabitLog, updateHabitLog, deleteHabitLog, getHabitLogs } from "./routes/habit-logs.prisma";
+
+import { createBackup } from "./routes/backup";
 
 // Middleware
 import { requireAuth } from "./middleware/auth.prisma";
@@ -78,11 +61,10 @@ import db from "./db";
 export function createServer() {
   const app = express();
 
-  // Security: restrict CORS to front-end origin if provided and allow credentials for cookie usage
   const FRONTEND = process.env.FRONTEND_URL || "http://localhost:5173";
   app.use(cors({ origin: FRONTEND, credentials: true }));
 
-  // Basic security headers
+  // Security headers
   app.use((req, res, next) => {
     res.setHeader(
       "Content-Security-Policy",
@@ -100,11 +82,10 @@ export function createServer() {
     next();
   });
 
-  // Body parsing
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
-  // CSRF middleware (optional)
+  // CSRF middleware
   try {
     const { ensureCsrfCookie, csrfProtection } = require("./middleware/csrf");
     app.use(ensureCsrfCookie);
@@ -116,7 +97,6 @@ export function createServer() {
     console.warn("Failed to initialize CSRF middleware", String(e));
   }
 
-  // Helper: ensure authenticated user matches :userId param for user-scoped routes
   const requireOwner = (req: any, res: any, next: any) => {
     const paramId = req.params.userId || req.params.id;
     if (!req.authUserId)
@@ -126,15 +106,14 @@ export function createServer() {
     next();
   };
 
-  // Example API routes
+  // API routes
   app.get("/api/ping", (_req, res) => {
     const ping = process.env.PING_MESSAGE ?? "ping";
     res.json({ message: ping });
   });
-
   app.get("/api/demo", handleDemo);
 
-  // Auth routes
+  // Auth
   app.post("/api/register", registerHandler);
   app.post("/api/login", loginHandler);
   app.get("/api/auth/google", (req, res) => {
@@ -172,52 +151,17 @@ export function createServer() {
   app.put("/api/users/:id", requireAuth, requireOwner, updateUserHandler);
 
   // Habits
-  app.get(
-    "/api/users/:userId/habits",
-    requireAuth,
-    requireOwner,
-    getHabitsHandler,
-  );
-  app.post(
-    "/api/users/:userId/habits",
-    requireAuth,
-    requireOwner,
-    createHabitHandler,
-  );
-  app.put(
-    "/api/users/:userId/habits/:habitId",
-    requireAuth,
-    requireOwner,
-    updateHabitHandler,
-  );
-  app.delete(
-    "/api/users/:userId/habits/:habitId",
-    requireAuth,
-    requireOwner,
-    deleteHabitHandler,
-  );
-  app.post(
-    "/api/users/:userId/habits/:habitId/complete",
-    requireAuth,
-    requireOwner,
-    completeHabitHandler,
-  );
+  app.get("/api/users/:userId/habits", requireAuth, requireOwner, getHabitsHandler);
+  app.post("/api/users/:userId/habits", requireAuth, requireOwner, createHabitHandler);
+  app.put("/api/users/:userId/habits/:habitId", requireAuth, requireOwner, updateHabitHandler);
+  app.delete("/api/users/:userId/habits/:habitId", requireAuth, requireOwner, deleteHabitHandler);
+  app.post("/api/users/:userId/habits/:habitId/complete", requireAuth, requireOwner, completeHabitHandler);
 
   // Dashboard
-  app.get(
-    "/api/users/:userId/dashboard",
-    requireAuth,
-    requireOwner,
-    getDashboardStats,
-  );
+  app.get("/api/users/:userId/dashboard", requireAuth, requireOwner, getDashboardStats);
 
   // Calendar
-  app.get(
-    "/api/users/:userId/calendar",
-    requireAuth,
-    requireOwner,
-    getCalendarData,
-  );
+  app.get("/api/users/:userId/calendar", requireAuth, requireOwner, getCalendarData);
 
   // Debug
   app.get("/api/debug/users", listUsers);
@@ -225,87 +169,17 @@ export function createServer() {
   app.get("/api/debug/stats", dbStats);
 
   // Notifications
-  app.get(
-    "/api/users/:userId/notifications",
-    requireAuth,
-    requireOwner,
-    listNotifications,
-  );
-  app.post(
-    "/api/users/:userId/notifications",
-    requireAuth,
-    requireOwner,
-    createNotification,
-  );
-  app.post(
-    "/api/users/:userId/notifications/mark_all",
-    requireAuth,
-    requireOwner,
-    markAllRead,
-  );
-  app.put(
-    "/api/users/:userId/notifications/:id/read",
-    requireAuth,
-    requireOwner,
-    markAsRead,
-  );
-  app.delete(
-    "/api/users/:userId/notifications/:id",
-    requireAuth,
-    requireOwner,
-    deleteNotification,
-  );
+  app.get("/api/users/:userId/notifications", requireAuth, requireOwner, listNotifications);
+  app.post("/api/users/:userId/notifications", requireAuth, requireOwner, createNotification);
+  app.post("/api/users/:userId/notifications/mark_all", requireAuth, requireOwner, markAllRead);
+  app.put("/api/users/:userId/notifications/:id/read", requireAuth, requireOwner, markAsRead);
+  app.delete("/api/users/:userId/notifications/:id", requireAuth, requireOwner, deleteNotification);
 
   // Reminders
-  app.get(
-    "/api/users/:userId/reminders",
-    requireAuth,
-    requireOwner,
-    listReminders,
-  );
-  app.post(
-    "/api/users/:userId/reminders",
-    requireAuth,
-    requireOwner,
-    createReminder,
-  );
-  app.put(
-    "/api/users/:userId/reminders/:id",
-    requireAuth,
-    requireOwner,
-    updateReminder,
-  );
-  app.delete(
-    "/api/users/:userId/reminders/:id",
-    requireAuth,
-    requireOwner,
-    deleteReminder,
-  );
-
-  // Achievements (disabled temporarily - using achievements.prisma routes)
-  // app.get("/api/achievements", listCatalog);
-  // app.post("/api/achievements/seed", seedCatalog);
-  // app.get(
-  //   "/api/users/:userId/achievements",
-  //   requireAuth,
-  //   requireOwner,
-  //   getUserAchievement,
-  // );
-
-  // Devices (disabled temporarily)
-  // app.get("/api/users/:userId/devices", requireAuth, requireOwner, listDevices);
-  // app.post(
-  //   "/api/users/:userId/devices",
-  //   requireAuth,
-  //   requireOwner,
-  //   registerDevice,
-  // );
-  // app.delete(
-  //   "/api/users/:userId/devices/:id",
-  //   requireAuth,
-  //   requireOwner,
-  //   unregisterDevice,
-  // );
+  app.get("/api/users/:userId/reminders", requireAuth, requireOwner, listReminders);
+  app.post("/api/users/:userId/reminders", requireAuth, requireOwner, createReminder);
+  app.put("/api/users/:userId/reminders/:id", requireAuth, requireOwner, updateReminder);
+  app.delete("/api/users/:userId/reminders/:id", requireAuth, requireOwner, deleteReminder);
 
   // Goals & Progress
   app.get("/api/users/:userId/goals", requireAuth, requireOwner, getGoals);
@@ -329,6 +203,16 @@ export function createServer() {
   app.put("/api/users/:userId/habits/:habitId/logs/:logId", requireAuth, requireOwner, updateHabitLog);
   app.delete("/api/users/:userId/habits/:habitId/logs/:logId", requireAuth, requireOwner, deleteHabitLog);
 
+  // User settings
+  app.get("/api/users/:userId/settings", requireAuth, requireOwner, getSettings);
+  app.put("/api/users/:userId/settings", requireAuth, requireOwner, upsertSettings);
+
+  // Backup
+  app.post("/api/users/:userId/backup", requireAuth, requireOwner, createBackup);
+
+  // Delete account
+  app.delete("/api/users/:id", requireAuth, requireOwner, deleteUserHandler);
+
   // Admin
   const adminToken = process.env.ADMIN_TOKEN || "CHANGE_ME_ADMIN_TOKEN";
   const requireAdmin = (req: any, res: any, next: any) => {
@@ -336,8 +220,7 @@ export function createServer() {
     if (!auth) return res.status(401).json({ message: "Unauthorized" });
     let token = auth;
     if (auth.startsWith("Bearer ")) token = auth.slice(7);
-    if (token !== adminToken)
-      return res.status(403).json({ message: "Forbidden" });
+    if (token !== adminToken) return res.status(403).json({ message: "Forbidden" });
     next();
   };
   app.post("/api/admin/run_worker", requireAdmin, (req, res) => {
@@ -348,66 +231,6 @@ export function createServer() {
       res.status(500).json({ error: "worker failed", details: String(e) });
     }
   });
-
-  // Habit logs (disabled old version - using habit-logs.prisma above)
-  // app.get(
-  //   "/api/users/:userId/habits/:habitId/logs",
-  //   requireAuth,
-  //   requireOwner,
-  //   listLogs,
-  // );
-  // app.post(
-  //   "/api/users/:userId/habits/:habitId/logs",
-  //   requireAuth,
-  //   requireOwner,
-  //   createLog,
-  // );
-  // app.put(
-  //   "/api/users/:userId/habits/:habitId/logs/:logId",
-  //   requireAuth,
-  //   requireOwner,
-  //   updateLog,
-  // );
-  // app.delete(
-  //   "/api/users/:userId/habits/:habitId/logs/:logId",
-  //   requireAuth,
-  //   requireOwner,
-  //   deleteLog,
-  // );
-
-  // Overrides (disabled temporarily)
-  // app.get(
-  //   "/api/users/:userId/habits/:habitId/overrides",
-  //   requireAuth,
-  //   requireOwner,
-  //   listOverrides,
-  // );
-  // app.post(
-  //   "/api/users/:userId/habits/:habitId/overrides",
-  //   requireAuth,
-  //   requireOwner,
-  //   createOverride,
-  // );
-  // app.delete(
-  //   "/api/users/:userId/habits/:habitId/overrides/:overrideId",
-  //   requireAuth,
-  //   requireOwner,
-  //   deleteOverride,
-  // );
-
-  // User settings
-  app.get(
-    "/api/users/:userId/settings",
-    requireAuth,
-    requireOwner,
-    getSettings,
-  );
-  app.put(
-    "/api/users/:userId/settings",
-    requireAuth,
-    requireOwner,
-    upsertSettings,
-  );
 
   return app;
 }

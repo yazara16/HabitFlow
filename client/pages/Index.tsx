@@ -1,6 +1,12 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -22,6 +28,8 @@ import {
   Users,
   Clock,
   Heart,
+  ShoppingCart,
+  Moon,
   Twitter,
   Instagram,
   Facebook,
@@ -30,7 +38,7 @@ import {
   UserPlus,
   LogIn,
   Book,
-  GraduationCap
+  GraduationCap,
 } from "lucide-react";
 import LandingNav from "@/components/LandingNav";
 
@@ -39,66 +47,77 @@ export default function Index() {
     {
       icon: Target,
       title: "Organización Inteligente",
-      description: "Crea y organiza hábitos por categorías: ejercicio, hidratación, finanzas, compras y más.",
-      color: "text-blue-500"
+      description:
+        "Crea y organiza hábitos por categorías: ejercicio, hidratación, finanzas, compras y más.",
+      color: "text-blue-500",
     },
     {
       icon: BarChart3,
       title: "Visualización Avanzada",
-      description: "Dashboards interactivos con gráficas que muestran tu progreso y tendencias.",
-      color: "text-green-500"
+      description:
+        "Dashboards interactivos con gráficas que muestran tu progreso y tendencias.",
+      color: "text-green-500",
     },
     {
       icon: Zap,
       title: "Motivación Instantánea",
-      description: "Recibe retroalimentación inmediata, logros virtuales y animaciones motivacionales.",
-      color: "text-yellow-500"
+      description:
+        "Recibe retroalimentación inmediata, logros virtuales y animaciones motivacionales.",
+      color: "text-yellow-500",
     },
     {
       icon: Bell,
       title: "Recordatorios Inteligentes",
-      description: "Notificaciones personalizadas y sugerencias basadas en tu historial.",
-      color: "text-purple-500"
+      description:
+        "Notificaciones personalizadas y sugerencias basadas en tu historial.",
+      color: "text-purple-500",
     },
     {
       icon: Calendar,
       title: "Planificación Visual",
-      description: "Calendario interactivo con drag & drop para organizar tu rutina perfecta.",
-      color: "text-indigo-500"
+      description:
+        "Calendario interactivo con drag & drop para organizar tu rutina perfecta.",
+      color: "text-indigo-500",
     },
     {
       icon: Smartphone,
       title: "Acceso Offline",
-      description: "Funcionalidad PWA para usar la app sin conexión y máxima seguridad.",
-      color: "text-pink-500"
-    }
+      description:
+        "Funcionalidad PWA para usar la app sin conexión y máxima seguridad.",
+      color: "text-pink-500",
+    },
   ];
 
   const stats = [
     { number: "10K+", label: "Usuarios activos", icon: Users },
     { number: "50K+", label: "Hábitos creados", icon: Target },
     { number: "85%", label: "Tasa de éxito", icon: TrendingUp },
-    { number: "24/7", label: "Soporte", icon: Clock }
+    { number: "24/7", label: "Soporte", icon: Clock },
   ];
 
   return (
     <div className="min-h-screen bg-background">
       <LandingNav />
-      
+
       {/* Hero Section */}
-      <section id="hero" className="relative px-4 py-20 sm:px-6 lg:px-8 bg-gradient-to-br from-background via-background to-accent/10">
+      <section
+        id="hero"
+        className="relative px-4 py-20 sm:px-6 lg:px-8 bg-gradient-to-br from-background via-background to-accent/10"
+      >
         <div className="max-w-7xl mx-auto text-center">
-          
           <h1 className="text-4xl sm:text-6xl font-bold text-foreground mb-6 leading-tight">
             Transforma tu vida con
-            <span className="text-primary block mt-2">hábitos inteligentes</span>
+            <span className="text-primary block mt-2">
+              hábitos inteligentes
+            </span>
           </h1>
-          
+
           <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed">
-            HabitFlow es la aplicación definitiva para crear, rastrear y mantener hábitos saludables. 
-            Con visualizaciones avanzadas, motivación constante y herramientas inteligentes.
+            HabitFlow es la aplicación definitiva para crear, rastrear y
+            mantener hábitos saludables. Con visualizaciones avanzadas,
+            motivación constante y herramientas inteligentes.
           </p>
-          
+
           <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4 mb-12">
             <Link to="/register">
               <Button size="lg" className="px-8 py-6 text-lg font-semibold">
@@ -121,8 +140,12 @@ export default function Index() {
                 <div className="inline-flex items-center justify-center w-12 h-12 bg-primary/10 rounded-lg mb-2">
                   <stat.icon className="h-6 w-6 text-primary" />
                 </div>
-                <div className="text-2xl font-bold text-foreground">{stat.number}</div>
-                <div className="text-sm text-muted-foreground">{stat.label}</div>
+                <div className="text-2xl font-bold text-foreground">
+                  {stat.number}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  {stat.label}
+                </div>
               </div>
             ))}
           </div>
@@ -137,15 +160,21 @@ export default function Index() {
               Características que marcan la diferencia
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Descubre por qué miles de personas eligen HabitFlow para transformar sus rutinas diarias
+              Descubre por qué miles de personas eligen HabitFlow para
+              transformar sus rutinas diarias
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((feature, index) => (
-              <Card key={index} className="group hover:shadow-lg transition-all duration-300 border border-border/50 hover:border-primary/20">
+              <Card
+                key={index}
+                className="group hover:shadow-lg transition-all duration-300 border border-border/50 hover:border-primary/20"
+              >
                 <CardHeader>
-                  <div className={`inline-flex items-center justify-center w-12 h-12 rounded-lg bg-background border border-border group-hover:border-primary/20 transition-colors mb-4`}>
+                  <div
+                    className={`inline-flex items-center justify-center w-12 h-12 rounded-lg bg-background border border-border group-hover:border-primary/20 transition-colors mb-4`}
+                  >
                     <feature.icon className={`h-6 w-6 ${feature.color}`} />
                   </div>
                   <CardTitle className="text-xl">{feature.title}</CardTitle>
@@ -162,33 +191,88 @@ export default function Index() {
       </section>
 
       {/* Categories Preview */}
-      <section id="categories" className="px-4 py-20 sm:px-6 lg:px-8 bg-muted/30">
+      <section
+        id="categories"
+        className="px-4 py-20 sm:px-6 lg:px-8 bg-muted/30"
+      >
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
               Organiza todos tus hábitos
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Categorías inteligentes para mantener tu vida equilibrada y organizada
+              Categorías inteligentes para mantener tu vida equilibrada y
+              organizada
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { name: "Ejercicio & Salud", icon: Heart, color: "bg-red-500", count: "12 hábitos" },
-              { name: "Hidratación", icon: CheckCircle2, color: "bg-blue-500", count: "3 hábitos" },
-              { name: "Finanzas", icon: TrendingUp, color: "bg-green-500", count: "8 hábitos" },
-              { name: "Lectura", icon: Book, color: "bg-amber-500", count: "6 hábitos" },
-              { name: "Estudio", icon: GraduationCap, color: "bg-teal-500", count: "5 hábitos" },
-              { name: "Personalizado", icon: Star, color: "bg-purple-500", count: "15 hábitos" }
+              {
+                name: "Ejercicio & Salud",
+                icon: Heart,
+                color: "bg-red-500",
+                count: "12 hábitos",
+              },
+              {
+                name: "Hidratación",
+                icon: CheckCircle2,
+                color: "bg-blue-500",
+                count: "3 hábitos",
+              },
+              {
+                name: "Finanzas",
+                icon: TrendingUp,
+                color: "bg-green-500",
+                count: "8 hábitos",
+              },
+              {
+                name: "Lectura",
+                icon: Book,
+                color: "bg-amber-500",
+                count: "6 hábitos",
+              },
+              {
+                name: "Estudio",
+                icon: GraduationCap,
+                color: "bg-teal-500",
+                count: "5 hábitos",
+              },
+              {
+                name: "Compras",
+                icon: ShoppingCart,
+                color: "bg-orange-500",
+                count: "4 hábitos",
+              },
+              {
+                name: "Meditación",
+                icon: Moon,
+                color: "bg-purple-500",
+                count: "7 hábitos",
+              },
+              {
+                name: "Personalizado",
+                icon: Star,
+                color: "bg-pink-500",
+                count: "15 hábitos",
+              },
             ].map((category, index) => (
-              <Card key={index} className="group hover:shadow-md transition-all duration-300">
+              <Card
+                key={index}
+                className="group hover:shadow-md transition-all duration-300"
+              >
                 <CardContent className="p-6 text-center">
-                  <div className={`inline-flex items-center justify-center w-16 h-16 ${category.color} rounded-xl mb-4 group-hover:scale-110 transition-transform`}>
+                  <div
+                    className={`inline-flex items-center justify-center w-16 h-16 ${category.color} rounded-xl mb-4 group-hover:scale-110 transition-transform`}
+                  >
                     <category.icon className="h-8 w-8 text-white" />
                   </div>
-                  <h3 className="font-semibold text-foreground mb-2">{category.name}</h3>
-                  <p className="text-sm text-muted-foreground">{category.count}</p>
+                  <h3 className="font-semibold text-foreground mb-2">
+                    {category.name}
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    {category.count}
+                  </p>
                 </CardContent>
               </Card>
             ))}
@@ -205,10 +289,14 @@ export default function Index() {
             </div>
           </div>
           <div className="text-center md:text-left">
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">Sobre nosotros</h2>
+            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
+              Sobre nosotros
+            </h2>
             <p className="text-lg text-muted-foreground">
-              En HabitFlow creemos que pequeños pasos diarios generan grandes cambios. Nuestra misión es darte
-              herramientas claras, visuales y motivadoras para construir hábitos sostenibles y alcanzar tus metas.
+              En HabitFlow creemos que pequeños pasos diarios generan grandes
+              cambios. Nuestra misión es darte herramientas claras, visuales y
+              motivadoras para construir hábitos sostenibles y alcanzar tus
+              metas.
             </p>
           </div>
         </div>
@@ -222,19 +310,55 @@ export default function Index() {
               <div className="w-12 h-12 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mr-3">
                 <MessageSquare className="h-6 w-6 text-primary" />
               </div>
-              <h2 className="text-3xl sm:text-4xl font-bold text-foreground">Contacto</h2>
+              <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
+                Contacto
+              </h2>
             </div>
-            <p className="text-lg text-muted-foreground mb-6">Escríbenos o conéctate con nosotros en redes sociales.</p>
+            <p className="text-lg text-muted-foreground mb-6">
+              Escríbenos o conéctate con nosotros en redes sociales.
+            </p>
             <div className="flex items-center space-x-4">
-              <a href="mailto:soporte@habitflow.app" className="underline text-primary">soporte@habitflow.app</a>
-              <a href="#" aria-label="Twitter" className="p-2 rounded-lg border border-border hover:bg-muted/50 transition"><Twitter className="h-4 w-4" /></a>
-              <a href="#" aria-label="Instagram" className="p-2 rounded-lg border border-border hover:bg-muted/50 transition"><Instagram className="h-4 w-4" /></a>
-              <a href="#" aria-label="Facebook" className="p-2 rounded-lg border border-border hover:bg-muted/50 transition"><Facebook className="h-4 w-4" /></a>
-              <a href="#" aria-label="LinkedIn" className="p-2 rounded-lg border border-border hover:bg-muted/50 transition"><Linkedin className="h-4 w-4" /></a>
+              <a
+                href="mailto:soporte@habitflow.app"
+                className="underline text-primary"
+              >
+                soporte@habitflow.app
+              </a>
+              <a
+                href="#"
+                aria-label="Twitter"
+                className="p-2 rounded-lg border border-border hover:bg-muted/50 transition"
+              >
+                <Twitter className="h-4 w-4" />
+              </a>
+              <a
+                href="#"
+                aria-label="Instagram"
+                className="p-2 rounded-lg border border-border hover:bg-muted/50 transition"
+              >
+                <Instagram className="h-4 w-4" />
+              </a>
+              <a
+                href="#"
+                aria-label="Facebook"
+                className="p-2 rounded-lg border border-border hover:bg-muted/50 transition"
+              >
+                <Facebook className="h-4 w-4" />
+              </a>
+              <a
+                href="#"
+                aria-label="LinkedIn"
+                className="p-2 rounded-lg border border-border hover:bg-muted/50 transition"
+              >
+                <Linkedin className="h-4 w-4" />
+              </a>
             </div>
           </div>
           <form
-            onSubmit={(e) => { e.preventDefault(); toast({ title: "Mensaje enviado" }); }}
+            onSubmit={(e) => {
+              e.preventDefault();
+              toast({ title: "Mensaje enviado" });
+            }}
             className="space-y-4"
           >
             <div className="space-y-2">
@@ -243,13 +367,25 @@ export default function Index() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="cemail">Correo</Label>
-              <Input id="cemail" type="email" placeholder="tu@correo.com" required />
+              <Input
+                id="cemail"
+                type="email"
+                placeholder="tu@correo.com"
+                required
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="cmsg">Mensaje</Label>
-              <Textarea id="cmsg" placeholder="Cuéntanos en qué podemos ayudarte" rows={4} required />
+              <Textarea
+                id="cmsg"
+                placeholder="Cuéntanos en qué podemos ayudarte"
+                rows={4}
+                required
+              />
             </div>
-            <Button type="submit" className="w-full md:w-auto">Enviar</Button>
+            <Button type="submit" className="w-full md:w-auto">
+              Enviar
+            </Button>
           </form>
         </div>
       </section>
@@ -263,7 +399,8 @@ export default function Index() {
               ¿Listo para transformar tu vida?
             </h2>
             <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Únete a miles de personas que ya están construyendo mejores hábitos y alcanzando sus metas con HabitFlow.
+              Únete a miles de personas que ya están construyendo mejores
+              hábitos y alcanzando sus metas con HabitFlow.
             </p>
             <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
               <Link to="/register">
@@ -290,7 +427,9 @@ export default function Index() {
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                 <CheckCircle2 className="h-5 w-5 text-primary-foreground" />
               </div>
-              <span className="text-xl font-bold text-foreground">HabitFlow</span>
+              <span className="text-xl font-bold text-foreground">
+                HabitFlow
+              </span>
             </div>
             <p className="text-muted-foreground text-center md:text-right">
               © 2025 HabitFlow. Construyendo mejores hábitos, un día a la vez.

@@ -2,6 +2,16 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import HabitDialog from "@/components/HabitDialog";
+
+interface DashboardStats {
+  completedToday?: number;
+  totalHabits?: number;
+  maxStreak?: number;
+  weekCompleted?: number;
+  achievementsCount?: number;
+  categoryCounts?: Record<string, number>;
+  [key: string]: any;
+}
 import ProgressCharts from "@/components/ProgressCharts";
 import {
   Card,
@@ -32,6 +42,7 @@ import {
   Book,
   BookOpen,
   Clock,
+  Moon,
   ArrowUp,
   ArrowDown,
 } from "lucide-react";
@@ -62,7 +73,7 @@ export default function Dashboard() {
     isLoading: statsLoading,
     isError: statsError,
     error: statsErrorObj,
-  } = useQuery({
+  } = useQuery<DashboardStats, Error>({
     queryKey: ["dashboard", user?.id],
     queryFn: async () => {
       if (!user) throw new Error("Not authenticated");
@@ -79,7 +90,7 @@ export default function Dashboard() {
     enabled: !!user,
     staleTime: 60 * 1000,
     cacheTime: 5 * 60 * 1000,
-  });
+  } as any);
 
   useEffect(() => {
     if (statsError && statsErrorObj) {
@@ -499,6 +510,17 @@ export default function Dashboard() {
                     color: "text-indigo-600",
                   },
                   {
+                    key: "meditation",
+                    name: "Meditación",
+                    icon: Moon,
+                    count:
+                      serverStats?.categoryCounts?.meditation ??
+                      habits.filter((h) =>
+                        h.name.toLowerCase().includes("medit"),
+                      ).length,
+                    color: "text-purple-500",
+                  },
+                  {
                     key: "study",
                     name: "Estudio",
                     icon: BookOpen,
@@ -522,7 +544,10 @@ export default function Dashboard() {
                     className="flex items-center justify-between"
                   >
                     <div className="flex items-center space-x-3">
-                      <category.icon className={`h-4 w-4 ${category.color}`} />
+                      {(() => {
+                        const Icon = category.icon;
+                        return <Icon className={`h-4 w-4 ${category.color}`} />;
+                      })()}
                       <span className="text-sm font-medium">
                         {category.name}
                       </span>

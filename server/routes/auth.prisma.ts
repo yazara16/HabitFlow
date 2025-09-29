@@ -214,3 +214,32 @@ export const googleMockHandler: RequestHandler = (req, res) => {
   // Mock Google OAuth handler
   res.json({ message: "Google OAuth not implemented yet" });
 };
+
+export const deleteUserHandler: RequestHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Primero, eliminar datos dependientes si tienes relaciones (habits, logs, etc.)
+    // Ejemplo rápido usando db (ajusta según tus modelos y relaciones)
+    await db.habit.deleteMany({ where: { userId: Number(id) } });
+    await db.habitLog.deleteMany({ where: { userId: Number(id) } });
+    await db.habitOverride.deleteMany({ where: { userId: Number(id) } });
+    await db.notification.deleteMany({ where: { userId: Number(id) } });
+    await db.reminder.deleteMany({ where: { userId: Number(id) } });
+    await db.goal.deleteMany({ where: { userId: Number(id) } });
+    await db.progressEntry.deleteMany({ where: { userId: Number(id) } });
+    await db.streakRecord.deleteMany({ where: { userId: Number(id) } });
+    await db.userAchievement.deleteMany({ where: { userId: Number(id) } });
+    await db.category.deleteMany({ where: { userId: Number(id) } });
+    await db.theme.deleteMany({ where: { userId: Number(id) } });
+    await db.userSettings.deleteMany({ where: { userId: Number(id) } });
+
+    // Finalmente eliminar el usuario
+    await db.user.delete({ where: { id: Number(id) } });
+
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.error("Delete user error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
