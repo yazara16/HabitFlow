@@ -243,7 +243,10 @@ export default function NotificationsPanel() {
               <div
                 className={`w-10 h-10 rounded-lg flex items-center justify-center ${n.color}`}
               >
-                <n.icon className="h-5 w-5" />
+                {(() => {
+                  const Icon = n.icon;
+                  return <Icon className="h-5 w-5" />;
+                })()}
               </div>
               <div>
                 <div className="font-semibold">{n.title}</div>
