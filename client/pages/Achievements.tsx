@@ -526,21 +526,33 @@ export default function Achievements() {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="start">
-                              <DropdownMenuItem
-                                onSelect={() => copyText(`${s.text} ${s.url}`)}
-                              >
-                                <Copy className="h-4 w-4 mr-2" /> Copiar texto
+                              <DropdownMenuItem onSelect={() => window.open(s.fb, "_blank") }>
+                                <svg className="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M22 12a10 10 0 10-11.5 9.9v-7h-2.2v-2.9h2.2V9.3c0-2.2 1.3-3.5 3.3-3.5.96 0 1.96.17 1.96.17v2.1h-1.08c-1.06 0-1.39.66-1.39 1.33v1.6h2.36l-.38 2.9h-1.98v7A10 10 0 0022 12z"/></svg>
+                                Facebook
                               </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onSelect={() =>
-                                  downloadAchievementImage(
-                                    a.title,
-                                    iconToEmoji(a.icon),
-                                  )
-                                }
-                              >
-                                <Copy className="h-4 w-4 mr-2" /> Descargar
-                                imagen
+                              <DropdownMenuItem onSelect={() => window.open(s.wa, "_blank") }>
+                                <svg className="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M20.52 3.48A11.94 11.94 0 0012 0C5.37 0 .08 4.93.04 11.03a12.3 12.3 0 001.86 6.25L0 24l6.99-1.79a11.94 11.94 0 005.01 1.2c6.63 0 11.92-4.93 11.96-11.03a11.9 11.9 0 00-3.44-8.9zM12 21.5a9.4 9.4 0 01-4.7-1.2l-.34-.2-4.15 1.06 1.1-3.99-.22-.36A9.4 9.4 0 012.5 11C2.5 6 6.7 2.2 12 2.2c3.2 0 6.04 1.52 7.8 4.06A8.78 8.78 0 0120.78 11c0 5-4.2 9.5-8.78 10.5z"/></svg>
+                                WhatsApp
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onSelect={async () => {
+                                  try {
+                                    const blob = await generateAchievementImage(a.title, iconToEmoji(a.icon));
+                                    const shared = await tryWebShare(a.title, s.text, s.url, blob);
+                                    if (!shared) {
+                                      await copyText(`${s.text} ${s.url}`);
+                                      toast({ title: 'Compartir', description: 'Se copió el texto. Pega en Instagram para compartir.' });
+                                    }
+                                  } catch (e) {
+                                    await copyText(`${s.text} ${s.url}`);
+                                    toast({ title: 'Compartir', description: 'Se copió el texto. Pega en Instagram para compartir.' });
+                                  }
+                                }}>
+                                <svg className="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.2c3.2 0 3.584.012 4.85.07 1.17.053 1.96.24 2.42.4.6.22 1.03.48 1.48.92.45.45.7.88.92 1.48.16.46.35 1.25.4 2.42.06 1.26.07 1.65.07 4.85s-.012 3.585-.07 4.85c-.053 1.17-.24 1.96-.4 2.42-.22.6-.48 1.03-.92 1.48-.45.45-.88.7-1.48.92-.46.16-1.25.35-2.42.4-1.26.06-1.65.07-4.85.07s-3.585-.012-4.85-.07c-1.17-.053-1.96-.24-2.42-.4-.6-.22-1.03-.48-1.48-.92-.45-.45-.7-.88-.92-1.48-.16-.46-.35-1.25-.4-2.42C2.212 15.585 2.2 15.2 2.2 12s.012-3.585.07-4.85c.053-1.17.24-1.96.4-2.42.22-.6.48-1.03.92-1.48.45-.45.88-.7 1.48-.92.46-.16 1.25-.35 2.42-.4C8.415 2.212 8.8 2.2 12 2.2zm0 3.2a6.6 6.6 0 100 13.2 6.6 6.6 0 000-13.2zm0 10.88a4.28 4.28 0 110-8.56 4.28 4.28 0 010 8.56zm5.2-10.92a1.54 1.54 0 11-3.08 0 1.54 1.54 0 013.08 0z"/></svg>
+                                Instagram
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onSelect={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(s.text)}&url=${encodeURIComponent(s.url)}`, "_blank") }>
+                                <svg className="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M22.46 6c-.77.35-1.6.58-2.46.69a4.26 4.26 0 001.88-2.35 8.48 8.48 0 01-2.7 1.03 4.24 4.24 0 00-7.22 3.86A12.02 12.02 0 013 4.79a4.24 4.24 0 001.31 5.66 4.2 4.2 0 01-1.92-.53v.05a4.24 4.24 0 003.4 4.16 4.27 4.27 0 01-1.91.07 4.26 4.26 0 003.97 2.95A8.5 8.5 0 012 19.54a12.01 12.01 0 006.5 1.9c7.8 0 12.07-6.46 12.07-12.07 0-.18-.01-.35-.02-.53A8.6 8.6 0 0022.46 6z"/></svg>
+                                X
                               </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
