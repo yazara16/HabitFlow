@@ -217,9 +217,9 @@ export default function Settings() {
                   <RefreshCw className="h-4 w-4 mr-2" />
                   Restablecer
                 </Button>
-                <Button onClick={saveSettings}>
+                <Button onClick={saveSettings} disabled={saving}>
                   <Save className="h-4 w-4 mr-2" />
-                  Guardar Cambios
+                  {saving ? 'Guardando...' : 'Guardar Cambios'}
                 </Button>
               </div>
             )}
