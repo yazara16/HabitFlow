@@ -113,13 +113,9 @@ export default function NotificationsPanel() {
     },
     onSuccess: () => {
       if (queryClient)
-<<<<<<< HEAD
-        queryClient.invalidateQueries({ queryKey: ["notifications", user?.id] });
-=======
         queryClient.invalidateQueries({
           queryKey: ["notifications", user?.id],
         });
->>>>>>> origin/main
     },
   });
 
@@ -136,13 +132,9 @@ export default function NotificationsPanel() {
     },
     onSuccess: () => {
       if (queryClient)
-<<<<<<< HEAD
-        queryClient.invalidateQueries({ queryKey: ["notifications", user?.id] });
-=======
         queryClient.invalidateQueries({
           queryKey: ["notifications", user?.id],
         });
->>>>>>> origin/main
     },
   });
 
@@ -159,13 +151,9 @@ export default function NotificationsPanel() {
     },
     onSuccess: () => {
       if (queryClient)
-<<<<<<< HEAD
-        queryClient.invalidateQueries({ queryKey: ["notifications", user?.id] });
-=======
         queryClient.invalidateQueries({
           queryKey: ["notifications", user?.id],
         });
->>>>>>> origin/main
     },
   });
 
