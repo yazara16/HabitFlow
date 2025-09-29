@@ -73,7 +73,7 @@ export default function Dashboard() {
     isLoading: statsLoading,
     isError: statsError,
     error: statsErrorObj,
-  } = useQuery({
+  } = useQuery<DashboardStats, Error>({
     queryKey: ["dashboard", user?.id],
     queryFn: async () => {
       if (!user) throw new Error("Not authenticated");
@@ -90,7 +90,7 @@ export default function Dashboard() {
     enabled: !!user,
     staleTime: 60 * 1000,
     cacheTime: 5 * 60 * 1000,
-  });
+  } as any);
 
   useEffect(() => {
     if (statsError && statsErrorObj) {
