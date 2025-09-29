@@ -1,6 +1,6 @@
 -- CreateTable
 CREATE TABLE "public"."users" (
-    "id" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT,
@@ -12,8 +12,8 @@ CREATE TABLE "public"."users" (
 
 -- CreateTable
 CREATE TABLE "public"."habits" (
-    "id" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
+    "userId" INTEGER NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT,
     "categoryLabel" TEXT,
@@ -29,15 +29,15 @@ CREATE TABLE "public"."habits" (
     "reminderEnabled" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "lastCompleted" TIMESTAMP(3),
-    "categoryId" TEXT,
+    "categoryId" INTEGER,
 
     CONSTRAINT "habits_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "public"."notifications" (
-    "id" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
+    "userId" INTEGER NOT NULL,
     "type" TEXT,
     "title" TEXT,
     "message" TEXT,
@@ -51,9 +51,9 @@ CREATE TABLE "public"."notifications" (
 
 -- CreateTable
 CREATE TABLE "public"."habit_logs" (
-    "id" TEXT NOT NULL,
-    "habitId" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
+    "habitId" INTEGER NOT NULL,
+    "userId" INTEGER NOT NULL,
     "date" TIMESTAMP(3) NOT NULL,
     "completedAmount" INTEGER NOT NULL DEFAULT 0,
     "completedBoolean" BOOLEAN NOT NULL DEFAULT false,
@@ -66,9 +66,9 @@ CREATE TABLE "public"."habit_logs" (
 
 -- CreateTable
 CREATE TABLE "public"."habit_overrides" (
-    "id" TEXT NOT NULL,
-    "habitId" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
+    "habitId" INTEGER NOT NULL,
+    "userId" INTEGER NOT NULL,
     "date" TIMESTAMP(3) NOT NULL,
     "hidden" BOOLEAN NOT NULL DEFAULT false,
     "patch" TEXT,
@@ -80,7 +80,7 @@ CREATE TABLE "public"."habit_overrides" (
 
 -- CreateTable
 CREATE TABLE "public"."user_settings" (
-    "userId" TEXT NOT NULL,
+    "userId" INTEGER NOT NULL,
     "settings" TEXT,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -89,7 +89,7 @@ CREATE TABLE "public"."user_settings" (
 
 -- CreateTable
 CREATE TABLE "public"."achievements" (
-    "id" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
     "key" TEXT NOT NULL,
     "title" TEXT,
     "description" TEXT,
@@ -101,9 +101,9 @@ CREATE TABLE "public"."achievements" (
 
 -- CreateTable
 CREATE TABLE "public"."user_achievements" (
-    "id" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
-    "achievementId" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "achievementId" INTEGER NOT NULL,
     "earnedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "meta" TEXT,
 
@@ -112,9 +112,9 @@ CREATE TABLE "public"."user_achievements" (
 
 -- CreateTable
 CREATE TABLE "public"."reminders" (
-    "id" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
-    "habitId" TEXT,
+    "id" SERIAL NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "habitId" INTEGER,
     "timeOfDay" TEXT,
     "enabled" BOOLEAN NOT NULL DEFAULT true,
     "timezone" TEXT,
@@ -128,8 +128,8 @@ CREATE TABLE "public"."reminders" (
 
 -- CreateTable
 CREATE TABLE "public"."devices" (
-    "id" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
+    "userId" INTEGER NOT NULL,
     "platform" TEXT,
     "pushToken" TEXT,
     "lastSeenAt" TIMESTAMP(3),
@@ -140,8 +140,8 @@ CREATE TABLE "public"."devices" (
 
 -- CreateTable
 CREATE TABLE "public"."weekly_reports" (
-    "id" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
+    "userId" INTEGER NOT NULL,
     "weekStart" TIMESTAMP(3) NOT NULL,
     "weekEnd" TIMESTAMP(3) NOT NULL,
     "habitsCompleted" INTEGER NOT NULL DEFAULT 0,
@@ -158,8 +158,8 @@ CREATE TABLE "public"."weekly_reports" (
 
 -- CreateTable
 CREATE TABLE "public"."goals" (
-    "id" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
+    "userId" INTEGER NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT,
     "category" TEXT,
@@ -178,10 +178,10 @@ CREATE TABLE "public"."goals" (
 
 -- CreateTable
 CREATE TABLE "public"."progress_entries" (
-    "id" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
-    "habitId" TEXT,
-    "goalId" TEXT,
+    "id" SERIAL NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "habitId" INTEGER,
+    "goalId" INTEGER,
     "entryType" TEXT NOT NULL,
     "value" INTEGER NOT NULL DEFAULT 0,
     "description" TEXT,
@@ -193,9 +193,9 @@ CREATE TABLE "public"."progress_entries" (
 
 -- CreateTable
 CREATE TABLE "public"."streak_records" (
-    "id" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
-    "habitId" TEXT,
+    "id" SERIAL NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "habitId" INTEGER,
     "streakType" TEXT NOT NULL,
     "currentStreak" INTEGER NOT NULL DEFAULT 0,
     "longestStreak" INTEGER NOT NULL DEFAULT 0,
@@ -209,8 +209,8 @@ CREATE TABLE "public"."streak_records" (
 
 -- CreateTable
 CREATE TABLE "public"."categories" (
-    "id" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
+    "userId" INTEGER NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT,
     "color" TEXT NOT NULL,
@@ -224,8 +224,8 @@ CREATE TABLE "public"."categories" (
 
 -- CreateTable
 CREATE TABLE "public"."themes" (
-    "id" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
+    "userId" INTEGER NOT NULL,
     "themeName" TEXT NOT NULL DEFAULT 'system',
     "primaryColor" TEXT NOT NULL DEFAULT '#3b82f6',
     "secondaryColor" TEXT NOT NULL DEFAULT '#64748b',
