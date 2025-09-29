@@ -7,13 +7,6 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
-  Card,
-  CardHeader,
-  CardContent,
-  CardDescription,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   BarChart3,
   TrendingUp,
   Calendar,
