@@ -3,6 +3,16 @@ import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import HabitDialog from "@/components/HabitDialog";
+
+interface DashboardStats {
+  completedToday?: number;
+  totalHabits?: number;
+  maxStreak?: number;
+  weekCompleted?: number;
+  achievementsCount?: number;
+  categoryCounts?: Record<string, number>;
+  [key: string]: any;
+}
 import ProgressCharts from "@/components/ProgressCharts";
 import {
   Card,
