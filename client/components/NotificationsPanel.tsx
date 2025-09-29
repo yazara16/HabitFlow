@@ -229,14 +229,21 @@ export default function NotificationsPanel() {
               <Bell className="h-4 w-4" />
               <span className="font-medium">Notificaciones</span>
             </div>
-            <Button variant="ghost" size="sm" onClick={markAllAsRead} disabled={unreadCount === 0}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={markAllAsRead}
+              disabled={unreadCount === 0}
+            >
               Marcar todas leídas
             </Button>
           </div>
 
           <div className="max-h-72 overflow-y-auto">
             {notifications.length === 0 ? (
-              <div className="p-4 text-sm text-muted-foreground">Sin notificaciones</div>
+              <div className="p-4 text-sm text-muted-foreground">
+                Sin notificaciones
+              </div>
             ) : (
               notifications.map((n) => (
                 <div
@@ -249,7 +256,9 @@ export default function NotificationsPanel() {
                   }}
                 >
                   <div className="flex items-start space-x-3">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${n.color}`}>
+                    <div
+                      className={`w-10 h-10 rounded-lg flex items-center justify-center ${n.color}`}
+                    >
                       {(() => {
                         const Icon = n.icon;
                         return <Icon className="h-5 w-5" />;
@@ -257,7 +266,9 @@ export default function NotificationsPanel() {
                     </div>
                     <div>
                       <div className="font-semibold">{n.title}</div>
-                      <div className="text-sm text-muted-foreground">{n.message}</div>
+                      <div className="text-sm text-muted-foreground">
+                        {n.message}
+                      </div>
                     </div>
                   </div>
 
@@ -296,7 +307,9 @@ export default function NotificationsPanel() {
             <DialogTitle>{selected?.title}</DialogTitle>
             <DialogDescription>{selected?.message}</DialogDescription>
           </DialogHeader>
-          <div className="mt-4 text-sm text-muted-foreground">{selected?.time}</div>
+          <div className="mt-4 text-sm text-muted-foreground">
+            {selected?.time}
+          </div>
         </DialogContent>
       </Dialog>
     </>
