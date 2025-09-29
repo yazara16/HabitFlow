@@ -114,7 +114,9 @@ export default function NotificationsPanel() {
     },
     onSuccess: () => {
       if (queryClient)
-        queryClient.invalidateQueries({ queryKey: ["notifications", user?.id] });
+        queryClient.invalidateQueries({
+          queryKey: ["notifications", user?.id],
+        });
     },
   });
 
@@ -131,7 +133,9 @@ export default function NotificationsPanel() {
     },
     onSuccess: () => {
       if (queryClient)
-        queryClient.invalidateQueries({ queryKey: ["notifications", user?.id] });
+        queryClient.invalidateQueries({
+          queryKey: ["notifications", user?.id],
+        });
     },
   });
 
@@ -148,7 +152,9 @@ export default function NotificationsPanel() {
     },
     onSuccess: () => {
       if (queryClient)
-        queryClient.invalidateQueries({ queryKey: ["notifications", user?.id] });
+        queryClient.invalidateQueries({
+          queryKey: ["notifications", user?.id],
+        });
     },
   });
 
