@@ -534,6 +534,9 @@ export default function Achievements() {
                                 <svg className="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M20.52 3.48A11.94 11.94 0 0012 0C5.37 0 .08 4.93.04 11.03a12.3 12.3 0 001.86 6.25L0 24l6.99-1.79a11.94 11.94 0 005.01 1.2c6.63 0 11.92-4.93 11.96-11.03a11.9 11.9 0 00-3.44-8.9zM12 21.5a9.4 9.4 0 01-4.7-1.2l-.34-.2-4.15 1.06 1.1-3.99-.22-.36A9.4 9.4 0 012.5 11C2.5 6 6.7 2.2 12 2.2c3.2 0 6.04 1.52 7.8 4.06A8.78 8.78 0 0120.78 11c0 5-4.2 9.5-8.78 10.5z"/></svg>
                                 WhatsApp
                               </DropdownMenuItem>
+                              <DropdownMenuItem onSelect={() => downloadAchievementImage(a.title, iconToEmoji(a.icon))}>
+                                <Copy className="h-4 w-4 mr-2" /> Descargar imagen
+                              </DropdownMenuItem>
                               <DropdownMenuItem onSelect={async () => {
                                   try {
                                     const blob = await generateAchievementImage(a.title, iconToEmoji(a.icon));
@@ -613,9 +616,12 @@ export default function Achievements() {
                                   Facebook
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onSelect={() => window.open(s.wa, "_blank") }>
-                                  <svg className="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M20.52 3.48A11.94 11.94 0 0012 0C5.37 0 .08 4.93.04 11.03a12.3 12.3 0 001.86 6.25L0 24l6.99-1.79a11.94 11.94 0 005.01 1.2c6.63 0 11.92-4.93 11.96-11.03a11.9 11.9 0 00-3.44-8.9zM12 21.5a9.4 9.4 0 01-4.7-1.2l-.34-.2-4.15 1.06 1.1-3.99-.22-.36A9.4 9.4 0 012.5 11C2.5 6 6.7 2.2 12 2.2c3.2 0 6.04 1.52 7.8 4.06A8.78 8.78 0 0120.78 11c0 5-4.2 9.5-8.78 10.5z"/></svg>
-                                  WhatsApp
-                                </DropdownMenuItem>
+                                <svg className="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M20.52 3.48A11.94 11.94 0 0012 0C5.37 0 .08 4.93.04 11.03a12.3 12.3 0 001.86 6.25L0 24l6.99-1.79a11.94 11.94 0 005.01 1.2c6.63 0 11.92-4.93 11.96-11.03a11.9 11.9 0 00-3.44-8.9zM12 21.5a9.4 9.4 0 01-4.7-1.2l-.34-.2-4.15 1.06 1.1-3.99-.22-.36A9.4 9.4 0 012.5 11C2.5 6 6.7 2.2 12 2.2c3.2 0 6.04 1.52 7.8 4.06A8.78 8.78 0 0120.78 11c0 5-4.2 9.5-8.78 10.5z"/></svg>
+                                WhatsApp
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onSelect={() => downloadAchievementImage(a.title, iconToEmoji(a.icon))}>
+                                <Copy className="h-4 w-4 mr-2" /> Descargar imagen
+                              </DropdownMenuItem>
                                 <DropdownMenuItem onSelect={async () => {
                                     try {
                                       const blob = await generateAchievementImage(a.title, iconToEmoji(a.icon));
