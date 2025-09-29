@@ -903,7 +903,12 @@ export default function Settings() {
                             onClick={async () => {
                               try {
                                 if (!user) {
-                                  toast({ title: "Debes iniciar sesión", description: "Inicia sesión para exportar tus datos.", variant: "destructive" });
+                                  toast({
+                                    title: "Debes iniciar sesión",
+                                    description:
+                                      "Inicia sesión para exportar tus datos.",
+                                    variant: "destructive",
+                                  });
                                   return;
                                 }
                                 const payload = {
@@ -917,7 +922,10 @@ export default function Settings() {
                                   settings,
                                   habits,
                                 };
-                                const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+                                const blob = new Blob(
+                                  [JSON.stringify(payload, null, 2)],
+                                  { type: "application/json" },
+                                );
                                 const url = URL.createObjectURL(blob);
                                 const a = document.createElement("a");
                                 a.href = url;
@@ -926,10 +934,19 @@ export default function Settings() {
                                 a.click();
                                 a.remove();
                                 URL.revokeObjectURL(url);
-                                toast({ title: "Exportado", description: "Tu archivo JSON se descargó correctamente." });
+                                toast({
+                                  title: "Exportado",
+                                  description:
+                                    "Tu archivo JSON se descargó correctamente.",
+                                });
                               } catch (e: any) {
                                 console.error(e);
-                                toast({ title: "Error", description: "No fue posible exportar los datos.", variant: "destructive" });
+                                toast({
+                                  title: "Error",
+                                  description:
+                                    "No fue posible exportar los datos.",
+                                  variant: "destructive",
+                                });
                               }
                             }}
                           >
@@ -953,16 +970,43 @@ export default function Settings() {
                             size="sm"
                             className="w-full"
                             onClick={async () => {
-                              if (!user) { toast({ title: "Debes iniciar sesión", description: "Inicia sesión para respaldar tus datos.", variant: "destructive" }); return; }
+                              if (!user) {
+                                toast({
+                                  title: "Debes iniciar sesión",
+                                  description:
+                                    "Inicia sesión para respaldar tus datos.",
+                                  variant: "destructive",
+                                });
+                                return;
+                              }
                               try {
-                                const token = localStorage.getItem('auth:token');
-                                const res = await fetch(`/api/users/${user.id}/backup`, { method: 'POST', headers: token ? { Authorization: `Bearer ${token}` } : undefined });
-                                if (!res.ok) throw new Error('Backup failed');
+                                const token =
+                                  localStorage.getItem("auth:token");
+                                const res = await fetch(
+                                  `/api/users/${user.id}/backup`,
+                                  {
+                                    method: "POST",
+                                    headers: token
+                                      ? { Authorization: `Bearer ${token}` }
+                                      : undefined,
+                                  },
+                                );
+                                if (!res.ok) throw new Error("Backup failed");
                                 const body = await res.json().catch(() => ({}));
-                                toast({ title: 'Respaldo creado', description: body.filename ? `Archivo: ${body.filename}` : 'Respaldo almacenado en el servidor' });
+                                toast({
+                                  title: "Respaldo creado",
+                                  description: body.filename
+                                    ? `Archivo: ${body.filename}`
+                                    : "Respaldo almacenado en el servidor",
+                                });
                               } catch (e: any) {
                                 console.error(e);
-                                toast({ title: 'Error', description: 'No fue posible respaldar los datos', variant: 'destructive' });
+                                toast({
+                                  title: "Error",
+                                  description:
+                                    "No fue posible respaldar los datos",
+                                  variant: "destructive",
+                                });
                               }
                             }}
                           >
@@ -993,23 +1037,58 @@ export default function Settings() {
                                 hábitos, progreso y configuraciones. No se puede
                                 deshacer.
                               </p>
-                              <Button variant="destructive" size="sm" onClick={async () => {
-                                if (!user) { toast({ title: 'Debes iniciar sesión', description: 'Inicia sesión para eliminar tu cuenta.', variant: 'destructive' }); return; }
-                                const ok = window.confirm('¿Seguro que deseas eliminar tu cuenta y todos tus datos? Esta acción no se puede deshacer.');
-                                if (!ok) return;
-                                try {
-                                  const token = localStorage.getItem('auth:token');
-                                  const res = await fetch(`/api/users/${user.id}`, { method: 'DELETE', headers: token ? { Authorization: `Bearer ${token}` } : undefined });
-                                  if (!res.ok) throw new Error('Delete failed');
-                                  toast({ title: 'Cuenta eliminada', description: 'Tu cuenta y datos fueron eliminados.' });
-                                  // logout and redirect
-                                  try { logout(); } catch (e) {}
-                                  navigate('/');
-                                } catch (e: any) {
-                                  console.error(e);
-                                  toast({ title: 'Error', description: 'No fue posible eliminar la cuenta', variant: 'destructive' });
-                                }
-                              }}>
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                onClick={async () => {
+                                  if (!user) {
+                                    toast({
+                                      title: "Debes iniciar sesión",
+                                      description:
+                                        "Inicia sesión para eliminar tu cuenta.",
+                                      variant: "destructive",
+                                    });
+                                    return;
+                                  }
+                                  const ok = window.confirm(
+                                    "¿Seguro que deseas eliminar tu cuenta y todos tus datos? Esta acción no se puede deshacer.",
+                                  );
+                                  if (!ok) return;
+                                  try {
+                                    const token =
+                                      localStorage.getItem("auth:token");
+                                    const res = await fetch(
+                                      `/api/users/${user.id}`,
+                                      {
+                                        method: "DELETE",
+                                        headers: token
+                                          ? { Authorization: `Bearer ${token}` }
+                                          : undefined,
+                                      },
+                                    );
+                                    if (!res.ok)
+                                      throw new Error("Delete failed");
+                                    toast({
+                                      title: "Cuenta eliminada",
+                                      description:
+                                        "Tu cuenta y datos fueron eliminados.",
+                                    });
+                                    // logout and redirect
+                                    try {
+                                      logout();
+                                    } catch (e) {}
+                                    navigate("/");
+                                  } catch (e: any) {
+                                    console.error(e);
+                                    toast({
+                                      title: "Error",
+                                      description:
+                                        "No fue posible eliminar la cuenta",
+                                      variant: "destructive",
+                                    });
+                                  }
+                                }}
+                              >
                                 <Trash2 className="h-4 w-4 mr-2" />
                                 Eliminar cuenta y datos
                               </Button>

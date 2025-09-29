@@ -389,12 +389,7 @@ export function createServer() {
   );
 
   // Delete account
-  app.delete(
-    "/api/users/:id",
-    requireAuth,
-    requireOwner,
-    deleteUserHandler,
-  );
+  app.delete("/api/users/:id", requireAuth, requireOwner, deleteUserHandler);
 
   return app;
 }
