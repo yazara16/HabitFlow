@@ -48,6 +48,7 @@ import {
 import Navigation from "@/components/Navigation";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { useHabits } from "@/contexts/HabitsContext";
