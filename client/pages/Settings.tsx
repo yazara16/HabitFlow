@@ -50,6 +50,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
+import { useHabits } from "@/contexts/HabitsContext";
 
 interface UserSettings {
   // Profile
