@@ -94,9 +94,9 @@ export default function NotificationsPage() {
   const unread = useMemo(() => items.filter((i) => !i.read).length, [items]);
 
   const queryClient = useQueryClient();
-  const { data: dataNotifications, isLoading: notifsLoading } = useQuery(
-    ["notifications", user?.id],
-    async () => {
+  const { data: dataNotifications, isLoading: notifsLoading } = useQuery({
+    queryKey: ["notifications", user?.id],
+    queryFn: async () => {
       if (!user) return [] as any[];
       const token = localStorage.getItem("auth:token");
       const res = await fetch(`/api/users/${user.id}/notifications`, {
@@ -105,8 +105,8 @@ export default function NotificationsPage() {
       if (!res.ok) throw new Error("Failed to load notifications");
       return await res.json();
     },
-    { enabled: !!user },
-  );
+    enabled: !!user,
+  });
 
   useEffect(() => {
     if (!dataNotifications) {
@@ -145,8 +145,8 @@ export default function NotificationsPage() {
     );
   }, [dataNotifications]);
 
-  const markAllMutation = useMutation(
-    async () => {
+  const markAllMutation = useMutation({
+    mutationFn: async () => {
       if (!user) throw new Error("Not authenticated");
       const token = localStorage.getItem("auth:token");
       const res = await fetch(`/api/users/${user.id}/notifications/mark_all`, {
@@ -156,11 +156,9 @@ export default function NotificationsPage() {
       if (!res.ok) throw new Error("Failed to mark all");
       return true;
     },
-    {
-      onSuccess: () =>
-        queryClient.invalidateQueries(["notifications", user?.id]),
-    },
-  );
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["notifications", user?.id] }),
+  });
 
   const markAll = async () => {
     if (!user) return;
