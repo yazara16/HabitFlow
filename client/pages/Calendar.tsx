@@ -69,6 +69,7 @@ const MAX_HABITS_PER_DAY = 2;
 
 export default function Calendar() {
   useHabitReminders();
+  const { user } = useAuth();
   const {
     habits,
     addHabit,
