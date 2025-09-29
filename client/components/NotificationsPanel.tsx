@@ -59,9 +59,9 @@ export default function NotificationsPanel() {
 
   // Use React Query to fetch notifications
   const queryClient = useQueryClient();
-  const { data: notifsData, isLoading: notifsLoading } = useQuery(
-    ["notifications", user?.id],
-    async () => {
+  const { data: notifsData, isLoading: notifsLoading } = useQuery({
+    queryKey: ["notifications", user?.id],
+    queryFn: async () => {
       if (!user) return [] as any[];
       const token = localStorage.getItem("auth:token");
       const res = await fetch(`/api/users/${user.id}/notifications`, {
@@ -70,8 +70,8 @@ export default function NotificationsPanel() {
       if (!res.ok) throw new Error("Failed fetching notifications");
       return await res.json();
     },
-    { enabled: !!user },
-  );
+    enabled: !!user,
+  });
 
   // derive local notifications shape
   useEffect(() => {
@@ -97,8 +97,8 @@ export default function NotificationsPanel() {
   const [selected, setSelected] = useState<Notification | null>(null);
   const unreadCount = notifications.filter((n) => !n.read).length;
 
-  const markAsReadMutation = useMutation(
-    async (id: string) => {
+  const markAsReadMutation = useMutation({
+    mutationFn: async (id: string) => {
       if (!user) throw new Error("Not authenticated");
       const token = localStorage.getItem("auth:token");
       const res = await fetch(
@@ -111,16 +111,14 @@ export default function NotificationsPanel() {
       if (!res.ok) throw new Error("Failed to mark read");
       return await res.json();
     },
-    {
-      onSuccess: () => {
-        if (queryClient)
-          queryClient.invalidateQueries(["notifications", user?.id]);
-      },
+    onSuccess: () => {
+      if (queryClient)
+        queryClient.invalidateQueries({ queryKey: ["notifications", user?.id] });
     },
-  );
+  });
 
-  const markAllMutation = useMutation(
-    async () => {
+  const markAllMutation = useMutation({
+    mutationFn: async () => {
       if (!user) throw new Error("Not authenticated");
       const token = localStorage.getItem("auth:token");
       const res = await fetch(`/api/users/${user.id}/notifications/mark_all`, {
@@ -130,16 +128,14 @@ export default function NotificationsPanel() {
       if (!res.ok) throw new Error("Failed to mark all");
       return true;
     },
-    {
-      onSuccess: () => {
-        if (queryClient)
-          queryClient.invalidateQueries(["notifications", user?.id]);
-      },
+    onSuccess: () => {
+      if (queryClient)
+        queryClient.invalidateQueries({ queryKey: ["notifications", user?.id] });
     },
-  );
+  });
 
-  const deleteMutation = useMutation(
-    async (id: string) => {
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
       if (!user) throw new Error("Not authenticated");
       const token = localStorage.getItem("auth:token");
       const res = await fetch(`/api/users/${user.id}/notifications/${id}`, {
@@ -149,13 +145,11 @@ export default function NotificationsPanel() {
       if (!res.ok && res.status !== 204) throw new Error("Failed to delete");
       return id;
     },
-    {
-      onSuccess: () => {
-        if (queryClient)
-          queryClient.invalidateQueries(["notifications", user?.id]);
-      },
+    onSuccess: () => {
+      if (queryClient)
+        queryClient.invalidateQueries({ queryKey: ["notifications", user?.id] });
     },
-  );
+  });
 
   const markAsRead = async (id: string) => {
     if (!user) return;
