@@ -229,6 +229,34 @@ export const registerHandler: RequestHandler = (req, res) => {
   return res.status(201).json({ user, token });
 };
 
+export const deleteUserHandler: RequestHandler = (req, res) => {
+  try {
+    const id = req.params.id;
+    if (!id) return res.status(400).json({ message: "Missing id" });
+
+    // Delete related data
+    const tables = [
+      "user_settings",
+      "reminders",
+      "devices",
+      "habit_overrides",
+      "habit_logs",
+      "user_achievements",
+      "notifications",
+      "habits",
+    ];
+    for (const t of tables) {
+      db.prepare(`DELETE FROM ${t} WHERE userId = ?`).run(id);
+    }
+    // Finally delete user
+    db.prepare("DELETE FROM users WHERE id = ?").run(id);
+    return res.json({ ok: true });
+  } catch (e: any) {
+    console.error("deleteUserHandler error:", e);
+    return res.status(500).json({ message: String(e) });
+  }
+};
+
 export const loginHandler: RequestHandler = (req, res) => {
   const { email, password } = req.body || {};
   if (!email || !password)
