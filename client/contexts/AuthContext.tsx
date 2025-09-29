@@ -70,6 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (token) {
       localStorage.setItem('auth:token', token);
     }
+    return u;
   }, []);
 
   const login = useCallback(async (data: { email: string; password: string }) => {
