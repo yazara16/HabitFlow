@@ -8,16 +8,16 @@ export const registerHandler: RequestHandler = async (req, res) => {
     if (!name || !email || !password)
       return res.status(400).json({ message: "Missing fields" });
 
-    // Check existing user
+    // Verificar si el usuario ya existe
     const existing = await db.user.findUnique({
       where: { email },
-      select: { id: true, email: true }
+      select: { id: true, email: true },
     });
-    
+
     if (existing)
       return res.status(400).json({ message: "Email already registered" });
 
-    // Create user
+    // Crear usuario
     const hashed = bcrypt.hashSync(password, 8);
     const user = await db.user.create({
       data: {
@@ -25,14 +25,14 @@ export const registerHandler: RequestHandler = async (req, res) => {
         email,
         password: hashed,
         photoUrl: photoUrl || null,
-      }
+      },
     });
 
-    // Seed default habits for new user based on preferences
+    // Crear hábitos por defecto según preferencias
     const prefs: string[] = req.body?.preferredCategories || [];
-    const defaultHabits = [];
+    const defaultHabits: any[] = [];
 
-    if (prefs.includes('exercise')) {
+    if (prefs.includes("exercise")) {
       defaultHabits.push({
         userId: user.id,
         name: "Correr 30 minutos",
@@ -47,7 +47,7 @@ export const registerHandler: RequestHandler = async (req, res) => {
       });
     }
 
-    if (prefs.includes('hydration')) {
+    if (prefs.includes("hydration")) {
       defaultHabits.push({
         userId: user.id,
         name: "Beber 2 litros de agua",
@@ -62,7 +62,7 @@ export const registerHandler: RequestHandler = async (req, res) => {
       });
     }
 
-    if (prefs.includes('mindfulness')) {
+    if (prefs.includes("mindfulness")) {
       defaultHabits.push({
         userId: user.id,
         name: "Meditación 10 minutos",
@@ -77,7 +77,7 @@ export const registerHandler: RequestHandler = async (req, res) => {
       });
     }
 
-    if (prefs.includes('reading')) {
+    if (prefs.includes("reading")) {
       defaultHabits.push({
         userId: user.id,
         name: "Leer 30 minutos",
@@ -92,7 +92,7 @@ export const registerHandler: RequestHandler = async (req, res) => {
       });
     }
 
-    if (prefs.includes('sleep')) {
+    if (prefs.includes("sleep")) {
       defaultHabits.push({
         userId: user.id,
         name: "Dormir 8 horas",
@@ -107,11 +107,8 @@ export const registerHandler: RequestHandler = async (req, res) => {
       });
     }
 
-    // Create default habits
     if (defaultHabits.length > 0) {
-      await db.habit.createMany({
-        data: defaultHabits
-      });
+      await db.habit.createMany({ data: defaultHabits });
     }
 
     res.json({
@@ -120,8 +117,8 @@ export const registerHandler: RequestHandler = async (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
-        photoUrl: user.photoUrl
-      }
+        photoUrl: user.photoUrl,
+      },
     });
   } catch (error) {
     console.error("Registration error:", error);
@@ -137,18 +134,17 @@ export const loginHandler: RequestHandler = async (req, res) => {
 
     const user = await db.user.findUnique({
       where: { email },
-      select: { id: true, name: true, email: true, password: true, photoUrl: true }
+      select: { id: true, name: true, email: true, password: true, photoUrl: true },
     });
 
     if (!user || !user.password)
       return res.status(401).json({ message: "Invalid credentials" });
 
     const valid = bcrypt.compareSync(password, user.password);
-    if (!valid)
-      return res.status(401).json({ message: "Invalid credentials" });
+    if (!valid) return res.status(401).json({ message: "Invalid credentials" });
 
-    // Generate JWT token (you'll need to implement this)
-    const token = "temp-token"; // TODO: Implement JWT
+    // TODO: Implementar JWT
+    const token = "temp-token";
 
     res.json({
       message: "Login successful",
@@ -157,8 +153,8 @@ export const loginHandler: RequestHandler = async (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
-        photoUrl: user.photoUrl
-      }
+        photoUrl: user.photoUrl,
+      },
     });
   } catch (error) {
     console.error("Login error:", error);
@@ -168,15 +164,14 @@ export const loginHandler: RequestHandler = async (req, res) => {
 
 export const getUserHandler: RequestHandler = async (req, res) => {
   try {
-    const { id } = req.params;
-    
+    const id = Number(req.params.id);
+
     const user = await db.user.findUnique({
       where: { id },
-      select: { id: true, name: true, email: true, photoUrl: true, createdAt: true }
+      select: { id: true, name: true, email: true, photoUrl: true, createdAt: true },
     });
 
-    if (!user)
-      return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ message: "User not found" });
 
     res.json(user);
   } catch (error) {
@@ -187,7 +182,7 @@ export const getUserHandler: RequestHandler = async (req, res) => {
 
 export const updateUserHandler: RequestHandler = async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = Number(req.params.id);
     const { name, email, photoUrl } = req.body || {};
 
     const user = await db.user.update({
@@ -197,45 +192,38 @@ export const updateUserHandler: RequestHandler = async (req, res) => {
         ...(email && { email }),
         ...(photoUrl !== undefined && { photoUrl }),
       },
-      select: { id: true, name: true, email: true, photoUrl: true, createdAt: true }
+      select: { id: true, name: true, email: true, photoUrl: true, createdAt: true },
     });
 
-    res.json({
-      message: "User updated successfully",
-      user
-    });
+    res.json({ message: "User updated successfully", user });
   } catch (error) {
     console.error("Update user error:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
 
-export const googleMockHandler: RequestHandler = (req, res) => {
-  // Mock Google OAuth handler
+export const googleMockHandler: RequestHandler = (_req, res) => {
   res.json({ message: "Google OAuth not implemented yet" });
 };
 
 export const deleteUserHandler: RequestHandler = async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = Number(req.params.id);
 
-    // Primero, eliminar datos dependientes si tienes relaciones (habits, logs, etc.)
-    // Ejemplo rápido usando db (ajusta según tus modelos y relaciones)
-    await db.habit.deleteMany({ where: { userId: Number(id) } });
-    await db.habitLog.deleteMany({ where: { userId: Number(id) } });
-    await db.habitOverride.deleteMany({ where: { userId: Number(id) } });
-    await db.notification.deleteMany({ where: { userId: Number(id) } });
-    await db.reminder.deleteMany({ where: { userId: Number(id) } });
-    await db.goal.deleteMany({ where: { userId: Number(id) } });
-    await db.progressEntry.deleteMany({ where: { userId: Number(id) } });
-    await db.streakRecord.deleteMany({ where: { userId: Number(id) } });
-    await db.userAchievement.deleteMany({ where: { userId: Number(id) } });
-    await db.category.deleteMany({ where: { userId: Number(id) } });
-    await db.theme.deleteMany({ where: { userId: Number(id) } });
-    await db.userSettings.deleteMany({ where: { userId: Number(id) } });
+    await db.habit.deleteMany({ where: { userId: id } });
+    await db.habitLog.deleteMany({ where: { userId: id } });
+    await db.habitOverride.deleteMany({ where: { userId: id } });
+    await db.notification.deleteMany({ where: { userId: id } });
+    await db.reminder.deleteMany({ where: { userId: id } });
+    await db.goal.deleteMany({ where: { userId: id } });
+    await db.progressEntry.deleteMany({ where: { userId: id } });
+    await db.streakRecord.deleteMany({ where: { userId: id } });
+    await db.userAchievement.deleteMany({ where: { userId: id } });
+    await db.category.deleteMany({ where: { userId: id } });
+    await db.theme.deleteMany({ where: { userId: id } });
+    await db.userSettings.deleteMany({ where: { userId: id } });
 
-    // Finalmente eliminar el usuario
-    await db.user.delete({ where: { id: Number(id) } });
+    await db.user.delete({ where: { id } });
 
     res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {

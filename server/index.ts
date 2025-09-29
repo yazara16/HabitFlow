@@ -1,7 +1,6 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import path from "path";
 
 // Routes
 import { handleDemo } from "./routes/demo";
@@ -101,7 +100,7 @@ export function createServer() {
     const paramId = req.params.userId || req.params.id;
     if (!req.authUserId)
       return res.status(401).json({ message: "Unauthorized" });
-    if (paramId && req.authUserId !== paramId)
+    if (paramId && Number(req.authUserId) !== Number(paramId))
       return res.status(403).json({ message: "Forbidden" });
     next();
   };
@@ -133,22 +132,33 @@ export function createServer() {
     }
   });
 
-  app.get("/api/me", requireAuth, (req, res) => {
+  // /api/me endpoint con Prisma
+  app.get("/api/me", requireAuth, async (req, res) => {
     try {
-      const uid = req.authUserId;
-      const row = db
-        .prepare(
-          "SELECT id,name,email,photoUrl,createdAt FROM users WHERE id = ?",
-        )
-        .get(uid);
-      return res.json(row);
+      const uid = Number(req.authUserId);
+      const user = await db.user.findUnique({
+        where: { id: uid },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          photoUrl: true,
+          createdAt: true,
+        },
+      });
+
+      if (!user) return res.status(404).json({ message: "User not found" });
+      res.json(user);
     } catch (e) {
-      return res.status(500).json({ error: String(e) });
+      console.error(e);
+      res.status(500).json({ error: String(e) });
     }
   });
 
+  // Users
   app.get("/api/users/:id", getUserHandler);
   app.put("/api/users/:id", requireAuth, requireOwner, updateUserHandler);
+  app.delete("/api/users/:id", requireAuth, requireOwner, deleteUserHandler);
 
   // Habits
   app.get("/api/users/:userId/habits", requireAuth, requireOwner, getHabitsHandler);
@@ -209,9 +219,6 @@ export function createServer() {
 
   // Backup
   app.post("/api/users/:userId/backup", requireAuth, requireOwner, createBackup);
-
-  // Delete account
-  app.delete("/api/users/:id", requireAuth, requireOwner, deleteUserHandler);
 
   // Admin
   const adminToken = process.env.ADMIN_TOKEN || "CHANGE_ME_ADMIN_TOKEN";
