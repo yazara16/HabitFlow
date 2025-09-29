@@ -88,6 +88,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const token: string | undefined = body.token;
     persistUser(u);
     if (token) localStorage.setItem('auth:token', token);
+    return u;
   }, []);
 
   const loginWithGoogle = useCallback(async () => {
