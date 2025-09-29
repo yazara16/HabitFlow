@@ -949,6 +949,19 @@ export default function Settings() {
                             variant="outline"
                             size="sm"
                             className="w-full"
+                            onClick={async () => {
+                              if (!user) { toast({ title: "Debes iniciar sesión", description: "Inicia sesión para respaldar tus datos.", variant: "destructive" }); return; }
+                              try {
+                                const token = localStorage.getItem('auth:token');
+                                const res = await fetch(`/api/users/${user.id}/backup`, { method: 'POST', headers: token ? { Authorization: `Bearer ${token}` } : undefined });
+                                if (!res.ok) throw new Error('Backup failed');
+                                const body = await res.json().catch(() => ({}));
+                                toast({ title: 'Respaldo creado', description: body.filename ? `Archivo: ${body.filename}` : 'Respaldo almacenado en el servidor' });
+                              } catch (e: any) {
+                                console.error(e);
+                                toast({ title: 'Error', description: 'No fue posible respaldar los datos', variant: 'destructive' });
+                              }
+                            }}
                           >
                             <RefreshCw className="h-4 w-4 mr-2" />
                             Respaldar
