@@ -1,13 +1,25 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardHeader, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  CardDescription,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   BarChart3,
   TrendingUp,
   Calendar,
   Target,
   Clock,
-  Award
+  Award,
 } from "lucide-react";
 
 interface ProgressData {
@@ -72,11 +84,15 @@ export default function ProgressCharts() {
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm">{day.completed}/{day.total} hábitos</span>
-                    <span className="text-sm font-medium">{day.percentage}%</span>
+                    <span className="text-sm">
+                      {day.completed}/{day.total} hábitos
+                    </span>
+                    <span className="text-sm font-medium">
+                      {day.percentage}%
+                    </span>
                   </div>
                   <div className="w-full bg-muted rounded-full h-2">
-                    <div 
+                    <div
                       className="bg-primary h-2 rounded-full transition-all duration-300"
                       style={{ width: `${day.percentage}%` }}
                     />
@@ -113,20 +129,27 @@ export default function ProgressCharts() {
                 <div key={index} className="space-y-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                      <div className={`w-3 h-3 rounded-full ${category.color}`} />
-                      <span className="text-sm font-medium">{category.name}</span>
+                      <div
+                        className={`w-3 h-3 rounded-full ${category.color}`}
+                      />
+                      <span className="text-sm font-medium">
+                        {category.name}
+                      </span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <span className="text-sm text-muted-foreground">
                         {category.completed}/{category.total}
                       </span>
-                      <Badge variant={percentage === 100 ? "default" : "secondary"} className="text-xs">
+                      <Badge
+                        variant={percentage === 100 ? "default" : "secondary"}
+                        className="text-xs"
+                      >
                         {Math.round(percentage)}%
                       </Badge>
                     </div>
                   </div>
                   <div className="w-full bg-muted rounded-full h-2">
-                    <div 
+                    <div
                       className={`h-2 rounded-full transition-all duration-300 ${category.color}`}
                       style={{ width: `${percentage}%` }}
                     />
@@ -135,7 +158,7 @@ export default function ProgressCharts() {
               );
             })}
           </div>
-          
+
           <div className="mt-6 grid grid-cols-2 gap-4">
             <div className="text-center p-3 bg-success/10 rounded-lg">
               <div className="text-2xl font-bold text-success">22</div>
@@ -174,20 +197,20 @@ export default function ProgressCharts() {
                         <div
                           key={i}
                           className={`w-4 h-4 rounded-sm ${
-                            i < week.days 
-                              ? 'bg-primary' 
-                              : 'bg-muted'
+                            i < week.days ? "bg-primary" : "bg-muted"
                           }`}
                         />
                       ))}
                     </div>
-                    <span className="text-sm font-medium">{week.days}/7 días</span>
+                    <span className="text-sm font-medium">
+                      {week.days}/7 días
+                    </span>
                   </div>
                 </div>
               </div>
             ))}
           </div>
-          
+
           <div className="mt-4 p-3 bg-primary/10 rounded-lg border border-primary/20">
             <div className="flex items-center space-x-2 text-primary">
               <Award className="h-4 w-4" />
@@ -214,14 +237,16 @@ export default function ProgressCharts() {
           <div className="space-y-4">
             <div className="p-3 border border-border rounded-lg">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium">Mejor momento del día</span>
+                <span className="text-sm font-medium">
+                  Mejor momento del día
+                </span>
                 <Badge variant="outline">Mañana</Badge>
               </div>
               <p className="text-xs text-muted-foreground">
                 Completas el 78% de tus hábitos entre 6:00 AM - 10:00 AM
               </p>
             </div>
-            
+
             <div className="p-3 border border-border rounded-lg">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium">Día más productivo</span>
@@ -231,10 +256,12 @@ export default function ProgressCharts() {
                 Promedio de 4.8/5 hábitos completados los martes
               </p>
             </div>
-            
+
             <div className="p-3 border border-border rounded-lg">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium">Hábito más consistente</span>
+                <span className="text-sm font-medium">
+                  Hábito más consistente
+                </span>
                 <Badge variant="outline">Hidratación</Badge>
               </div>
               <p className="text-xs text-muted-foreground">
@@ -242,11 +269,13 @@ export default function ProgressCharts() {
               </p>
             </div>
           </div>
-          
+
           <div className="mt-4 grid grid-cols-3 gap-2 text-center">
             <div>
               <div className="text-lg font-bold text-foreground">6.2</div>
-              <div className="text-xs text-muted-foreground">Promedio diario</div>
+              <div className="text-xs text-muted-foreground">
+                Promedio diario
+              </div>
             </div>
             <div>
               <div className="text-lg font-bold text-foreground">25</div>
