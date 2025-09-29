@@ -118,6 +118,8 @@ export default function Settings() {
 
   const [activeTab, setActiveTab] = useState("profile");
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const { toast } = useToast();
 
   const updateSetting = <K extends keyof UserSettings>(key: K, value: UserSettings[K]) => {
     setSettings(prev => ({ ...prev, [key]: value }));
@@ -127,13 +129,24 @@ export default function Settings() {
   };
 
   const saveSettings = async () => {
-    if (!user) return;
-    await updateProfile({ name: settings.name, email: settings.email });
+    if (!user) {
+      toast({ title: "Debes iniciar sesión para guardar cambios", description: "Inicia sesión para guardar tus preferencias.", variant: "destructive" });
+      return;
+    }
+    setSaving(true);
     try {
+      await updateProfile({ name: settings.name, email: settings.email });
       const token = localStorage.getItem('auth:token');
-      await fetch(`/api/users/${user.id}/settings`, { method: 'PUT', headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify(settings) });
-    } catch (e) {}
-    setHasUnsavedChanges(false);
+      const res = await fetch(`/api/users/${user.id}/settings`, { method: 'PUT', headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify(settings) });
+      if (!res.ok) throw new Error('Error saving settings');
+      setHasUnsavedChanges(false);
+      toast({ title: "Preferencias guardadas", description: "Tus ajustes fueron guardados correctamente." });
+    } catch (e: any) {
+      console.error(e);
+      toast({ title: "Error", description: e?.message || 'No se pudo guardar', variant: "destructive" });
+    } finally {
+      setSaving(false);
+    }
   };
 
   const resetSettings = () => {
