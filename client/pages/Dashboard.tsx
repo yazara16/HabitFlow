@@ -515,11 +515,7 @@ export default function Dashboard() {
                     icon: Moon,
                     count:
                       serverStats?.categoryCounts?.meditation ??
-                      habits.filter(
-                        (h) =>
-                          h.category === "meditation" ||
-                          h.name.toLowerCase().includes("medit"),
-                      ).length,
+                      habits.filter((h) => h.name.toLowerCase().includes("medit")).length,
                     color: "text-purple-500",
                   },
                   {
