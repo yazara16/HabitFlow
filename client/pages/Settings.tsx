@@ -897,6 +897,38 @@ export default function Settings() {
                             variant="outline"
                             size="sm"
                             className="w-full"
+                            onClick={async () => {
+                              try {
+                                if (!user) {
+                                  toast({ title: "Debes iniciar sesión", description: "Inicia sesión para exportar tus datos.", variant: "destructive" });
+                                  return;
+                                }
+                                const payload = {
+                                  user: {
+                                    id: user.id,
+                                    name: user.name,
+                                    email: user.email,
+                                    photoUrl: user.photoUrl,
+                                    createdAt: user.createdAt,
+                                  },
+                                  settings,
+                                  habits,
+                                };
+                                const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+                                const url = URL.createObjectURL(blob);
+                                const a = document.createElement("a");
+                                a.href = url;
+                                a.download = `habitflow-export-${user.id}-${new Date().toISOString()}.json`;
+                                document.body.appendChild(a);
+                                a.click();
+                                a.remove();
+                                URL.revokeObjectURL(url);
+                                toast({ title: "Exportado", description: "Tu archivo JSON se descargó correctamente." });
+                              } catch (e: any) {
+                                console.error(e);
+                                toast({ title: "Error", description: "No fue posible exportar los datos.", variant: "destructive" });
+                              }
+                            }}
                           >
                             <Download className="h-4 w-4 mr-2" />
                             Exportar
