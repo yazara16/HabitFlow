@@ -22,6 +22,7 @@ import {
   Users,
   Clock,
   Heart,
+  ShoppingCart,
   Twitter,
   Instagram,
   Facebook,
