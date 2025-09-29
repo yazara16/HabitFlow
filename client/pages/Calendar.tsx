@@ -36,7 +36,6 @@ import { useHabits, Habit as HabitType } from "@/contexts/HabitsContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useHabitReminders } from "@/hooks/use-habit-reminders";
 import { toast } from "@/hooks/use-toast";
-import { useAuth } from "@/contexts/AuthContext";
 
 type Habit = HabitType;
 
