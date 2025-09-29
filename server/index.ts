@@ -59,6 +59,8 @@ import {
 import { getSettings, upsertSettings } from "./routes/settings";
 import { getDashboardStats } from "./routes/dashboard";
 import { getCalendarData } from "./routes/calendar";
+import { createBackup } from "./routes/backup";
+import { deleteUserHandler } from "./routes/auth";
 
 // Middleware
 import { requireAuth } from "./middleware/auth";
