@@ -42,6 +42,7 @@ import {
   Book,
   BookOpen,
   Clock,
+  Moon,
   ArrowUp,
   ArrowDown,
 } from "lucide-react";
@@ -507,6 +508,15 @@ export default function Dashboard() {
                       serverStats?.categoryCounts?.reading ??
                       habits.filter((h) => h.category === "reading").length,
                     color: "text-indigo-600",
+                  },
+                  {
+                    key: "meditation",
+                    name: "Meditación",
+                    icon: Moon,
+                    count:
+                      serverStats?.categoryCounts?.meditation ??
+                      habits.filter((h) => h.category === "meditation" || h.name.toLowerCase().includes("medit")).length,
+                    color: "text-purple-500",
                   },
                   {
                     key: "study",
