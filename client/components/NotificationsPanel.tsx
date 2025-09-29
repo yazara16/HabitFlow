@@ -213,71 +213,92 @@ export default function NotificationsPanel() {
   };
 
   return (
-    <Card>
-      <CardHeader className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-            <Bell className="h-4 w-4 text-primary" />
-          </div>
-          <CardTitle>Notificaciones</CardTitle>
-          {unreadCount > 0 && <Badge className="ml-2">{unreadCount}</Badge>}
-        </div>
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={markAllAsRead}
-            disabled={unreadCount === 0}
-          >
-            Marcar todas le��das
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="sm" className="relative">
+            <Bell className="h-5 w-5" />
+            {unreadCount > 0 && (
+              <Badge className="absolute -top-1 -right-1">{unreadCount}</Badge>
+            )}
           </Button>
-        </div>
-      </CardHeader>
-      <CardContent>
-        {notifications.length === 0 && (
-          <div className="text-sm text-muted-foreground">
-            Sin notificaciones
-          </div>
-        )}
-        {notifications.map((n) => (
-          <div
-            key={n.id}
-            className="flex items-start justify-between py-3 border-b last:border-b-0"
-          >
-            <div className="flex items-start space-x-3">
-              <div
-                className={`w-10 h-10 rounded-lg flex items-center justify-center ${n.color}`}
-              >
-                {(() => {
-                  const Icon = n.icon;
-                  return <Icon className="h-5 w-5" />;
-                })()}
-              </div>
-              <div>
-                <div className="font-semibold">{n.title}</div>
-                <div className="text-sm text-muted-foreground">{n.message}</div>
-              </div>
-            </div>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-96 p-0">
+          <div className="p-3 border-b flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button size="sm" variant="ghost">
-                    <X className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem onSelect={() => markAsRead(n.id)}>
-                    Marcar leída
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => deleteNotification(n.id)}>
-                    Eliminar
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <Bell className="h-4 w-4" />
+              <span className="font-medium">Notificaciones</span>
             </div>
+            <Button variant="ghost" size="sm" onClick={markAllAsRead} disabled={unreadCount === 0}>
+              Marcar todas leídas
+            </Button>
           </div>
-        ))}
-      </CardContent>
-    </Card>
+
+          <div className="max-h-72 overflow-y-auto">
+            {notifications.length === 0 ? (
+              <div className="p-4 text-sm text-muted-foreground">Sin notificaciones</div>
+            ) : (
+              notifications.map((n) => (
+                <div
+                  key={n.id}
+                  className="flex items-start justify-between p-3 hover:bg-muted/50 cursor-pointer"
+                  onClick={() => {
+                    setSelected(n);
+                    setDetailOpen(true);
+                    markAsRead(n.id);
+                  }}
+                >
+                  <div className="flex items-start space-x-3">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${n.color}`}>
+                      {(() => {
+                        const Icon = n.icon;
+                        return <Icon className="h-5 w-5" />;
+                      })()}
+                    </div>
+                    <div>
+                      <div className="font-semibold">{n.title}</div>
+                      <div className="text-sm text-muted-foreground">{n.message}</div>
+                    </div>
+                  </div>
+
+                  <div className="ml-2 flex items-start space-x-2">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        markAsRead(n.id);
+                      }}
+                    >
+                      <Check className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteNotification(n.id);
+                      }}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{selected?.title}</DialogTitle>
+            <DialogDescription>{selected?.message}</DialogDescription>
+          </DialogHeader>
+          <div className="mt-4 text-sm text-muted-foreground">{selected?.time}</div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
