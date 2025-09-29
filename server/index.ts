@@ -380,6 +380,22 @@ export function createServer() {
     upsertSettings,
   );
 
+  // Backup
+  app.post(
+    "/api/users/:userId/backup",
+    requireAuth,
+    requireOwner,
+    createBackup,
+  );
+
+  // Delete account
+  app.delete(
+    "/api/users/:id",
+    requireAuth,
+    requireOwner,
+    deleteUserHandler,
+  );
+
   return app;
 }
 
