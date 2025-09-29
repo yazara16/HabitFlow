@@ -532,7 +532,7 @@ export default function Dashboard() {
                     className="flex items-center justify-between"
                   >
                     <div className="flex items-center space-x-3">
-                      <category.icon className={`h-4 w-4 ${category.color}`} />
+                      {(() => { const Icon = category.icon; return <Icon className={`h-4 w-4 ${category.color}`} />; })()}
                       <span className="text-sm font-medium">
                         {category.name}
                       </span>
