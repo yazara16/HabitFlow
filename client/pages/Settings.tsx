@@ -94,7 +94,9 @@ export default function Settings() {
     setTheme,
     setColorScheme,
   } = useTheme();
-  const { user, updateProfile } = useAuth();
+  const { user, updateProfile, logout } = useAuth();
+  const navigate = useNavigate();
+  const { habits } = useHabits();
   const [settings, setSettings] = useState<UserSettings>({
     // Profile
     name: user?.name || "",
