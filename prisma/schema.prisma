@@ -1,0 +1,308 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String?
+  photoUrl  String?
+  createdAt DateTime @default(now())
+
+  // Relations
+  habits            Habit[]
+  notifications     Notification[]
+  habitLogs         HabitLog[]
+  habitOverrides    HabitOverride[]
+  userSettings      UserSettings?
+  userAchievements  UserAchievement[]
+  reminders         Reminder[]
+  devices           Device[]
+
+  // New relations for extended tables
+  weeklyReports     WeeklyReport[]
+  goals             Goal[]
+  progressEntries   ProgressEntry[]
+  streakRecords     StreakRecord[]
+  categories        Category[]
+  themes            Theme[]
+
+  @@map("users")
+}
+
+model Habit {
+  id              String   @id @default(cuid())
+  userId          String
+  name            String
+  description     String?
+  category        String?
+  color           String?
+  icon            String?
+  target          Int?
+  completed       Int      @default(0)
+  streak          Int      @default(0)
+  frequency       String?
+  monthlyDays     String?
+  monthlyMonths   String?
+  reminderTime    String?
+  reminderEnabled Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  lastCompleted   DateTime?
+
+  // Relations
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  habitLogs      HabitLog[]
+  habitOverrides HabitOverride[]
+  reminders      Reminder[]
+
+  @@map("habits")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String?
+  title     String?
+  message   String?
+  time      String?
+  read      Boolean  @default(false)
+  metadata  String?
+  createdAt DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model HabitLog {
+  id              String   @id @default(cuid())
+  habitId         String
+  userId          String
+  date            DateTime
+  completedAmount Int      @default(0)
+  completedBoolean Boolean @default(false)
+  note            String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  habit Habit @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("habit_logs")
+}
+
+model HabitOverride {
+  id        String   @id @default(cuid())
+  habitId   String
+  userId    String
+  date      DateTime
+  hidden    Boolean  @default(false)
+  patch     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  habit Habit @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("habit_overrides")
+}
+
+model UserSettings {
+  userId    String   @id
+  settings  String?
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_settings")
+}
+
+model Achievement {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  title       String?
+  description String?
+  criteria    String?
+  createdAt   DateTime @default(now())
+
+  // Relations
+  userAchievements UserAchievement[]
+
+  @@map("achievements")
+}
+
+model UserAchievement {
+  id            String   @id @default(cuid())
+  userId        String
+  achievementId String
+  earnedAt      DateTime @default(now())
+  meta          String?
+
+  // Relations
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  @@map("user_achievements")
+}
+
+model Reminder {
+  id        String   @id @default(cuid())
+  userId    String
+  habitId   String?
+  timeOfDay String?
+  enabled   Boolean  @default(true)
+  timezone  String?
+  recurrence String?
+  days      String?
+  nextRun   DateTime?
+  createdAt DateTime @default(now())
+
+  // Relations
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  habit Habit? @relation(fields: [habitId], references: [id], onDelete: Cascade)
+
+  @@map("reminders")
+}
+
+model Device {
+  id         String    @id @default(cuid())
+  userId     String
+  platform   String?
+  pushToken  String?
+  lastSeenAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("devices")
+}
+
+// Additional tables for dashboard features
+model WeeklyReport {
+  id          String   @id @default(cuid())
+  userId      String
+  weekStart   DateTime
+  weekEnd     DateTime
+  habitsCompleted Int  @default(0)
+  totalHabits     Int  @default(0)
+  weeklyStreak    Int  @default(0)
+  goals          Json?  // Goals for this week
+  achievements   Json?  // Achievements earned
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("weekly_reports")
+}
+
+model Goal {
+  id           String   @id @default(cuid())
+  userId       String
+  title        String
+  description  String?
+  category     String?
+  targetValue  Int
+  currentValue Int      @default(0)
+  deadline     DateTime?
+  status       String   @default("active") // active, completed, cancelled
+  priority     String   @default("medium") // low, medium, high
+  color        String?
+  icon         String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("goals")
+}
+
+model ProgressEntry {
+  id          String   @id @default(cuid())
+  userId      String
+  habitId     String?
+  goalId      String?
+  entryType   String   // "habit", "goal", "custom"
+  value       Int      @default(0)
+  description String?
+  date        DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  habit Habit? @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  goal Goal? @relation(fields: [goalId], references: [id], onDelete: Cascade)
+
+  @@map("progress_entries")
+}
+
+model StreakRecord {
+  id             String   @id @default(cuid())
+  userId         String
+  habitId        String?
+  streakType     String   // "daily", "weekly", "monthly"
+  currentStreak  Int      @default(0)
+  longestStreak  Int      @default(0)
+  lastActivity   DateTime
+  streakStarted  DateTime
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  habit Habit? @relation(fields: [habitId], references: [id], onDelete: Cascade)
+
+  @@map("streak_records")
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  description String?
+  color       String
+  icon        String?
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  habits Habit[]
+
+  @@map("categories")
+}
+
+model Theme {
+  id        String   @id @default(cuid())
+  userId    String
+  themeName String   @default("system")
+  primaryColor String @default("#3b82f6")
+  secondaryColor String @default("#64748b")
+  accentColor  String @default("#f59e0b")
+  isDarkMode  Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("themes")
+}

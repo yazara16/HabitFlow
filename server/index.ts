@@ -11,14 +11,15 @@ import {
   googleMockHandler,
   getUserHandler,
   updateUserHandler,
-} from "./routes/auth";
+} from "./routes/auth.prisma";
 
 import {
   getHabitsHandler,
   createHabitHandler,
   updateHabitHandler,
   deleteHabitHandler,
-} from "./routes/habits";
+  completeHabitHandler,
+} from "./routes/habits.prisma";
 
 import { listUsers, listHabits, dbStats } from "./routes/debug";
 
@@ -28,40 +29,48 @@ import {
   markAsRead,
   markAllRead,
   deleteNotification,
-} from "./routes/notifications";
+} from "./routes/notifications.prisma";
 
 import {
   listReminders,
   createReminder,
   updateReminder,
   deleteReminder,
-} from "./routes/reminders";
+} from "./routes/reminders.prisma";
 
-import {
-  listCatalog,
-  getUserAchievements,
-  unlockAchievement,
-  seedCatalog,
-} from "./routes/achievements";
+// Temporarily disabled - using achievements.prisma instead
+// import {
+//   listCatalog,
+//   getUserAchievements,
+//   unlockAchievement,
+//   seedCatalog,
+// } from "./routes/achievements";
 
-import {
-  registerDevice,
-  unregisterDevice,
-  listDevices,
-} from "./routes/devices";
+// Temporarily disabled devices - not critical for basic functionality
+// import {
+//   registerDevice,
+//   unregisterDevice,
+//   listDevices,
+// } from "./routes/devices";
 
-import { listLogs, createLog, updateLog, deleteLog } from "./routes/habit_logs";
-import {
-  listOverrides,
-  createOverride,
-  deleteOverride,
-} from "./routes/overrides";
-import { getSettings, upsertSettings } from "./routes/settings";
-import { getDashboardStats } from "./routes/dashboard";
-import { getCalendarData } from "./routes/calendar";
+// Temporarily disabled habit_logs - using habit-logs.prisma instead
+// import { listLogs, createLog, updateLog, deleteLog } from "./routes/habit_logs";
+// Temporarily disabled overrides - not critical for basic functionality
+// import {
+//   listOverrides,
+//   createOverride,
+//   deleteOverride,
+// } from "./routes/overrides";
+import { getSettings, upsertSettings } from "./routes/settings.prisma";
+import { getDashboardStats } from "./routes/dashboard.prisma";
+import { getCalendarData } from "./routes/calendar.prisma";
+import { getGoals, createGoal, updateGoal, deleteGoal, getGoalProgress } from "./routes/goals.prisma";
+import { getAchievements, unlockAchievement, checkAchievements } from "./routes/achievements.prisma";
+import { getStreaks, updateStreak } from "./routes/streak.prisma";
+import { createHabitLog, updateHabitLog, deleteHabitLog, getHabitLogs } from "./routes/habit-logs.prisma";
 
 // Middleware
-import { requireAuth } from "./middleware/auth";
+import { requireAuth } from "./middleware/auth.prisma";
 
 // Database
 import db from "./db";
@@ -187,6 +196,12 @@ export function createServer() {
     requireOwner,
     deleteHabitHandler,
   );
+  app.post(
+    "/api/users/:userId/habits/:habitId/complete",
+    requireAuth,
+    requireOwner,
+    completeHabitHandler,
+  );
 
   // Dashboard
   app.get(
@@ -267,36 +282,52 @@ export function createServer() {
     deleteReminder,
   );
 
-  // Achievements
-  app.get("/api/achievements", listCatalog);
-  app.post("/api/achievements/seed", seedCatalog);
-  app.get(
-    "/api/users/:userId/achievements",
-    requireAuth,
-    requireOwner,
-    getUserAchievements,
-  );
-  app.post(
-    "/api/users/:userId/achievements",
-    requireAuth,
-    requireOwner,
-    unlockAchievement,
-  );
+  // Achievements (disabled temporarily - using achievements.prisma routes)
+  // app.get("/api/achievements", listCatalog);
+  // app.post("/api/achievements/seed", seedCatalog);
+  // app.get(
+  //   "/api/users/:userId/achievements",
+  //   requireAuth,
+  //   requireOwner,
+  //   getUserAchievement,
+  // );
 
-  // Devices
-  app.get("/api/users/:userId/devices", requireAuth, requireOwner, listDevices);
-  app.post(
-    "/api/users/:userId/devices",
-    requireAuth,
-    requireOwner,
-    registerDevice,
-  );
-  app.delete(
-    "/api/users/:userId/devices/:id",
-    requireAuth,
-    requireOwner,
-    unregisterDevice,
-  );
+  // Devices (disabled temporarily)
+  // app.get("/api/users/:userId/devices", requireAuth, requireOwner, listDevices);
+  // app.post(
+  //   "/api/users/:userId/devices",
+  //   requireAuth,
+  //   requireOwner,
+  //   registerDevice,
+  // );
+  // app.delete(
+  //   "/api/users/:userId/devices/:id",
+  //   requireAuth,
+  //   requireOwner,
+  //   unregisterDevice,
+  // );
+
+  // Goals & Progress
+  app.get("/api/users/:userId/goals", requireAuth, requireOwner, getGoals);
+  app.post("/api/users/:userId/goals", requireAuth, requireOwner, createGoal);
+  app.put("/api/users/:userId/goals/:goalId", requireAuth, requireOwner, updateGoal);
+  app.delete("/api/users/:userId/goals/:goalId", requireAuth, requireOwner, deleteGoal);
+  app.get("/api/users/:userId/goals/:goalId/progress", requireAuth, requireOwner, getGoalProgress);
+
+  // Achievements
+  app.get("/api/users/:userId/achievements", requireAuth, requireOwner, getAchievements);
+  app.post("/api/users/:userId/achievements/unlock", requireAuth, requireOwner, unlockAchievement);
+  app.post("/api/users/:userId/achievements/check", requireAuth, requireOwner, checkAchievements);
+
+  // Streaks
+  app.get("/api/users/:userId/streaks", requireAuth, requireOwner, getStreaks);
+  app.post("/api/users/:userId/streaks/update", requireAuth, requireOwner, updateStreak);
+
+  // Habit Logs
+  app.get("/api/users/:userId/habits/:habitId/logs", requireAuth, requireOwner, getHabitLogs);
+  app.post("/api/users/:userId/habits/:habitId/logs", requireAuth, requireOwner, createHabitLog);
+  app.put("/api/users/:userId/habits/:habitId/logs/:logId", requireAuth, requireOwner, updateHabitLog);
+  app.delete("/api/users/:userId/habits/:habitId/logs/:logId", requireAuth, requireOwner, deleteHabitLog);
 
   // Admin
   const adminToken = process.env.ADMIN_TOKEN || "CHANGE_ME_ADMIN_TOKEN";
@@ -318,51 +349,51 @@ export function createServer() {
     }
   });
 
-  // Habit logs
-  app.get(
-    "/api/users/:userId/habits/:habitId/logs",
-    requireAuth,
-    requireOwner,
-    listLogs,
-  );
-  app.post(
-    "/api/users/:userId/habits/:habitId/logs",
-    requireAuth,
-    requireOwner,
-    createLog,
-  );
-  app.put(
-    "/api/users/:userId/habits/:habitId/logs/:logId",
-    requireAuth,
-    requireOwner,
-    updateLog,
-  );
-  app.delete(
-    "/api/users/:userId/habits/:habitId/logs/:logId",
-    requireAuth,
-    requireOwner,
-    deleteLog,
-  );
+  // Habit logs (disabled old version - using habit-logs.prisma above)
+  // app.get(
+  //   "/api/users/:userId/habits/:habitId/logs",
+  //   requireAuth,
+  //   requireOwner,
+  //   listLogs,
+  // );
+  // app.post(
+  //   "/api/users/:userId/habits/:habitId/logs",
+  //   requireAuth,
+  //   requireOwner,
+  //   createLog,
+  // );
+  // app.put(
+  //   "/api/users/:userId/habits/:habitId/logs/:logId",
+  //   requireAuth,
+  //   requireOwner,
+  //   updateLog,
+  // );
+  // app.delete(
+  //   "/api/users/:userId/habits/:habitId/logs/:logId",
+  //   requireAuth,
+  //   requireOwner,
+  //   deleteLog,
+  // );
 
-  // Overrides
-  app.get(
-    "/api/users/:userId/habits/:habitId/overrides",
-    requireAuth,
-    requireOwner,
-    listOverrides,
-  );
-  app.post(
-    "/api/users/:userId/habits/:habitId/overrides",
-    requireAuth,
-    requireOwner,
-    createOverride,
-  );
-  app.delete(
-    "/api/users/:userId/habits/:habitId/overrides/:overrideId",
-    requireAuth,
-    requireOwner,
-    deleteOverride,
-  );
+  // Overrides (disabled temporarily)
+  // app.get(
+  //   "/api/users/:userId/habits/:habitId/overrides",
+  //   requireAuth,
+  //   requireOwner,
+  //   listOverrides,
+  // );
+  // app.post(
+  //   "/api/users/:userId/habits/:habitId/overrides",
+  //   requireAuth,
+  //   requireOwner,
+  //   createOverride,
+  // );
+  // app.delete(
+  //   "/api/users/:userId/habits/:habitId/overrides/:overrideId",
+  //   requireAuth,
+  //   requireOwner,
+  //   deleteOverride,
+  // );
 
   // User settings
   app.get(

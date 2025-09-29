@@ -6,7 +6,16 @@ const DB_DIR = path.join(process.cwd(), "server", "data");
 if (!fs.existsSync(DB_DIR)) fs.mkdirSync(DB_DIR, { recursive: true });
 const DB_PATH = path.join(DB_DIR, "app.sqlite");
 
-const db = new Database(DB_PATH);
+// Try to create database, fallback to memory if bindings fail
+let db: Database.Database;
+try {
+  db = new Database(DB_PATH);
+  console.log("Using file-based SQLite database");
+} catch (error) {
+  console.warn("Failed to create file-based database, using in-memory database:", error);
+  db = new Database(":memory:");
+  console.log("Using in-memory SQLite database (data will be lost on restart)");
+}
 
 // Initialize tables
 db.exec(`

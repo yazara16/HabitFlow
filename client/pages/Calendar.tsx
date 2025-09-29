@@ -33,6 +33,7 @@ import {
 import Navigation from "@/components/Navigation";
 import HabitDialog from "@/components/HabitDialog";
 import { useHabits, Habit as HabitType } from "@/contexts/HabitsContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useHabitReminders } from "@/hooks/use-habit-reminders";
 import { toast } from "@/hooks/use-toast";
 
@@ -68,6 +69,7 @@ const MAX_HABITS_PER_DAY = 2;
 
 export default function Calendar() {
   useHabitReminders();
+  const { user } = useAuth();
   const {
     habits,
     addHabit,

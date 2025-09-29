@@ -1,3 +1,3 @@
 // server/db.ts
-import db from './db.sqlite';
+import db from './db.prisma';
 export default db;
