@@ -991,7 +991,23 @@ export default function Settings() {
                                 hábitos, progreso y configuraciones. No se puede
                                 deshacer.
                               </p>
-                              <Button variant="destructive" size="sm">
+                              <Button variant="destructive" size="sm" onClick={async () => {
+                                if (!user) { toast({ title: 'Debes iniciar sesión', description: 'Inicia sesión para eliminar tu cuenta.', variant: 'destructive' }); return; }
+                                const ok = window.confirm('¿Seguro que deseas eliminar tu cuenta y todos tus datos? Esta acción no se puede deshacer.');
+                                if (!ok) return;
+                                try {
+                                  const token = localStorage.getItem('auth:token');
+                                  const res = await fetch(`/api/users/${user.id}`, { method: 'DELETE', headers: token ? { Authorization: `Bearer ${token}` } : undefined });
+                                  if (!res.ok) throw new Error('Delete failed');
+                                  toast({ title: 'Cuenta eliminada', description: 'Tu cuenta y datos fueron eliminados.' });
+                                  // logout and redirect
+                                  try { logout(); } catch (e) {}
+                                  navigate('/');
+                                } catch (e: any) {
+                                  console.error(e);
+                                  toast({ title: 'Error', description: 'No fue posible eliminar la cuenta', variant: 'destructive' });
+                                }
+                              }}>
                                 <Trash2 className="h-4 w-4 mr-2" />
                                 Eliminar cuenta y datos
                               </Button>
