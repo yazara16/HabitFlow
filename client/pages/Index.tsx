@@ -184,7 +184,7 @@ export default function Index() {
               { name: "Estudio", icon: GraduationCap, color: "bg-teal-500", count: "5 hábitos" },
               { name: "Compras", icon: ShoppingCart, color: "bg-orange-500", count: "4 hábitos" },
               { name: "Meditación", icon: Moon, color: "bg-purple-500", count: "7 hábitos" },
-              { name: "Personalizado", icon: Star, color: "bg-purple-500", count: "15 hábitos" }
+              { name: "Personalizado", icon: Star, color: "bg-pink-500", count: "15 hábitos" }
             ].map((category, index) => (
               <Card key={index} className="group hover:shadow-md transition-all duration-300">
                 <CardContent className="p-6 text-center">
