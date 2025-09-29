@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -223,7 +224,7 @@ export default function NotificationsPanel() {
             onClick={markAllAsRead}
             disabled={unreadCount === 0}
           >
-            Marcar todas leídas
+            Marcar todas le��das
           </Button>
         </div>
       </CardHeader>
