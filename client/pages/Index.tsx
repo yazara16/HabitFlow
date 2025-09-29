@@ -23,6 +23,7 @@ import {
   Clock,
   Heart,
   ShoppingCart,
+  Moon,
   Twitter,
   Instagram,
   Facebook,
