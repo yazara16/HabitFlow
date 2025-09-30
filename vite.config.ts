@@ -6,7 +6,13 @@ import path from "path";
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
-    port: 8080,
+    port: 5173, // Cambiado a 5173 para evitar conflicto con Express
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080', // Backend Express
+        changeOrigin: true,
+      },
+    },
     fs: {
       allow: ["./client", "./shared", "."],
       deny: [".env", ".env.*", "*.{crt,pem}", "**/.git/**", "server/**"],

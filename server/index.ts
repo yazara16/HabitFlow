@@ -2,8 +2,7 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 
-// Routes
-import { handleDemo } from "./routes/demo";
+// Auth routes
 import {
   registerHandler,
   loginHandler,
@@ -13,6 +12,7 @@ import {
   deleteUserHandler,
 } from "./routes/auth.prisma";
 
+// Habits routes
 import {
   getHabitsHandler,
   createHabitHandler,
@@ -21,8 +21,10 @@ import {
   completeHabitHandler,
 } from "./routes/habits.prisma";
 
+// Debug
 import { listUsers, listHabits, dbStats } from "./routes/debug";
 
+// Notifications
 import {
   listNotifications,
   createNotification,
@@ -31,6 +33,7 @@ import {
   deleteNotification,
 } from "./routes/notifications.prisma";
 
+// Reminders
 import {
   listReminders,
   createReminder,
@@ -38,17 +41,40 @@ import {
   deleteReminder,
 } from "./routes/reminders.prisma";
 
-import {
-  getSettings,
-  upsertSettings
-} from "./routes/settings.prisma";
-import { getDashboardStats } from "./routes/dashboard.prisma";
-import { getCalendarData } from "./routes/calendar.prisma";
-import { getGoals, createGoal, updateGoal, deleteGoal, getGoalProgress } from "./routes/goals.prisma";
-import { getAchievements, unlockAchievement, checkAchievements } from "./routes/achievements.prisma";
-import { getStreaks, updateStreak } from "./routes/streak.prisma";
-import { createHabitLog, updateHabitLog, deleteHabitLog, getHabitLogs } from "./routes/habit-logs.prisma";
+// Settings
+import { getSettings, upsertSettings } from "./routes/settings.prisma";
 
+// Dashboard
+import { getDashboardStats } from "./routes/dashboard.prisma";
+
+// Goals
+import {
+  getGoals,
+  createGoal,
+  updateGoal,
+  deleteGoal,
+  getGoalProgress,
+} from "./routes/goals.prisma";
+
+// Achievements
+import {
+  getAchievements,
+  unlockAchievement,
+  checkAchievements,
+} from "./routes/achievements.prisma";
+
+// Streaks
+import { getStreaks, updateStreak } from "./routes/streak.prisma";
+
+// Habit Logs
+import {
+  createHabitLog,
+  updateHabitLog,
+  deleteHabitLog,
+  getHabitLogs,
+} from "./routes/habit-logs.prisma";
+
+// Backup
 import { createBackup } from "./routes/backup";
 
 // Middleware
@@ -56,10 +82,12 @@ import { requireAuth } from "./middleware/auth.prisma";
 
 // Database
 import db from "./db";
+import { getCalendarData } from "./routes/calendar.prisma";
 
 export function createServer() {
   const app = express();
 
+  // FRONTEND URL para CORS
   const FRONTEND = process.env.FRONTEND_URL || "http://localhost:5173";
   app.use(cors({ origin: FRONTEND, credentials: true }));
 
@@ -67,7 +95,7 @@ export function createServer() {
   app.use((req, res, next) => {
     res.setHeader(
       "Content-Security-Policy",
-      "default-src 'self'; img-src 'self' data: https://www.google-analytics.com https://www.googletagmanager.com; script-src 'self' 'unsafe-inline' https://www.google-analytics.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-ancestors 'none'; base-uri 'self';",
+      "default-src 'self'; img-src 'self' data: https://www.google-analytics.com https://www.googletagmanager.com; script-src 'self' 'unsafe-inline' https://www.google-analytics.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-ancestors 'none'; base-uri 'self';"
     );
     res.setHeader("X-Content-Type-Options", "nosniff");
     res.setHeader("X-Frame-Options", "DENY");
@@ -75,7 +103,7 @@ export function createServer() {
     if (process.env.NODE_ENV === "production") {
       res.setHeader(
         "Strict-Transport-Security",
-        "max-age=63072000; includeSubDomains; preload",
+        "max-age=63072000; includeSubDomains; preload"
       );
     }
     next();
@@ -110,29 +138,13 @@ export function createServer() {
     const ping = process.env.PING_MESSAGE ?? "ping";
     res.json({ message: ping });
   });
-  app.get("/api/demo", handleDemo);
 
   // Auth
   app.post("/api/register", registerHandler);
   app.post("/api/login", loginHandler);
-  app.get("/api/auth/google", (req, res) => {
-    try {
-      const { googleRedirect } = require("./routes/google_oauth");
-      return googleRedirect(req, res);
-    } catch (e) {
-      return res.status(500).json({ error: String(e) });
-    }
-  });
-  app.get("/api/auth/google/callback", (req, res) => {
-    try {
-      const { googleCallback } = require("./routes/google_oauth");
-      return googleCallback(req, res);
-    } catch (e) {
-      return res.status(500).json({ error: String(e) });
-    }
-  });
+  app.get("/api/auth/google", googleMockHandler);
 
-  // /api/me endpoint con Prisma
+  // /api/me endpoint
   app.get("/api/me", requireAuth, async (req, res) => {
     try {
       const uid = Number(req.authUserId);
@@ -146,7 +158,6 @@ export function createServer() {
           createdAt: true,
         },
       });
-
       if (!user) return res.status(404).json({ message: "User not found" });
       res.json(user);
     } catch (e) {
@@ -245,7 +256,7 @@ export function createServer() {
 // Start server if run directly
 if (process.argv[1] && process.argv[1].endsWith("server/index.ts")) {
   const app = createServer();
-  const port = process.env.PORT || 5173;
+  const port = 8080; // puerto fijo 8080
   app.listen(port, () => {
     console.log(`Server listening on http://localhost:${port}`);
   });

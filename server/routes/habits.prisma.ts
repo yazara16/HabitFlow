@@ -1,17 +1,18 @@
 import type { RequestHandler } from "express";
 import db from "../db";
 
+// Obtener hábitos de un usuario
 export const getHabitsHandler: RequestHandler = async (req, res) => {
   try {
     const { userId } = req.params;
-    
+
     if (!userId) {
       return res.status(400).json({ message: "User ID is required" });
     }
 
     const habits = await db.habit.findMany({
-      where: { userId },
-      orderBy: { createdAt: 'desc' }
+      where: { userId: Number(userId) },
+      orderBy: { createdAt: "desc" },
     });
 
     res.json(habits);
@@ -21,10 +22,21 @@ export const getHabitsHandler: RequestHandler = async (req, res) => {
   }
 };
 
+// Crear hábito nuevo
 export const createHabitHandler: RequestHandler = async (req, res) => {
   try {
     const { userId } = req.params;
-    const { name, description, category, color, icon, target, frequency, reminderTime, reminderEnabled } = req.body;
+    const {
+      name,
+      description,
+      category,
+      color,
+      icon,
+      target,
+      frequency,
+      reminderTime,
+      reminderEnabled,
+    } = req.body;
 
     if (!userId) {
       return res.status(400).json({ message: "User ID is required" });
@@ -34,16 +46,14 @@ export const createHabitHandler: RequestHandler = async (req, res) => {
       return res.status(400).json({ message: "Habit name is required" });
     }
 
-    // Convert icon object to string if it's an object
-    let iconString = icon;
-    if (typeof icon === 'object' && icon !== null) {
-      // Extract icon name from the icon object, or use a default
-      iconString = icon.name || 'target';
+    // Convertir icon a string si es un objeto
+    let iconString: string | undefined = icon;
+    if (typeof icon === "object" && icon !== null) {
+      iconString = icon.name || "target";
     }
 
     const habit = await db.habit.create({
       data: {
-        userId,
         name,
         description,
         category,
@@ -53,54 +63,71 @@ export const createHabitHandler: RequestHandler = async (req, res) => {
         frequency,
         reminderTime,
         reminderEnabled: reminderEnabled || false,
-      }
+        user: {
+          connect: { id: Number(userId) },
+        },
+      },
     });
 
-    res.json(habit);
+    res.status(201).json(habit);
   } catch (error) {
     console.error("Error creating habit:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
 
+// Actualizar hábito
 export const updateHabitHandler: RequestHandler = async (req, res) => {
   try {
     const { habitId } = req.params;
     const updateData = req.body;
 
-    // Convert icon object to string if it's an object
-    if (updateData.icon && typeof updateData.icon === 'object' && updateData.icon !== null) {
-      updateData.icon = updateData.icon.name || 'target';
+    if (!habitId) {
+      return res.status(400).json({ message: "Habit ID is required" });
     }
 
-    // Filter only allowed fields for Habit model
+    // Convertir icon a string si es un objeto
+    if (updateData.icon && typeof updateData.icon === "object" && updateData.icon !== null) {
+      updateData.icon = updateData.icon.name || "target";
+    }
+
+    // Filtrar solo campos permitidos
     const allowedFields = [
-      'name', 'description', 'category', 'color', 'icon', 'target',
-      'frequency', 'monthlyDays', 'monthlyMonths', 'reminderTime',
-      'reminderEnabled', 'completed', 'streak' 
+      "name",
+      "description",
+      "category",
+      "color",
+      "icon",
+      "target",
+      "frequency",
+      "monthlyDays",
+      "monthlyMonths",
+      "reminderTime",
+      "reminderEnabled",
+      "completed",
+      "streak",
+      "lastCompleted",
     ];
 
     const filteredData: any = {};
     for (const field of allowedFields) {
       if (updateData[field] !== undefined) {
-        filteredData[field] = updateData[field];
+        filteredData[field] =
+          field === "lastCompleted" && updateData[field]
+            ? new Date(updateData[field])
+            : updateData[field];
       }
     }
 
-    // Handle lastCompleted specially
-    if (updateData.lastCompleted !== undefined) {
-      filteredData.lastCompleted = updateData.lastCompleted ? new Date(updateData.lastCompleted) : null;
-    }
-
     const habit = await db.habit.update({
-      where: { id: habitId },
-      data: filteredData
+      where: { id: Number(habitId) },
+      data: filteredData,
     });
 
     res.json(habit);
   } catch (error: any) {
     console.error("Error updating habit:", error);
-    if (error.code === 'P2025') {
+    if (error.code === "P2025") {
       res.status(404).json({ message: "Habit not found" });
     } else {
       res.status(500).json({ message: "Internal server error" });
@@ -108,12 +135,17 @@ export const updateHabitHandler: RequestHandler = async (req, res) => {
   }
 };
 
+// Eliminar hábito
 export const deleteHabitHandler: RequestHandler = async (req, res) => {
   try {
     const { habitId } = req.params;
 
+    if (!habitId) {
+      return res.status(400).json({ message: "Habit ID is required" });
+    }
+
     await db.habit.delete({
-      where: { id: habitId }
+      where: { id: Number(habitId) },
     });
 
     res.json({ message: "Habit deleted successfully" });
@@ -123,7 +155,7 @@ export const deleteHabitHandler: RequestHandler = async (req, res) => {
   }
 };
 
-// New endpoint to mark habit as completed (creates a log entry)
+// Marcar hábito como completado
 export const completeHabitHandler: RequestHandler = async (req, res) => {
   try {
     const { userId, habitId } = req.params;
@@ -133,9 +165,8 @@ export const completeHabitHandler: RequestHandler = async (req, res) => {
       return res.status(400).json({ message: "User ID and Habit ID are required" });
     }
 
-    // Verify the habit exists and belongs to the user
     const habit = await db.habit.findFirst({
-      where: { id: habitId, userId }
+      where: { id: Number(habitId), userId: Number(userId) },
     });
 
     if (!habit) {
@@ -143,91 +174,84 @@ export const completeHabitHandler: RequestHandler = async (req, res) => {
     }
 
     const logDate = new Date();
+    const startOfToday = new Date(logDate);
+    startOfToday.setHours(0, 0, 0, 0);
 
-    // Check if there's already a log for today
+    const endOfToday = new Date(logDate);
+    endOfToday.setHours(23, 59, 59, 999);
+
     const existingLog = await db.habitLog.findFirst({
       where: {
-        habitId,
-        userId,
-        date: {
-          gte: new Date(logDate.toISOString().split('T')[0]), // Start of today
-          lt: new Date(Date.parse(logDate.toISOString().split('T')[0]) + 24 * 60 * 60 * 1000) // End of today
-        }
-      }
+        habitId: Number(habitId),
+        userId: Number(userId),
+        date: { gte: startOfToday, lte: endOfToday },
+      },
     });
 
     if (existingLog) {
-      // Update existing log
       const updatedLog = await db.habitLog.update({
         where: { id: existingLog.id },
         data: {
           completedAmount,
           completedBoolean,
-          note: note || null
-        }
+          note: note || null,
+        },
       });
 
-      // Update habit stats
-      await updateHabitStats(habitId);
+      await updateHabitStats(Number(habitId));
 
       return res.json(updatedLog);
-    } else {
-      // Create new log
-      const habitLog = await db.habitLog.create({
-        data: {
-          habitId,
-          userId,
-          date: logDate,
-          completedAmount,
-          completedBoolean,
-          note: note || null
-        }
-      });
-
-      // Update habit stats
-      if (completedBoolean) {
-        await db.habit.update({
-          where: { id: habitId },
-          data: {
-            completed: { increment: 1 },
-            lastCompleted: logDate,
-            streak: await calculateStreak(habitId, logDate)
-          }
-        });
-      }
-
-      res.status(201).json(habitLog);
     }
+
+    const habitLog = await db.habitLog.create({
+      data: {
+        habitId: Number(habitId),
+        userId: Number(userId),
+        date: logDate,
+        completedAmount,
+        completedBoolean,
+        note: note || null,
+      },
+    });
+
+    if (completedBoolean) {
+      await db.habit.update({
+        where: { id: Number(habitId) },
+        data: {
+          completed: { increment: 1 },
+          lastCompleted: logDate,
+          streak: await calculateStreak(Number(habitId), logDate),
+        },
+      });
+    }
+
+    res.status(201).json(habitLog);
   } catch (error) {
     console.error("Error completing habit:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
 
-// Helper function to calculate streak
-async function calculateStreak(habitId: string, logDate: Date): Promise<number> {
+// Helper: calcular streak
+async function calculateStreak(habitId: number, logDate: Date): Promise<number> {
   try {
     const recentLogs = await db.habitLog.findMany({
-      where: { 
-        habitId,
-        completedBoolean: true,
-        date: { lte: logDate }
-      },
-      orderBy: { date: 'desc' },
-      take: 30
+      where: { habitId, completedBoolean: true, date: { lte: logDate } },
+      orderBy: { date: "desc" },
+      take: 30,
     });
 
     let streak = 0;
-    const today = logDate.toISOString().split('T')[0];
-    let checkDate = today;
+    let checkDate = new Date(logDate);
+    checkDate.setHours(0, 0, 0, 0);
 
     for (const log of recentLogs) {
-      const logDateStr = log.date.toISOString().split('T')[0];
-      
-      if (logDateStr === checkDate) {
+      const logDateCopy = new Date(log.date);
+      logDateCopy.setHours(0, 0, 0, 0);
+
+      if (logDateCopy.getTime() === checkDate.getTime()) {
         streak++;
-        checkDate = new Date(Date.parse(checkDate) - 24 * 60 * 60 * 1000)
-          .toISOString().split('T')[0];
+        checkDate.setDate(checkDate.getDate() - 1);
       } else {
         break;
       }
@@ -240,16 +264,16 @@ async function calculateStreak(habitId: string, logDate: Date): Promise<number> 
   }
 }
 
-// Helper function to update habit stats
-async function updateHabitStats(habitId: string): Promise<void> {
+// Helper: actualizar estadísticas del hábito
+async function updateHabitStats(habitId: number): Promise<void> {
   try {
     const completedCount = await db.habitLog.count({
-      where: { habitId, completedBoolean: true }
+      where: { habitId, completedBoolean: true },
     });
 
     const lastLog = await db.habitLog.findFirst({
       where: { habitId, completedBoolean: true },
-      orderBy: { date: 'desc' }
+      orderBy: { date: "desc" },
     });
 
     const currentStreak = lastLog ? await calculateStreak(habitId, lastLog.date) : 0;
@@ -259,8 +283,8 @@ async function updateHabitStats(habitId: string): Promise<void> {
       data: {
         completed: completedCount,
         streak: currentStreak,
-        lastCompleted: lastLog?.date || null
-      }
+        lastCompleted: lastLog?.date || null,
+      },
     });
   } catch (error) {
     console.error("Error updating habit stats:", error);

@@ -24,50 +24,41 @@ interface AuthContextValue {
     password: string;
     photoUrl?: string;
     preferredCategories?: string[];
-  }) => Promise<void>;
-  login: (data: { email: string; password: string }) => Promise<void>;
+  }) => Promise<AuthUser>;
+  login: (data: { email: string; password: string }) => Promise<AuthUser>;
   loginWithGoogle: () => Promise<void>;
   logout: () => void;
   updateProfile: (patch: Partial<AuthUser>) => Promise<void>;
-  registerDevice?: (payload: {
-    platform?: string;
-    pushToken: string;
-  }) => Promise<void>;
+  registerDevice?: (payload: { platform?: string; pushToken: string }) => Promise<void>;
   unregisterDevice?: (deviceId: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-const USERS_KEY = "auth:users";
-const CURRENT_KEY = "auth:current";
+const API_BASE = "http://localhost:8080"; // <-- puerto backend
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
 
   useEffect(() => {
-    // Try to restore session from token
     const token = localStorage.getItem("auth:token");
     if (token) {
-      fetch(`/api/me`, { headers: { Authorization: `Bearer ${token}` } })
+      fetch(`${API_BASE}/api/me`, { headers: { Authorization: `Bearer ${token}` } })
         .then(async (res) => {
           if (res.ok) {
             const u = await res.json();
             setUser(u);
-            // persist token
             localStorage.setItem("auth:token", token);
           } else {
             localStorage.removeItem("auth:token");
           }
         })
-        .catch(() => {
-          // ignore
-        });
+        .catch(() => {});
     }
   }, []);
 
   const persistUser = (u: AuthUser) => {
-    // Persist minimal session (user id) locally
-    localStorage.setItem(CURRENT_KEY, u.id);
+    localStorage.setItem("auth:current", u.id);
     setUser(u);
   };
 
@@ -79,7 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       photoUrl?: string;
       preferredCategories?: string[];
     }) => {
-      const res = await fetch("/api/register", {
+      const res = await fetch(`${API_BASE}/api/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -89,12 +80,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw new Error(body?.message || "Error registering");
       }
       const body = await res.json();
-      const u: AuthUser = body.user || body;
+      const u: AuthUser = body.user;
       const token: string | undefined = body.token;
       persistUser(u);
-      if (token) {
-        localStorage.setItem("auth:token", token);
-      }
+      if (token) localStorage.setItem("auth:token", token);
       return u;
     },
     [],
@@ -102,7 +91,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = useCallback(
     async (data: { email: string; password: string }) => {
-      const res = await fetch("/api/login", {
+      const res = await fetch(`${API_BASE}/api/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -112,7 +101,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw new Error(body?.message || "Credenciales inválidas");
       }
       const body = await res.json();
-      const u: AuthUser = body.user || body;
+      const u: AuthUser = body.user;
       const token: string | undefined = body.token;
       persistUser(u);
       if (token) localStorage.setItem("auth:token", token);
@@ -122,19 +111,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 
   const loginWithGoogle = useCallback(async () => {
-    // Trigger Google OAuth redirect; frontend should handle callback token on return
-    window.location.href = "/api/auth/google";
+    window.location.href = `${API_BASE}/api/auth/google`;
   }, []);
 
   const logout = useCallback(() => {
-    localStorage.removeItem(CURRENT_KEY);
+    localStorage.removeItem("auth:current");
     setUser(null);
   }, []);
 
   const updateProfile = useCallback(
     async (patch: Partial<AuthUser>) => {
       if (!user) throw new Error("No user");
-      const res = await fetch(`/api/users/${user.id}`, {
+      const res = await fetch(`${API_BASE}/api/users/${user.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(patch),
@@ -150,7 +138,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     async (payload: { platform?: string; pushToken: string }) => {
       if (!user) throw new Error("No user");
       const token = localStorage.getItem("auth:token");
-      await fetch(`/api/users/${user.id}/devices`, {
+      await fetch(`${API_BASE}/api/users/${user.id}/devices`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -165,7 +153,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const unregisterDevice = useCallback(
     async (deviceId: string) => {
       if (!user) throw new Error("No user");
-      await fetch(`/api/users/${user.id}/devices/${deviceId}`, {
+      await fetch(`${API_BASE}/api/users/${user.id}/devices/${deviceId}`, {
         method: "DELETE",
       });
     },
@@ -173,8 +161,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 
   const value = useMemo<AuthContextValue>(
-    () => ({ user, register, login, loginWithGoogle, logout, updateProfile }),
-    [user, register, login, loginWithGoogle, logout, updateProfile],
+    () => ({ user, register, login, loginWithGoogle, logout, updateProfile, registerDevice, unregisterDevice }),
+    [user, register, login, loginWithGoogle, logout, updateProfile, registerDevice, unregisterDevice],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

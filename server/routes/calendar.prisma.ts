@@ -4,18 +4,18 @@ import db from "../db";
 export const getCalendarData: RequestHandler = async (req, res) => {
   try {
     const { userId } = req.params;
-    
-    if (!userId) {
-      return res.status(400).json({ message: "User ID is required" });
+    const userIdNum = Number(userId);
+    if (isNaN(userIdNum)) {
+      return res.status(400).json({ message: "Invalid user ID" });
     }
 
-    // Get habits and their logs for calendar view
+    // Asegúrate de que el modelo Habit tiene habitLogs o ajusta el nombre
     const habits = await db.habit.findMany({
-      where: { userId },
+      where: { userId: userIdNum },
       include: {
         habitLogs: {
-          orderBy: { date: 'desc' },
-          take: 10 // Get last 10 logs per habit
+          orderBy: { date: "desc" },
+          take: 10
         }
       }
     });
@@ -26,7 +26,7 @@ export const getCalendarData: RequestHandler = async (req, res) => {
         name: habit.name,
         color: habit.color,
         logs: habit.habitLogs.map(log => ({
-          date: log.date.toISOString().split('T')[0],
+          date: log.date.toISOString().split("T")[0],
           completed: log.completedBoolean,
           amount: log.completedAmount
         }))

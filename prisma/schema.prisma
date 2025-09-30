@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,34 +8,32 @@ datasource db {
 }
 
 model User {
-  id        Int   @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String?
-  photoUrl  String?
-  createdAt DateTime @default(now())
-
-  // Relations
-  habits           Habit[]
-  notifications    Notification[]
+  id               Int               @id @default(autoincrement())
+  name             String
+  email            String            @unique
+  password         String?
+  photoUrl         String?
+  createdAt        DateTime          @default(now())
+  categories       Category[]
+  devices          Device[]
+  goals            Goal[]
   habitLogs        HabitLog[]
   habitOverrides   HabitOverride[]
-  userSettings     UserSettings?
-  userAchievements UserAchievement[]
-  reminders        Reminder[]
-  devices          Device[]
-  weeklyReports    WeeklyReport[]
-  goals            Goal[]
+  habits           Habit[]
+  notifications    Notification[]
   progressEntries  ProgressEntry[]
+  reminders        Reminder[]
   streakRecords    StreakRecord[]
-  categories       Category[]
   themes           Theme[]
+  userAchievements UserAchievement[]
+  userSettings     UserSettings?
+  weeklyReports    WeeklyReport[]
 
   @@map("users")
 }
 
 model Habit {
-  id              Int    @id @default(autoincrement())
+  id              Int             @id @default(autoincrement())
   userId          Int
   name            String
   description     String?
@@ -46,32 +41,29 @@ model Habit {
   color           String?
   icon            String?
   target          Int?
-  completed       Int       @default(0)
-  streak          Int       @default(0)
+  completed       Int             @default(0)
+  streak          Int             @default(0)
   frequency       String?
   monthlyDays     String?
   monthlyMonths   String?
   reminderTime    String?
-  reminderEnabled Boolean   @default(false)
-  createdAt       DateTime  @default(now())
+  reminderEnabled Boolean         @default(false)
+  createdAt       DateTime        @default(now())
   lastCompleted   DateTime?
-
-  // Relations
-  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categoryId      Int?
   habitLogs       HabitLog[]
   habitOverrides  HabitOverride[]
-  reminders       Reminder[]
+  category        Category?       @relation(fields: [categoryId], references: [id])
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   progressEntries ProgressEntry[]
+  reminders       Reminder[]
   streakRecords   StreakRecord[]
-
-  categoryId Int?
-  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
 
   @@map("habits")
 }
 
 model Notification {
-  id        Int   @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   userId    Int
   type      String?
   title     String?
@@ -80,14 +72,13 @@ model Notification {
   read      Boolean  @default(false)
   metadata  String?
   createdAt DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("notifications")
 }
 
 model HabitLog {
-  id               Int   @id @default(autoincrement())
+  id               Int      @id @default(autoincrement())
   habitId          Int
   userId           Int
   date             DateTime
@@ -96,15 +87,14 @@ model HabitLog {
   note             String?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
-
-  habit Habit @relation(fields: [habitId], references: [id], onDelete: Cascade)
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  habit            Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("habit_logs")
 }
 
 model HabitOverride {
-  id        Int   @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   habitId   Int
   userId    Int
   date      DateTime
@@ -112,51 +102,47 @@ model HabitOverride {
   patch     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  habit Habit @relation(fields: [habitId], references: [id], onDelete: Cascade)
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  habit     Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("habit_overrides")
 }
 
 model UserSettings {
-  userId    Int   @id
+  userId    Int      @id
   settings  String?
   updatedAt DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("user_settings")
 }
 
 model Achievement {
-  id          Int   @id @default(autoincrement())
-  key         String   @unique
-  title       String?
-  description String?
-  criteria    String?
-  createdAt   DateTime @default(now())
-
+  id               Int               @id @default(autoincrement())
+  key              String            @unique
+  title            String?
+  description      String?
+  criteria         String?
+  createdAt        DateTime          @default(now())
   userAchievements UserAchievement[]
 
   @@map("achievements")
 }
 
 model UserAchievement {
-  id            Int   @id @default(autoincrement())
+  id            Int         @id @default(autoincrement())
   userId        Int
   achievementId Int
-  earnedAt      DateTime @default(now())
+  earnedAt      DateTime    @default(now())
   meta          String?
-
-  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  achievement Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("user_achievements")
 }
 
 model Reminder {
-  id         Int    @id @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   userId     Int
   habitId    Int?
   timeOfDay  String?
@@ -166,28 +152,26 @@ model Reminder {
   days       String?
   nextRun    DateTime?
   createdAt  DateTime  @default(now())
-
-  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  habit Habit? @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  habit      Habit?    @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("reminders")
 }
 
 model Device {
-  id         Int    @id @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   userId     Int
   platform   String?
   pushToken  String?
   lastSeenAt DateTime?
   createdAt  DateTime  @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("devices")
 }
 
 model WeeklyReport {
-  id              Int   @id @default(autoincrement())
+  id              Int      @id @default(autoincrement())
   userId          Int
   weekStart       DateTime
   weekEnd         DateTime
@@ -199,37 +183,34 @@ model WeeklyReport {
   notes           String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("weekly_reports")
 }
 
 model Goal {
-  id           Int    @id @default(autoincrement())
-  userId       Int
-  title        String
-  description  String?
-  category     String?
-  targetValue  Int
-  currentValue Int       @default(0)
-  deadline     DateTime?
-  status       String    @default("active")
-  priority     String    @default("medium")
-  color        String?
-  icon         String?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  id              Int             @id @default(autoincrement())
+  userId          Int
+  title           String
+  description     String?
+  category        String?
+  targetValue     Int
+  currentValue    Int             @default(0)
+  deadline        DateTime?
+  status          String          @default("active")
+  priority        String          @default("medium")
+  color           String?
+  icon            String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   progressEntries ProgressEntry[]
 
   @@map("goals")
 }
 
 model ProgressEntry {
-  id          Int   @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   userId      Int
   habitId     Int?
   goalId      Int?
@@ -238,16 +219,15 @@ model ProgressEntry {
   description String?
   date        DateTime @default(now())
   createdAt   DateTime @default(now())
-
-  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  habit Habit? @relation(fields: [habitId], references: [id], onDelete: Cascade)
-  goal  Goal?  @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  goal        Goal?    @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  habit       Habit?   @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("progress_entries")
 }
 
 model StreakRecord {
-  id            Int   @id @default(autoincrement())
+  id            Int      @id @default(autoincrement())
   userId        Int
   habitId       Int?
   streakType    String
@@ -257,15 +237,14 @@ model StreakRecord {
   streakStarted DateTime
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-
-  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  habit Habit? @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  habit         Habit?   @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("streak_records")
 }
 
 model Category {
-  id          Int   @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   userId      Int
   name        String
   description String?
@@ -274,15 +253,14 @@ model Category {
   isDefault   Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-
-  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  habits Habit[]
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  habits      Habit[]
 
   @@map("categories")
 }
 
 model Theme {
-  id             Int   @id @default(autoincrement())
+  id             Int      @id @default(autoincrement())
   userId         Int
   themeName      String   @default("system")
   primaryColor   String   @default("#3b82f6")
@@ -291,8 +269,7 @@ model Theme {
   isDarkMode     Boolean  @default(false)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("themes")
 }
