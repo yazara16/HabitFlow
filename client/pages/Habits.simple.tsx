@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Navigation from "@/components/Navigation";
+import Navigation from "@/components/Navigation"; // ya no pasamos props
 import { useAuth } from "@/contexts/AuthContext";
 import { useHabits } from "@/contexts/HabitsContext.simple";
 import {
@@ -25,10 +25,8 @@ import {
   Moon,
   Star,
   Trash2,
-  Edit,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import HabitDialog from "@/components/HabitDialog";
 
 const iconOptions = [
   { value: "Target", icon: Target, label: "Objetivo" },
@@ -63,9 +61,9 @@ export default function Habits() {
 
   const handleToggleHabit = async (habit: any) => {
     try {
-      await updateHabit(habit.id, { 
-        completed: !habit.completed,
-        completedBoolean: !habit.completed 
+      // ✅ Convertimos boolean a número 0/1
+      await updateHabit(habit.id, {
+        completed: habit.completed ? 0 : 1,
       });
       toast({ title: habit.completed ? "Hábito desmarcado" : "Hábito completado" });
     } catch (error) {
@@ -87,22 +85,21 @@ export default function Habits() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation onLogout={handleLogout} user={user} />
-      
+      {/* Navigation ya no necesita props */}
+      <Navigation />
+
       <main className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-foreground">Mis Hábitos</h1>
-              <p className="text-muted-foreground mt-2">
-                Gestiona tus hábitos diarios y mantén el progreso
-              </p>
-            </div>
-            <Button onClick={() => setShowDialog(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Agregar Hábito
-            </Button>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">Mis Hábitos</h1>
+            <p className="text-muted-foreground mt-2">
+              Gestiona tus hábitos diarios y mantén el progreso
+            </p>
           </div>
+          <Button onClick={() => setShowDialog(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Agregar Hábito
+          </Button>
         </div>
 
         {/* Estadísticas */}
@@ -221,7 +218,7 @@ export default function Habits() {
           </CardContent>
         </Card>
 
-        {/* Dialog para crear/editar hábitos */}
+        {/* Dialog para crear hábitos */}
         {showDialog && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <Card className="w-full max-w-md">
@@ -242,26 +239,15 @@ export default function Habits() {
                     target: parseInt(formData.get('target') as string) || 1,
                     frequency: formData.get('frequency'),
                   };
-                  if (habitData.name) {
-                    handleCreateHabit(habitData);
-                  }
+                  if (habitData.name) handleCreateHabit(habitData);
                 }} className="space-y-4">
                   <div>
                     <Label htmlFor="name">Nombre del hábito</Label>
-                    <Input
-                      id="name"
-                      name="name"
-                      placeholder="Ej: Ejercitarse 30 minutos"
-                      required
-                    />
+                    <Input id="name" name="name" placeholder="Ej: Ejercitarse 30 minutos" required />
                   </div>
                   <div>
                     <Label htmlFor="description">Descripción (opcional)</Label>
-                    <Textarea
-                      id="description"
-                      name="description"
-                      placeholder="Describe tu hábito..."
-                    />
+                    <Textarea id="description" name="description" placeholder="Describe tu hábito..." />
                   </div>
                   <div>
                     <Label htmlFor="category">Categoría</Label>
@@ -280,13 +266,7 @@ export default function Habits() {
                   </div>
                   <div>
                     <Label htmlFor="target">Objetivo</Label>
-                    <Input
-                      id="target"
-                      name="target"
-                      type="number"
-                      placeholder="1"
-                      defaultValue={1}
-                    />
+                    <Input id="target" name="target" type="number" placeholder="1" defaultValue={1} />
                   </div>
                   <div>
                     <Label htmlFor="frequency">Frecuencia</Label>
@@ -302,13 +282,7 @@ export default function Habits() {
                     </Select>
                   </div>
                   <div className="flex justify-end space-x-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setShowDialog(false)}
-                    >
-                      Cancelar
-                    </Button>
+                    <Button type="button" variant="outline" onClick={() => setShowDialog(false)}>Cancelar</Button>
                     <Button type="submit">Crear Hábito</Button>
                   </div>
                 </form>
@@ -320,4 +294,3 @@ export default function Habits() {
     </div>
   );
 }
-

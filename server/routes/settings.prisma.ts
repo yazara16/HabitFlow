@@ -3,8 +3,8 @@ import db from "../db";
 
 export const getSettings: RequestHandler = async (req, res) => {
   try {
-    const { userId } = req.params;
-    
+    const userId = Number(req.params.userId);
+
     if (!userId) {
       return res.status(400).json({ message: "User ID is required" });
     }
@@ -35,9 +35,9 @@ export const getSettings: RequestHandler = async (req, res) => {
 
 export const upsertSettings: RequestHandler = async (req, res) => {
   try {
-    const { userId } = req.params;
+    const userId = Number(req.params.userId);
     const settingsData = req.body;
-    
+
     if (!userId) {
       return res.status(400).json({ message: "User ID is required" });
     }

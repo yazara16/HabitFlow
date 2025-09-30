@@ -3,7 +3,7 @@ import db from "../db";
 
 export const listNotifications: RequestHandler = async (req, res) => {
   try {
-    const { userId } = req.params;
+    const userId = Number(req.params.userId);
     
     if (!userId) {
       return res.status(400).json({ message: "User ID is required" });
@@ -23,7 +23,7 @@ export const listNotifications: RequestHandler = async (req, res) => {
 
 export const createNotification: RequestHandler = async (req, res) => {
   try {
-    const { userId } = req.params;
+    const userId = Number(req.params.userId);
     const { type, title, message, metadata } = req.body;
 
     if (!userId) {
@@ -53,7 +53,8 @@ export const createNotification: RequestHandler = async (req, res) => {
 
 export const markAsRead: RequestHandler = async (req, res) => {
   try {
-    const { userId, id } = req.params;
+    const userId = Number(req.params.userId);
+    const id = Number(req.params.id);
 
     const notification = await db.notification.update({
       where: { id },
@@ -69,7 +70,7 @@ export const markAsRead: RequestHandler = async (req, res) => {
 
 export const markAllRead: RequestHandler = async (req, res) => {
   try {
-    const { userId } = req.params;
+    const userId = Number(req.params.userId);
 
     await db.notification.updateMany({
       where: { userId, read: false },
@@ -85,7 +86,8 @@ export const markAllRead: RequestHandler = async (req, res) => {
 
 export const deleteNotification: RequestHandler = async (req, res) => {
   try {
-    const { userId, id } = req.params;
+    const userId = Number(req.params.userId);
+    const id = Number(req.params.id);
 
     await db.notification.delete({
       where: { id }
@@ -97,4 +99,3 @@ export const deleteNotification: RequestHandler = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-

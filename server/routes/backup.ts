@@ -1,49 +1,51 @@
 import fs from "fs";
 import path from "path";
-import db from "../db";
-import { RequestHandler } from "../types.d";
+import type { RequestHandler } from "express";
+import { PrismaClient } from "@prisma/client";
 
-export const createBackup: RequestHandler = (req, res) => {
+const prisma = new PrismaClient();
+
+export const createBackup: RequestHandler = async (req, res) => {
   try {
-    const userId = req.params.userId;
+    const userId = Number(req.params.userId);
     if (!userId) return res.status(400).json({ message: "Missing userId" });
 
-    // gather user and related data
-    const user = db
-      .prepare(
-        "SELECT id,name,email,photoUrl,createdAt FROM users WHERE id = ?",
-      )
-      .get(userId);
+    // obtener usuario
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, name: true, email: true, photoUrl: true, createdAt: true },
+    });
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    const habits = db
-      .prepare("SELECT * FROM habits WHERE userId = ?")
-      .all(userId);
-    const logs = db
-      .prepare("SELECT * FROM habit_logs WHERE userId = ?")
-      .all(userId);
-    const reminders = db
-      .prepare("SELECT * FROM reminders WHERE userId = ?")
-      .all(userId);
-    const notifications = db
-      .prepare("SELECT * FROM notifications WHERE userId = ?")
-      .all(userId);
-    const settingsRow = db
-      .prepare("SELECT settings FROM user_settings WHERE userId = ?")
-      .get(userId);
-    const userSettings = settingsRow
-      ? JSON.parse(settingsRow.settings || "{}")
-      : {};
-    const achievements = db
-      .prepare(
-        "SELECT ua.*, a.title, a.description FROM user_achievements ua LEFT JOIN achievements a ON ua.achievementId = a.id WHERE ua.userId = ?",
-      )
-      .all(userId);
+    // obtener hábitos, logs, recordatorios, notificaciones
+    const [habits, logs, reminders, notifications, settingsRow, achievements] = await Promise.all([
+      prisma.habit.findMany({ where: { userId } }),
+      prisma.habitLog.findMany({ where: { userId } }),
+      prisma.reminder.findMany({ where: { userId } }),
+      prisma.notification.findMany({ where: { userId } }),
+      prisma.userSettings.findUnique({ where: { userId } }),
+      prisma.userAchievement.findMany({
+        where: { userId },
+        include: {
+          achievement: { select: { title: true, description: true } },
+        },
+      }),
+    ]);
+
+    const userSettings = settingsRow ? JSON.parse(settingsRow.settings || "{}") : {};
+
+    // formatear achievements con los campos title y description
+    const achievementsFormatted = achievements.map(a => ({
+      ...a,
+      title: a.achievement?.title,
+      description: a.achievement?.description,
+      meta: a.meta ? JSON.parse(a.meta) : undefined,
+    }));
 
     const payload = {
       meta: {
         createdAt: new Date().toISOString(),
-        userId: userId,
+        userId,
       },
       user,
       settings: userSettings,
@@ -51,13 +53,16 @@ export const createBackup: RequestHandler = (req, res) => {
       logs,
       reminders,
       notifications,
-      achievements,
+      achievements: achievementsFormatted,
     };
 
+    // crear carpeta de backup si no existe
     const dir = path.join(process.cwd(), "server", "data", "backups");
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+
     const filename = `${userId}-${Date.now()}.json`;
     const filepath = path.join(dir, filename);
+
     fs.writeFileSync(filepath, JSON.stringify(payload, null, 2), "utf-8");
 
     return res.json({ ok: true, filename });

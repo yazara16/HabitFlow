@@ -1,20 +1,21 @@
 import type { RequestHandler } from "express";
-import db from "../db";
+import { PrismaClient } from "@prisma/client";
+
+const db = new PrismaClient();
 
 export const getDashboardStats: RequestHandler = async (req, res) => {
   try {
-    const { userId } = req.params;
-    
-    if (!userId) {
-      return res.status(400).json({ message: "User ID is required" });
+    const userId = Number(req.params.userId);
+    if (isNaN(userId)) {
+      return res.status(400).json({ message: "User ID must be a number" });
     }
 
-    // Get user habits
+    // Obtener hábitos del usuario
     const habits = await db.habit.findMany({
       where: { userId }
     });
 
-    // Get today's habit logs
+    // Obtener logs de hoy
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
@@ -30,7 +31,7 @@ export const getDashboardStats: RequestHandler = async (req, res) => {
       }
     });
 
-    // Calculate stats
+    // Calcular estadísticas
     const totalHabits = habits.length;
     const completedToday = todayLogs.filter(log => log.completedBoolean).length;
     const totalStreak = habits.reduce((sum, habit) => sum + habit.streak, 0);

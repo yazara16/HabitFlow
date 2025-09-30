@@ -2,171 +2,228 @@ import type { RequestHandler } from 'express';
 import db from '../db';
 import { v4 as uuidv4 } from 'uuid';
 
-function parseDateIso(d: string) {
-  return new Date(d + 'T00:00:00');
-}
-
+// Helpers de fecha
 function isoDateStr(date: Date) {
   return date.toISOString().split('T')[0];
 }
 
-// Compute consecutive streak for a habit based on habit_logs and habit frequency
-function computeStreakForHabit(habit: any, userId: string): number {
-  const habitId = habit.id;
-  const frequency = habit.frequency || 'daily';
-  const createdAt = habit.createdAt || null; // ISO date
-
-  if (frequency === 'daily') {
-    return computeDailyStreak(habitId, userId);
-  }
-
-  if (frequency === 'weekly') {
-    // For weekly, determine scheduled weekday from createdAt or default to Sunday (0)
-    const created = createdAt ? new Date(createdAt) : new Date();
-    const weekday = created.getDay();
-    // Check consecutive weeks: for each week starting this week going back, check if there's a completed log on that weekday
-    let streak = 0;
-    let cursor = new Date(); cursor.setHours(0,0,0,0);
-    // Align cursor to this week's target weekday
-    const diff = cursor.getDay() - weekday;
-    cursor.setDate(cursor.getDate() - diff);
-    for (let i=0;i<365;i++) { // safety cap
-      const iso = isoDateStr(cursor);
-      const row = db.prepare('SELECT completedBoolean FROM habit_logs WHERE habitId = ? AND userId = ? AND date = ?').get(habitId, userId, iso);
-      if (row && row.completedBoolean) {
-        streak += 1;
-        cursor.setDate(cursor.getDate() - 7);
-      } else {
-        break;
-      }
-    }
-    return streak;
-  }
-
-  if (frequency === 'monthly') {
-    // For monthly, determine scheduled day-of-month from createdAt or default to 1
-    const created = createdAt ? new Date(createdAt) : new Date();
-    const dayOfMonth = created.getDate();
-    let streak = 0;
-    let cursor = new Date(); cursor.setHours(0,0,0,0);
-    // set cursor to this month's scheduled day, or if past, to this month's
-    cursor.setDate(dayOfMonth);
-    if (cursor > new Date()) {
-      // if scheduled day in future (this month), move to previous month
-      cursor.setMonth(cursor.getMonth() - 1);
-    }
-    for (let i=0;i<120;i++) {
-      const iso = isoDateStr(cursor);
-      const row = db.prepare('SELECT completedBoolean FROM habit_logs WHERE habitId = ? AND userId = ? AND date = ?').get(habitId, userId, iso);
-      if (row && row.completedBoolean) {
-        streak += 1;
-        cursor.setMonth(cursor.getMonth() - 1);
-      } else {
-        break;
-      }
-    }
-    return streak;
-  }
-
-  // fallback
-  return computeDailyStreak(habitId, userId);
+function parseDateIso(d: string) {
+  return new Date(d + 'T00:00:00');
 }
 
-// Compute consecutive daily streak for a habit based on habit_logs (completedBoolean)
-function computeDailyStreak(habitId: string, userId: string): number {
-  const rows = db.prepare('SELECT date, completedBoolean FROM habit_logs WHERE habitId = ? AND userId = ? ORDER BY date DESC').all(habitId, userId);
-  if (!rows || rows.length === 0) return 0;
+// Compute streak for daily habit
+async function computeDailyStreak(habitId: number, userId: number): Promise<number> {
+  const logs = await db.habitLog.findMany({
+    where: { habitId, userId },
+    orderBy: { date: 'desc' },
+    select: { date: true, completedBoolean: true },
+  });
+
+  if (!logs || logs.length === 0) return 0;
+
   let streak = 0;
   let cursor = new Date();
-  cursor.setHours(0,0,0,0);
-  for (const r of rows) {
-    const d = parseDateIso(r.date);
-    const diff = Math.round((cursor.getTime() - d.getTime()) / (1000*60*60*24));
-    if (diff === 0 && r.completedBoolean) {
+  cursor.setHours(0, 0, 0, 0);
+
+  for (const log of logs) {
+    const logDate = parseDateIso(log.date.toISOString().split('T')[0]);
+    const diff = Math.round((cursor.getTime() - logDate.getTime()) / (1000 * 60 * 60 * 24));
+
+    if ((diff === 0 || diff === 1) && log.completedBoolean) {
       streak += 1;
       cursor.setDate(cursor.getDate() - 1);
-    } else if (diff === 1 && r.completedBoolean) {
-      // allow consecutive previous day
-      streak += 1;
-      cursor.setDate(cursor.getDate() - 1);
-    } else if (diff > 1) {
-      break;
-    } else if (!r.completedBoolean) {
-      break;
     } else {
       break;
     }
   }
+
   return streak;
 }
 
+// Compute streak for weekly habit
+async function computeWeeklyStreak(habit: any, userId: number): Promise<number> {
+  const created = habit.createdAt ? new Date(habit.createdAt) : new Date();
+  const weekday = created.getDay(); // día programado
+  let streak = 0;
+  let cursor = new Date();
+  cursor.setHours(0, 0, 0, 0);
+
+  const diff = cursor.getDay() - weekday;
+  cursor.setDate(cursor.getDate() - diff);
+
+  for (let i = 0; i < 52; i++) {
+    const start = isoDateStr(cursor);
+    const log = await db.habitLog.findFirst({
+      where: { habitId: habit.id, userId, date: new Date(start), completedBoolean: true },
+    });
+    if (log) {
+      streak += 1;
+      cursor.setDate(cursor.getDate() - 7);
+    } else {
+      break;
+    }
+  }
+
+  return streak;
+}
+
+// Compute streak for monthly habit
+async function computeMonthlyStreak(habit: any, userId: number): Promise<number> {
+  const created = habit.createdAt ? new Date(habit.createdAt) : new Date();
+  const dayOfMonth = created.getDate(); // día programado
+  let streak = 0;
+  let cursor = new Date();
+  cursor.setHours(0, 0, 0, 0);
+  cursor.setDate(dayOfMonth);
+  if (cursor > new Date()) {
+    cursor.setMonth(cursor.getMonth() - 1);
+  }
+
+  for (let i = 0; i < 12; i++) {
+    const iso = isoDateStr(cursor);
+    const log = await db.habitLog.findFirst({
+      where: { habitId: habit.id, userId, date: new Date(iso), completedBoolean: true },
+    });
+    if (log) {
+      streak += 1;
+      cursor.setMonth(cursor.getMonth() - 1);
+    } else {
+      break;
+    }
+  }
+
+  return streak;
+}
+
+// Compute streak for habit based on frequency
+async function computeStreakForHabit(habit: any, userId: number): Promise<number> {
+  const frequency = habit.frequency || 'daily';
+  if (frequency === 'daily') return computeDailyStreak(habit.id, userId);
+  if (frequency === 'weekly') return computeWeeklyStreak(habit, userId);
+  if (frequency === 'monthly') return computeMonthlyStreak(habit, userId);
+  return computeDailyStreak(habit.id, userId);
+}
+
+// Worker principal
 export async function computeAndRunWorker() {
   const todayIso = isoDateStr(new Date());
-  const users = db.prepare('SELECT id FROM users').all();
-  const achievements = db.prepare('SELECT id,key,title,description,criteria FROM achievements').all();
+  const users = await db.user.findMany({ select: { id: true } });
+  const achievements = await db.achievement.findMany();
 
-  const report: any = { users: 0, habitsUpdated: 0, achievementsUnlocked: 0 };
+  const report = { users: 0, habitsUpdated: 0, achievementsUnlocked: 0 };
 
   for (const u of users) {
     report.users += 1;
     const userId = u.id;
-    const habits = db.prepare('SELECT id,target,frequency,createdAt FROM habits WHERE userId = ?').all(userId);
 
-    // Compute habit streaks and today's completion
+    const habits = await db.habit.findMany({
+      where: { userId },
+      select: { id: true, frequency: true, createdAt: true },
+    });
+
     for (const h of habits) {
-      const habitId = h.id;
-      const streak = computeStreakForHabit(h, userId);
+      const streak = await computeStreakForHabit(h, userId);
 
-      // Find today's log
-      const todayLog = db.prepare('SELECT completedAmount, completedBoolean FROM habit_logs WHERE habitId = ? AND userId = ? AND date = ?').get(habitId, userId, todayIso);
-      const completedToday = !!(todayLog && todayLog.completedBoolean);
-      const completedAmount = todayLog ? todayLog.completedAmount : 0;
+      // Upsert streak record
+      await db.streakRecord.upsert({
+        where: { habitId_userId: { habitId: h.id, userId } } as any,
+        update: {
+          currentStreak: streak,
+          longestStreak: streak,
+          lastActivity: new Date(),
+        },
+        create: {
+          habitId: h.id,
+          userId,
+          streakType: h.frequency || 'daily',
+          currentStreak: streak,
+          longestStreak: streak,
+          lastActivity: new Date(),
+          streakStarted: new Date(),
+        },
+      });
 
-      if (streak !== undefined) {
-        const lastCompleted = completedToday ? todayIso : db.prepare('SELECT lastCompleted FROM habits WHERE id = ?').get(habitId)?.lastCompleted || null;
-        db.prepare('UPDATE habits SET streak = ?, lastCompleted = COALESCE(?, lastCompleted) WHERE id = ?').run(streak, lastCompleted, habitId);
-        report.habitsUpdated += 1;
-      }
+      // Actualizar campo streak en Habit
+      await db.habit.update({
+        where: { id: h.id },
+        data: { streak },
+      });
 
-      db.prepare('UPDATE habits SET completed = COALESCE(completed,0) WHERE id = ?').run(habitId);
+      report.habitsUpdated += 1;
     }
 
-    // Evaluate achievements for this user
+    // Evaluar logros
     for (const a of achievements) {
       let criteria;
-      try { criteria = JSON.parse(a.criteria); } catch { criteria = null; }
-      let shouldUnlock = false;
+      try { criteria = JSON.parse(a.criteria || 'null'); } catch { criteria = null; }
       if (!criteria) continue;
+
+      let shouldUnlock = false;
 
       switch (criteria.type) {
         case 'count_per_day': {
-          const cnt = db.prepare('SELECT COUNT(*) as c FROM habit_logs WHERE userId = ? AND date = ? AND completedBoolean = 1').get(userId, todayIso).c;
+          const cnt = await db.habitLog.count({
+            where: { userId, date: new Date(todayIso), completedBoolean: true },
+          });
           if (cnt >= (criteria.count || 0)) shouldUnlock = true;
           break;
         }
         case 'all_today': {
-          const totalHabits = db.prepare('SELECT COUNT(*) as c FROM habits WHERE userId = ?').get(userId).c;
+          const totalHabits = await db.habit.count({ where: { userId } });
           if (totalHabits === 0) break;
-          const completedHabits = db.prepare('SELECT COUNT(DISTINCT habitId) as c FROM habit_logs WHERE userId = ? AND date = ? AND completedBoolean = 1').get(userId, todayIso).c;
+
+          const completedHabitsLogs = await db.habitLog.findMany({
+            where: { userId, date: new Date(todayIso), completedBoolean: true },
+            distinct: ['habitId'],
+            select: { habitId: true },
+          });
+          const completedHabits = completedHabitsLogs.length;
+
           if (completedHabits >= totalHabits) shouldUnlock = true;
           break;
         }
         case 'streak': {
           const days = criteria.days || 0;
-          const row = db.prepare('SELECT id,streak FROM habits WHERE userId = ?').all(userId).find((x: any) => (x.streak || 0) >= days);
+          const row = await db.habit.findFirst({
+            where: { userId, streak: { gte: days } },
+          });
           if (row) shouldUnlock = true;
           break;
         }
       }
 
       if (shouldUnlock) {
-        const exists = db.prepare('SELECT id FROM user_achievements WHERE userId = ? AND achievementId = ?').get(userId, a.id);
+        const exists = await db.userAchievement.findUnique({
+          where: { userId_achievementId: { userId, achievementId: a.id } } as any,
+        });
+
         if (!exists) {
           const uaId = uuidv4();
-          const now = new Date().toISOString();
-          db.prepare('INSERT INTO user_achievements (id,userId,achievementId,earnedAt,meta) VALUES (?,?,?,?,?)').run(uaId, userId, a.id, now, JSON.stringify({ auto: true }));
-          db.prepare('INSERT INTO notifications (id,userId,type,title,message,time,read,metadata,createdAt) VALUES (?,?,?,?,?,?,?,?,?)')
-            .run(uuidv4(), userId, 'achievement', `Logro: ${a.key}`, `Has desbloqueado: ${a.title}`, now, 0, JSON.stringify({ achievementKey: a.key }), now);
+          const now = new Date();
+          await db.userAchievement.create({
+            data: {
+              id: uaId,
+              userId,
+              achievementId: a.id,
+              earnedAt: now,
+              meta: JSON.stringify({ auto: true }),
+            },
+          });
+
+          await db.notification.create({
+            data: {
+              id: uuidv4(),
+              userId,
+              type: 'achievement',
+              title: `Logro: ${a.key}`,
+              message: `Has desbloqueado: ${a.title}`,
+              time: now.toISOString(),
+              read: false,
+              metadata: JSON.stringify({ achievementKey: a.key }),
+              createdAt: now,
+            },
+          });
+
           report.achievementsUnlocked += 1;
         }
       }
@@ -176,11 +233,13 @@ export async function computeAndRunWorker() {
   return report;
 }
 
+// Endpoint para ejecutar worker
 export const runWorker: RequestHandler = async (_req, res) => {
   try {
     const result = await computeAndRunWorker();
     res.json(result);
   } catch (e) {
+    console.error(e);
     res.status(500).json({ error: String(e) });
   }
 };

@@ -1,15 +1,12 @@
 import type { RequestHandler } from "express";
-import db from "../db";
+import  prisma  from "../db"; 
 
 export const getGoals: RequestHandler = async (req, res) => {
   try {
-    const { userId } = req.params;
-    
-    if (!userId) {
-      return res.status(400).json({ message: "User ID is required" });
-    }
+    const userId = Number(req.params.userId);
+    if (isNaN(userId)) return res.status(400).json({ message: "Invalid userId" });
 
-    const goals = await db.goal.findMany({
+    const goals = await prisma.goal.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' }
     });
@@ -23,14 +20,12 @@ export const getGoals: RequestHandler = async (req, res) => {
 
 export const createGoal: RequestHandler = async (req, res) => {
   try {
-    const { userId } = req.params;
-    const goalData = req.body;
-    
-    if (!userId) {
-      return res.status(400).json({ message: "User ID is required" });
-    }
+    const userId = Number(req.params.userId);
+    if (isNaN(userId)) return res.status(400).json({ message: "Invalid userId" });
 
-    const goal = await db.goal.create({
+    const goalData = req.body;
+
+    const goal = await prisma.goal.create({
       data: {
         userId,
         title: goalData.title,
@@ -55,18 +50,16 @@ export const createGoal: RequestHandler = async (req, res) => {
 
 export const updateGoal: RequestHandler = async (req, res) => {
   try {
-    const { userId, goalId } = req.params;
-    const updateData = req.body;
-    
-    if (!userId || !goalId) {
-      return res.status(400).json({ message: "User ID and Goal ID are required" });
+    const userId = Number(req.params.userId);
+    const goalId = Number(req.params.goalId);
+    if (isNaN(userId) || isNaN(goalId)) {
+      return res.status(400).json({ message: "Invalid userId or goalId" });
     }
 
-    const goal = await db.goal.update({
-      where: { 
-        id: goalId,
-        userId // Ensure user owns this goal
-      },
+    const updateData = req.body;
+
+    const goal = await prisma.goal.update({
+      where: { id: goalId },
       data: {
         title: updateData.title,
         description: updateData.description,
@@ -90,19 +83,13 @@ export const updateGoal: RequestHandler = async (req, res) => {
 
 export const deleteGoal: RequestHandler = async (req, res) => {
   try {
-    const { userId, goalId } = req.params;
-    
-    if (!userId || !goalId) {
-      return res.status(400).json({ message: "User ID and Goal ID are required" });
+    const userId = Number(req.params.userId);
+    const goalId = Number(req.params.goalId);
+    if (isNaN(userId) || isNaN(goalId)) {
+      return res.status(400).json({ message: "Invalid userId or goalId" });
     }
 
-    await db.goal.delete({
-      where: { 
-        id: goalId,
-        userId // Ensure user owns this goal
-      }
-    });
-
+    await prisma.goal.delete({ where: { id: goalId } });
     res.json({ message: "Goal deleted successfully" });
   } catch (error) {
     console.error("Error deleting goal:", error);
@@ -112,19 +99,16 @@ export const deleteGoal: RequestHandler = async (req, res) => {
 
 export const getGoalProgress: RequestHandler = async (req, res) => {
   try {
-    const { userId, goalId } = req.params;
-    
-    if (!userId || !goalId) {
-      return res.status(400).json({ message: "User ID and Goal ID are required" });
+    const userId = Number(req.params.userId);
+    const goalId = Number(req.params.goalId);
+    if (isNaN(userId) || isNaN(goalId)) {
+      return res.status(400).json({ message: "Invalid userId or goalId" });
     }
 
-    const progress = await db.progressEntry.findMany({
-      where: { 
-        userId,
-        goalId
-      },
+    const progress = await prisma.progressEntry.findMany({
+      where: { userId, goalId },
       orderBy: { date: 'desc' },
-      take: 30 // Last 30 entries
+      take: 30
     });
 
     res.json(progress);

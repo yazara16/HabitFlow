@@ -3,8 +3,8 @@ import db from '../db';
 
 export const listReminders: RequestHandler = async (req, res) => {
   try {
-    const userId = req.params.userId;
-    
+    const userId = Number(req.params.userId);
+
     if (!userId) {
       return res.status(400).json({ message: "User ID is required" });
     }
@@ -23,7 +23,7 @@ export const listReminders: RequestHandler = async (req, res) => {
 
 export const createReminder: RequestHandler = async (req, res) => {
   try {
-    const userId = req.params.userId;
+    const userId = Number(req.params.userId);
     const data = req.body;
 
     if (!userId) {
@@ -34,12 +34,13 @@ export const createReminder: RequestHandler = async (req, res) => {
       return res.status(400).json({ message: 'Missing timeOfDay' });
     }
 
-    const { timeOfDay, habitId, enabled, timezone, recurrence, days, nextRun } = data;
+    const habitId = data.habitId !== undefined ? Number(data.habitId) : null;
+    const { timeOfDay, enabled, timezone, recurrence, days, nextRun } = data;
 
     const reminder = await db.reminder.create({
       data: {
         userId,
-        habitId: habitId || null,
+        habitId,
         timeOfDay,
         enabled: enabled || false,
         timezone: timezone || null,
@@ -58,8 +59,8 @@ export const createReminder: RequestHandler = async (req, res) => {
 
 export const updateReminder: RequestHandler = async (req, res) => {
   try {
-    const userId = req.params.userId;
-    const id = req.params.id;
+    const userId = Number(req.params.userId);
+    const id = Number(req.params.id);
     const data = req.body;
 
     if (!userId || !id) {
@@ -97,8 +98,8 @@ export const updateReminder: RequestHandler = async (req, res) => {
 
 export const deleteReminder: RequestHandler = async (req, res) => {
   try {
-    const userId = req.params.userId;
-    const id = req.params.id;
+    const userId = Number(req.params.userId);
+    const id = Number(req.params.id);
 
     if (!userId || !id) {
       return res.status(400).json({ message: "User ID and Reminder ID are required" });

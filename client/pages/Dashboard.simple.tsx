@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Navigation from "@/components/Navigation";
+import Navigation from "@/components/Navigation"; 
 import { useAuth } from "@/contexts/AuthContext";
 import { useHabits } from "@/contexts/HabitsContext.simple";
 import {
@@ -24,8 +24,8 @@ import {
 import { toast } from "@/hooks/use-toast";
 
 export default function Dashboard() {
-  const { user, logout } = useAuth();
-  const { habits, addHabit, loading } = useHabits();
+  const { user } = useAuth(); // ya no necesitamos logout aquí
+  const { habits, loading } = useHabits();
   const navigate = useNavigate();
 
   // Redirigir si no hay usuario autenticado
@@ -34,12 +34,6 @@ export default function Dashboard() {
       navigate("/login");
     }
   }, [user, navigate]);
-
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
-    toast({ title: "Sesión cerrada" });
-  };
 
   const handleAddHabit = () => {
     navigate("/habits");
@@ -62,8 +56,9 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation onLogout={handleLogout} user={user} />
-      
+      {/* No pasamos props, Navigation usa useAuth internamente */}
+      <Navigation />
+
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground">
@@ -169,9 +164,7 @@ export default function Dashboard() {
                       className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors"
                     >
                       <div className="flex items-center space-x-3">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                          habit.color || 'bg-blue-500'
-                        }`}>
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${habit.color || 'bg-blue-500'}`}>
                           <Target className="h-4 w-4 text-white" />
                         </div>
                         <div>

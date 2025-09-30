@@ -2,32 +2,81 @@ import type { RequestHandler } from 'express';
 import db from '../db';
 import { v4 as uuidv4 } from 'uuid';
 
-export const listOverrides: RequestHandler = (req, res) => {
-  const { userId, habitId } = req.params;
-  const date = req.query.date as string | undefined;
-  let stmt = 'SELECT * FROM habit_overrides WHERE userId = ? AND habitId = ?';
-  const params: any[] = [userId, habitId];
-  if (date) { stmt += ' AND date = ?'; params.push(date); }
-  const rows = db.prepare(stmt).all(...params);
-  res.json(rows.map((r: any) => ({ ...r, hidden: !!r.hidden, patch: r.patch ? JSON.parse(r.patch) : null })));
+export const listOverrides: RequestHandler = async (req, res) => {
+  try {
+    const userId = Number(req.params.userId);
+    const habitId = Number(req.params.habitId);
+    const date = req.query.date as string | undefined;
+
+    if (!userId || !habitId) return res.status(400).json({ message: 'User ID and Habit ID are required' });
+
+    const where: any = { userId, habitId };
+    if (date) where.date = date;
+
+    const rows = await db.habitOverride.findMany({
+      where,
+      orderBy: { date: 'asc' },
+    });
+
+    res.json(rows.map(r => ({
+      ...r,
+      hidden: !!r.hidden,
+      patch: r.patch ? JSON.parse(r.patch) : null
+    })));
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 };
 
-export const createOverride: RequestHandler = (req, res) => {
-  const { userId, habitId } = req.params;
-  const data = req.body || {};
-  if (!data.date) return res.status(400).json({ message: 'Missing date' });
-  const id = uuidv4();
-  const now = new Date().toISOString();
-  db.prepare('INSERT INTO habit_overrides (id,habitId,userId,date,hidden,patch,createdAt,updatedAt) VALUES (?,?,?,?,?,?,?,?)')
-    .run(id, habitId, userId, data.date, data.hidden ? 1 : 0, data.patch ? JSON.stringify(data.patch) : null, now, now);
-  const row = db.prepare('SELECT * FROM habit_overrides WHERE id = ?').get(id);
-  res.status(201).json({ ...row, hidden: !!row.hidden, patch: row.patch ? JSON.parse(row.patch) : null });
+export const createOverride: RequestHandler = async (req, res) => {
+  try {
+    const userId = Number(req.params.userId);
+    const habitId = Number(req.params.habitId);
+    const data = req.body || {};
+    if (!data.date) return res.status(400).json({ message: 'Missing date' });
+
+    const now = new Date();
+    const override = await db.habitOverride.create({
+      data: {
+        id: uuidv4(),
+        userId,
+        habitId,
+        date: data.date,
+        hidden: data.hidden ? true : false,
+        patch: data.patch ? JSON.stringify(data.patch) : null,
+        createdAt: now,
+        updatedAt: now
+      }
+    });
+
+    res.status(201).json({
+      ...override,
+      hidden: !!override.hidden,
+      patch: override.patch ? JSON.parse(override.patch) : null
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 };
 
-export const deleteOverride: RequestHandler = (req, res) => {
-  const { userId, habitId, overrideId } = req.params;
-  const row = db.prepare('SELECT * FROM habit_overrides WHERE id = ? AND habitId = ? AND userId = ?').get(overrideId, habitId, userId);
-  if (!row) return res.status(404).json({ message: 'Not found' });
-  db.prepare('DELETE FROM habit_overrides WHERE id = ?').run(overrideId);
-  res.status(204).send();
+export const deleteOverride: RequestHandler = async (req, res) => {
+  try {
+    const userId = Number(req.params.userId);
+    const habitId = Number(req.params.habitId);
+    const overrideId = Number(req.params.overrideId);
+
+    const row = await db.habitOverride.findFirst({
+      where: { id: overrideId, userId, habitId }
+    });
+
+    if (!row) return res.status(404).json({ message: 'Not found' });
+
+    await db.habitOverride.delete({ where: { id: overrideId } });
+    res.status(204).send();
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 };

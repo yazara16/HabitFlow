@@ -139,6 +139,7 @@ model UserAchievement {
   user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("user_achievements")
+  @@unique([userId, achievementId])
 }
 
 model Reminder {
@@ -159,7 +160,7 @@ model Reminder {
 }
 
 model Device {
-  id         Int       @id @default(autoincrement())
+  id         String   @id @default(uuid())
   userId     Int
   platform   String?
   pushToken  String?
@@ -229,7 +230,7 @@ model ProgressEntry {
 model StreakRecord {
   id            Int      @id @default(autoincrement())
   userId        Int
-  habitId       Int?
+  habitId       Int
   streakType    String
   currentStreak Int      @default(0)
   longestStreak Int      @default(0)
@@ -237,11 +238,14 @@ model StreakRecord {
   streakStarted DateTime
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-  habit         Habit?   @relation(fields: [habitId], references: [id], onDelete: Cascade)
+
+  habit         Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("streak_records")
+  @@unique([habitId, userId])
 }
+
 
 model Category {
   id          Int      @id @default(autoincrement())
