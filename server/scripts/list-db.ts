@@ -1,5 +1,7 @@
 import db from '../db';
 
+import db from '../db';
+
 async function list() {
   console.log('Users:');
   const users = await db.all('SELECT id,name,email,createdAt FROM users');
