@@ -11,13 +11,13 @@ function isoDateStr(date: Date) {
 }
 
 // Compute consecutive streak for a habit based on habit_logs and habit frequency
-function computeStreakForHabit(habit: any, userId: string): number {
+async function computeStreakForHabit(habit: any, userId: string): Promise<number> {
   const habitId = habit.id;
   const frequency = habit.frequency || 'daily';
   const createdAt = habit.createdAt || null; // ISO date
 
   if (frequency === 'daily') {
-    return computeDailyStreak(habitId, userId);
+    return await computeDailyStreak(habitId, userId);
   }
 
   if (frequency === 'weekly') {
@@ -32,7 +32,7 @@ function computeStreakForHabit(habit: any, userId: string): number {
     cursor.setDate(cursor.getDate() - diff);
     for (let i=0;i<365;i++) { // safety cap
       const iso = isoDateStr(cursor);
-      const row = db.prepare('SELECT completedBoolean FROM habit_logs WHERE habitId = ? AND userId = ? AND date = ?').get(habitId, userId, iso);
+      const row = await db.get('SELECT completedBoolean FROM habit_logs WHERE habitId = ? AND userId = ? AND date = ?', habitId, userId, iso);
       if (row && row.completedBoolean) {
         streak += 1;
         cursor.setDate(cursor.getDate() - 7);
@@ -57,7 +57,7 @@ function computeStreakForHabit(habit: any, userId: string): number {
     }
     for (let i=0;i<120;i++) {
       const iso = isoDateStr(cursor);
-      const row = db.prepare('SELECT completedBoolean FROM habit_logs WHERE habitId = ? AND userId = ? AND date = ?').get(habitId, userId, iso);
+      const row = await db.get('SELECT completedBoolean FROM habit_logs WHERE habitId = ? AND userId = ? AND date = ?', habitId, userId, iso);
       if (row && row.completedBoolean) {
         streak += 1;
         cursor.setMonth(cursor.getMonth() - 1);
@@ -69,12 +69,12 @@ function computeStreakForHabit(habit: any, userId: string): number {
   }
 
   // fallback
-  return computeDailyStreak(habitId, userId);
+  return await computeDailyStreak(habitId, userId);
 }
 
 // Compute consecutive daily streak for a habit based on habit_logs (completedBoolean)
-function computeDailyStreak(habitId: string, userId: string): number {
-  const rows = db.prepare('SELECT date, completedBoolean FROM habit_logs WHERE habitId = ? AND userId = ? ORDER BY date DESC').all(habitId, userId);
+async function computeDailyStreak(habitId: string, userId: string): Promise<number> {
+  const rows = await db.all('SELECT date, completedBoolean FROM habit_logs WHERE habitId = ? AND userId = ? ORDER BY date DESC', habitId, userId);
   if (!rows || rows.length === 0) return 0;
   let streak = 0;
   let cursor = new Date();
@@ -102,33 +102,34 @@ function computeDailyStreak(habitId: string, userId: string): number {
 
 export async function computeAndRunWorker() {
   const todayIso = isoDateStr(new Date());
-  const users = db.prepare('SELECT id FROM users').all();
-  const achievements = db.prepare('SELECT id,key,title,description,criteria FROM achievements').all();
+  const users = await db.all('SELECT id FROM users');
+  const achievements = await db.all('SELECT id,key,title,description,criteria FROM achievements');
 
   const report: any = { users: 0, habitsUpdated: 0, achievementsUnlocked: 0 };
 
   for (const u of users) {
     report.users += 1;
     const userId = u.id;
-    const habits = db.prepare('SELECT id,target,frequency,createdAt FROM habits WHERE userId = ?').all(userId);
+    const habits = await db.all('SELECT id,target,frequency,createdAt FROM habits WHERE userId = ?', userId);
 
     // Compute habit streaks and today's completion
     for (const h of habits) {
       const habitId = h.id;
-      const streak = computeStreakForHabit(h, userId);
+      const streak = await computeStreakForHabit(h, userId);
 
       // Find today's log
-      const todayLog = db.prepare('SELECT completedAmount, completedBoolean FROM habit_logs WHERE habitId = ? AND userId = ? AND date = ?').get(habitId, userId, todayIso);
+      const todayLog = await db.get('SELECT completedAmount, completedBoolean FROM habit_logs WHERE habitId = ? AND userId = ? AND date = ?', habitId, userId, todayIso);
       const completedToday = !!(todayLog && todayLog.completedBoolean);
       const completedAmount = todayLog ? todayLog.completedAmount : 0;
 
       if (streak !== undefined) {
-        const lastCompleted = completedToday ? todayIso : db.prepare('SELECT lastCompleted FROM habits WHERE id = ?').get(habitId)?.lastCompleted || null;
-        db.prepare('UPDATE habits SET streak = ?, lastCompleted = COALESCE(?, lastCompleted) WHERE id = ?').run(streak, lastCompleted, habitId);
+        const lastCompletedRow = await db.get('SELECT lastCompleted FROM habits WHERE id = ?', habitId);
+        const lastCompleted = completedToday ? todayIso : (lastCompletedRow?.lastCompleted || null);
+        await db.run('UPDATE habits SET streak = ?, lastCompleted = COALESCE(?, lastCompleted) WHERE id = ?', streak, lastCompleted, habitId);
         report.habitsUpdated += 1;
       }
 
-      db.prepare('UPDATE habits SET completed = COALESCE(completed,0) WHERE id = ?').run(habitId);
+      await db.run('UPDATE habits SET completed = COALESCE(completed,0) WHERE id = ?', habitId);
     }
 
     // Evaluate achievements for this user
@@ -140,33 +141,36 @@ export async function computeAndRunWorker() {
 
       switch (criteria.type) {
         case 'count_per_day': {
-          const cnt = db.prepare('SELECT COUNT(*) as c FROM habit_logs WHERE userId = ? AND date = ? AND completedBoolean = 1').get(userId, todayIso).c;
+          const cntRow = await db.get('SELECT COUNT(*) as c FROM habit_logs WHERE userId = ? AND date = ? AND completedBoolean = 1', userId, todayIso);
+          const cnt = cntRow?.c ?? 0;
           if (cnt >= (criteria.count || 0)) shouldUnlock = true;
           break;
         }
         case 'all_today': {
-          const totalHabits = db.prepare('SELECT COUNT(*) as c FROM habits WHERE userId = ?').get(userId).c;
+          const totalHabitsRow = await db.get('SELECT COUNT(*) as c FROM habits WHERE userId = ?', userId);
+          const totalHabits = totalHabitsRow?.c ?? 0;
           if (totalHabits === 0) break;
-          const completedHabits = db.prepare('SELECT COUNT(DISTINCT habitId) as c FROM habit_logs WHERE userId = ? AND date = ? AND completedBoolean = 1').get(userId, todayIso).c;
+          const completedHabitsRow = await db.get('SELECT COUNT(DISTINCT habitId) as c FROM habit_logs WHERE userId = ? AND date = ? AND completedBoolean = 1', userId, todayIso);
+          const completedHabits = completedHabitsRow?.c ?? 0;
           if (completedHabits >= totalHabits) shouldUnlock = true;
           break;
         }
         case 'streak': {
           const days = criteria.days || 0;
-          const row = db.prepare('SELECT id,streak FROM habits WHERE userId = ?').all(userId).find((x: any) => (x.streak || 0) >= days);
+          const rows = await db.all('SELECT id,streak FROM habits WHERE userId = ?', userId);
+          const row = rows.find((x: any) => (x.streak || 0) >= days);
           if (row) shouldUnlock = true;
           break;
         }
       }
 
       if (shouldUnlock) {
-        const exists = db.prepare('SELECT id FROM user_achievements WHERE userId = ? AND achievementId = ?').get(userId, a.id);
+        const exists = await db.get('SELECT id FROM user_achievements WHERE userId = ? AND achievementId = ?', userId, a.id);
         if (!exists) {
           const uaId = uuidv4();
           const now = new Date().toISOString();
-          db.prepare('INSERT INTO user_achievements (id,userId,achievementId,earnedAt,meta) VALUES (?,?,?,?,?)').run(uaId, userId, a.id, now, JSON.stringify({ auto: true }));
-          db.prepare('INSERT INTO notifications (id,userId,type,title,message,time,read,metadata,createdAt) VALUES (?,?,?,?,?,?,?,?,?)')
-            .run(uuidv4(), userId, 'achievement', `Logro: ${a.key}`, `Has desbloqueado: ${a.title}`, now, 0, JSON.stringify({ achievementKey: a.key }), now);
+          await db.run('INSERT INTO user_achievements (id,userId,achievementId,earnedAt,meta) VALUES (?,?,?,?,?)', uaId, userId, a.id, now, JSON.stringify({ auto: true }));
+          await db.run('INSERT INTO notifications (id,userId,type,title,message,time,read,metadata,createdAt) VALUES (?,?,?,?,?,?,?,?,?)', uuidv4(), userId, 'achievement', `Logro: ${a.key}`, `Has desbloqueado: ${a.title}`, now, 0, JSON.stringify({ achievementKey: a.key }), now);
           report.achievementsUnlocked += 1;
         }
       }
