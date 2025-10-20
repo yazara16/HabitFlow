@@ -489,20 +489,23 @@ export default function Dashboard() {
                     <div className="h-8 bg-muted/30 rounded w-full animate-pulse" />
                     <div className="h-8 bg-muted/30 rounded w-full animate-pulse" />
                   </div>
-                ) : (achievements && achievements.length > 0 ? (
-                  achievements.slice(0, 5).map((a: any) => (
-                    <div key={a.id} className="flex items-center space-x-3 p-2 rounded-lg bg-muted/50">
-                      <div className="w-8 h-8 bg-yellow-500/10 rounded-lg flex items-center justify-center">
-                        <Flame className="h-4 w-4 text-yellow-500" />
+                ) : achievements && achievements.length > 0 ? (
+                  <>
+                    {achievements.slice(0, 5).map((a: any) => (
+                      <div key={a.id} className="flex items-center space-x-3 p-2 rounded-lg bg-muted/50">
+                        <div className="w-8 h-8 bg-yellow-500/10 rounded-lg flex items-center justify-center">
+                          <Flame className="h-4 w-4 text-yellow-500" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium">{a.title}</p>
+                          <p className="text-xs text-muted-foreground">{new Date(a.earnedAt).toLocaleDateString()}</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm font-medium">{a.title}</p>
-                        <p className="text-xs text-muted-foreground">{new Date(a.earnedAt).toLocaleDateString()}</p>
-                      </div>
-                    </div>
-                  )) : (
-                    <div className="text-sm text-muted-foreground">No hay logros recientes</div>
-                  ))}
+                    ))}
+                  </>
+                ) : (
+                  <div className="text-sm text-muted-foreground">No hay logros recientes</div>
+                )}
               </CardContent>
             </Card>
           </div>
