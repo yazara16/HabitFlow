@@ -25,7 +25,6 @@
     "prisma:migrate": "prisma migrate deploy"
   },
   "dependencies": {
-    "better-sqlite3": "^12.4.1",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "node-fetch": "^3.3.2",
