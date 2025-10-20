@@ -456,11 +456,15 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
         }
       },
       updateHabit: async (id, patch) => {
+        // Optimistic update: apply patch immediately to improve UX (instant toggle/check)
+        const previous = habits;
+        setHabits((prev) =>
+          prev.map((h) => (h.id === id ? { ...h, ...patch } as Habit : h)),
+        );
+
         try {
-          const updated: Habit = await updateMutation.mutateAsync({
-            id,
-            patch,
-          });
+          const updated: Habit = await updateMutation.mutateAsync({ id, patch });
+          // Ensure we use server-canonical habit after success
           setHabits((prev) => prev.map((h) => (h.id === id ? updated : h)));
 
           // If completed change, create a habit log for today
@@ -537,6 +541,8 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
             }
           } catch (e) {}
         } catch (e) {
+          // rollback optimistic update on error
+          setHabits(previous);
           throw e;
         }
       },
