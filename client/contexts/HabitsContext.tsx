@@ -225,7 +225,10 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
         },
         body: JSON.stringify(body),
       });
-      if (!res.ok) throw new Error("Failed to create habit");
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(text || "Failed to create habit");
+      }
       return await res.json();
     },
     onSuccess: (created: Habit) => {
@@ -251,7 +254,10 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
         },
         body: JSON.stringify(patch),
       });
-      if (!res.ok) throw new Error("Failed to update habit");
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(text || "Failed to update habit");
+      }
       return await res.json();
     },
     onSuccess: (_updated: Habit) => {
@@ -267,7 +273,10 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
         method: "DELETE",
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
-      if (!res.ok && res.status !== 204) throw new Error("Failed to delete");
+      if (!res.ok && res.status !== 204) {
+        const text = await res.text().catch(() => "");
+        throw new Error(text || "Failed to delete");
+      }
       return id;
     },
     onSuccess: (_id) => {
@@ -460,9 +469,15 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
                   recurrence: created.frequency,
                 }),
               });
-            } catch (e) {}
+            } catch (e) {
+              console.error("Failed to create reminder", e);
+            }
           }
         } catch (e: any) {
+          console.error("create habit failed:", e?.message || e);
+          try {
+            toast({ title: "Error creando hábito", description: String(e?.message || e) });
+          } catch (ee) {}
           throw e;
         }
       },
