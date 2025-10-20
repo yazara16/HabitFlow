@@ -20,7 +20,6 @@
     "format.fix": "prettier --write .",
     "typecheck": "tsc",
     "dev:server": "tsx server/index.ts",
-    "migrate:pg": "tsx server/scripts/migrate-to-postgres.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate deploy"
   },
