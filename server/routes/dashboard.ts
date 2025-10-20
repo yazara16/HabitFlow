@@ -1,4 +1,3 @@
-import type { RequestHandler } from "express";
 import db from "../db";
 
 // Returns aggregated dashboard stats for a given user
@@ -22,6 +21,17 @@ export const getDashboardStats: RequestHandler = (req, res) => {
       .get(userId, today);
     const completedToday = completedTodayRow?.c ?? 0;
 
+    // Yesterday completed
+    const yesterdayDate = new Date();
+    yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+    const yesterdayIso = yesterdayDate.toISOString().split("T")[0];
+    const yesterdayRow = db
+      .prepare(
+        "SELECT COUNT(*) as c FROM habit_logs WHERE userId = ? AND date = ? AND completedBoolean = 1",
+      )
+      .get(userId, yesterdayIso);
+    const yesterdayCompleted = yesterdayRow?.c ?? 0;
+
     // Current max streak among habits
     const streakRow = db
       .prepare("SELECT MAX(streak) as maxStreak FROM habits WHERE userId = ?")
@@ -33,6 +43,17 @@ export const getDashboardStats: RequestHandler = (req, res) => {
       .prepare("SELECT COUNT(*) as c FROM user_achievements WHERE userId = ?")
       .get(userId);
     const achievementsCount = achievementsRow?.c ?? 0;
+
+    // Achievements in the last 7 days
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const sevenDaysIso = sevenDaysAgo.toISOString().split("T")[0];
+    const recentAchievementsRow = db
+      .prepare(
+        "SELECT COUNT(*) as c FROM user_achievements WHERE userId = ? AND earnedAt >= ?",
+      )
+      .get(userId, sevenDaysIso);
+    const achievementsNew = recentAchievementsRow?.c ?? 0;
 
     // This week completed logs (from Monday)
     const now = new Date();
@@ -66,8 +87,10 @@ export const getDashboardStats: RequestHandler = (req, res) => {
     return res.json({
       totalHabits,
       completedToday,
+      yesterdayCompleted,
       maxStreak,
       achievementsCount,
+      achievementsNew,
       weekCompleted,
       categoryCounts,
       today,
