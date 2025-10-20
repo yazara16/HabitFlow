@@ -145,6 +145,7 @@ export const updateHabitHandler: RequestHandler = async (req, res) => {
   );
 
   const row2 = await db.get("SELECT * FROM habits WHERE id = ?", habitId);
+  const today = new Date().toISOString().split("T")[0];
   const habit = {
     id: row2.id,
     userId: row2.userId,
@@ -163,6 +164,7 @@ export const updateHabitHandler: RequestHandler = async (req, res) => {
     reminderEnabled: !!row2.reminderEnabled,
     createdAt: row2.createdAt,
     lastCompleted: row2.lastCompleted,
+    completedToday: row2.lastCompleted === today,
   };
   res.json(habit);
 };
