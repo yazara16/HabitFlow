@@ -1,38 +1,62 @@
-import type { RequestHandler } from "express";
 import db from "../db";
 
 // Returns aggregated dashboard stats for a given user
-export const getDashboardStats: RequestHandler = (req, res) => {
+export const getDashboardStats: RequestHandler = async (req, res) => {
   const userId = req.params.userId;
   if (!userId) return res.status(400).json({ message: "Missing userId" });
 
   try {
     const today = new Date().toISOString().split("T")[0];
 
-    const totalHabitsRow = db
-      .prepare("SELECT COUNT(*) as c FROM habits WHERE userId = ?")
-      .get(userId);
+    const totalHabitsRow = await db.get(
+      "SELECT COUNT(*) as c FROM habits WHERE userId = ?",
+      userId,
+    );
     const totalHabits = totalHabitsRow?.c ?? 0;
 
     // Completed today: count habit_logs where completedBoolean=1 for today
-    const completedTodayRow = db
-      .prepare(
-        "SELECT COUNT(*) as c FROM habit_logs WHERE userId = ? AND date = ? AND completedBoolean = 1",
-      )
-      .get(userId, today);
+    const completedTodayRow = await db.get(
+      "SELECT COUNT(*) as c FROM habit_logs WHERE userId = ? AND date = ? AND completedBoolean = 1",
+      userId,
+      today,
+    );
     const completedToday = completedTodayRow?.c ?? 0;
 
+    // Yesterday completed
+    const yesterdayDate = new Date();
+    yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+    const yesterdayIso = yesterdayDate.toISOString().split("T")[0];
+    const yesterdayRow = await db.get(
+      "SELECT COUNT(*) as c FROM habit_logs WHERE userId = ? AND date = ? AND completedBoolean = 1",
+      userId,
+      yesterdayIso,
+    );
+    const yesterdayCompleted = yesterdayRow?.c ?? 0;
+
     // Current max streak among habits
-    const streakRow = db
-      .prepare("SELECT MAX(streak) as maxStreak FROM habits WHERE userId = ?")
-      .get(userId);
+    const streakRow = await db.get(
+      "SELECT MAX(streak) as maxStreak FROM habits WHERE userId = ?",
+      userId,
+    );
     const maxStreak = streakRow?.maxStreak ?? 0;
 
     // Achievements unlocked count
-    const achievementsRow = db
-      .prepare("SELECT COUNT(*) as c FROM user_achievements WHERE userId = ?")
-      .get(userId);
+    const achievementsRow = await db.get(
+      "SELECT COUNT(*) as c FROM user_achievements WHERE userId = ?",
+      userId,
+    );
     const achievementsCount = achievementsRow?.c ?? 0;
+
+    // Achievements in the last 7 days
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const sevenDaysIso = sevenDaysAgo.toISOString().split("T")[0];
+    const recentAchievementsRow = await db.get(
+      "SELECT COUNT(*) as c FROM user_achievements WHERE userId = ? AND earnedAt >= ?",
+      userId,
+      sevenDaysIso,
+    );
+    const achievementsNew = recentAchievementsRow?.c ?? 0;
 
     // This week completed logs (from Monday)
     const now = new Date();
@@ -44,20 +68,20 @@ export const getDashboardStats: RequestHandler = (req, res) => {
     monday.setHours(0, 0, 0, 0);
     const mondayIso = monday.toISOString().split("T")[0];
 
-    const weekCompletedRow = db
-      .prepare(
-        "SELECT COUNT(*) as c FROM habit_logs WHERE userId = ? AND date >= ? AND date <= ? AND completedBoolean = 1",
-      )
-      .get(userId, mondayIso, today);
+    const weekCompletedRow = await db.get(
+      "SELECT COUNT(*) as c FROM habit_logs WHERE userId = ? AND date >= ? AND date <= ? AND completedBoolean = 1",
+      userId,
+      mondayIso,
+      today,
+    );
     const weekCompleted = weekCompletedRow?.c ?? 0;
 
     // Some basic per-category counts
     const categories =
-      db
-        .prepare(
-          "SELECT category, COUNT(*) as c FROM habits WHERE userId = ? GROUP BY category",
-        )
-        .all(userId) || [];
+      (await db.all(
+        "SELECT category, COUNT(*) as c FROM habits WHERE userId = ? GROUP BY category",
+        userId,
+      )) || [];
     const categoryCounts: Record<string, number> = {};
     categories.forEach((r: any) => {
       categoryCounts[r.category || "custom"] = r.c;
@@ -66,8 +90,10 @@ export const getDashboardStats: RequestHandler = (req, res) => {
     return res.json({
       totalHabits,
       completedToday,
+      yesterdayCompleted,
       maxStreak,
       achievementsCount,
+      achievementsNew,
       weekCompleted,
       categoryCounts,
       today,

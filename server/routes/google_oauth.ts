@@ -72,28 +72,25 @@ export const googleCallback: RequestHandler = async (req, res) => {
 
   // Upsert user
   const email = profile.email;
-  let row = db
-    .prepare(
-      "SELECT id,name,email,photoUrl,createdAt FROM users WHERE email = ?",
-    )
-    .get(email);
+  let row = await db.get(
+    "SELECT id,name,email,photoUrl,createdAt FROM users WHERE email = ?",
+    email,
+  );
   if (!row) {
     const id = uuidv4();
     const now = new Date().toISOString();
-    db.prepare(
+    await db.run(
       "INSERT INTO users (id,name,email,photoUrl,createdAt) VALUES (?,?,?,?,?)",
-    ).run(
       id,
       profile.name || "Google User",
       email,
       profile.picture || null,
       now,
     );
-    row = db
-      .prepare(
-        "SELECT id,name,email,photoUrl,createdAt FROM users WHERE id = ?",
-      )
-      .get(id);
+    row = await db.get(
+      "SELECT id,name,email,photoUrl,createdAt FROM users WHERE id = ?",
+      id,
+    );
   }
 
   // Sign JWT and redirect back to frontend with token (or return JSON)
@@ -108,12 +105,10 @@ export const googleCallback: RequestHandler = async (req, res) => {
       return res.redirect(
         `${FRONTEND}/?error=${encodeURIComponent("JWT not configured")}`,
       );
-    return res
-      .status(500)
-      .json({
-        message:
-          "JWT not configured on server. Set JWT_SECRET to enable token generation.",
-      });
+    return res.status(500).json({
+      message:
+        "JWT not configured on server. Set JWT_SECRET to enable token generation.",
+    });
   }
 
   const FRONTEND = process.env.FRONTEND_URL;

@@ -1,28 +1,44 @@
-import type { RequestHandler } from 'express';
-import db from '../db';
+import type { RequestHandler } from "express";
+import db from "../db";
 
-export const getSettings: RequestHandler = (req, res) => {
+export const getSettings: RequestHandler = async (req, res) => {
   const userId = req.params.userId;
-  const row = db.prepare('SELECT settings FROM user_settings WHERE userId = ?').get(userId);
+  const row = await db.get(
+    "SELECT settings FROM user_settings WHERE userId = ?",
+    userId,
+  );
   if (!row) return res.json({});
   try {
-    const settings = JSON.parse(row.settings);
+    const settings = row.settings;
     return res.json(settings);
   } catch (e) {
     return res.json({});
   }
 };
 
-export const upsertSettings: RequestHandler = (req, res) => {
+export const upsertSettings: RequestHandler = async (req, res) => {
   const userId = req.params.userId;
   const data = req.body || {};
   const now = new Date().toISOString();
-  const existing = db.prepare('SELECT userId FROM user_settings WHERE userId = ?').get(userId);
+  const existing = await db.get(
+    "SELECT userId FROM user_settings WHERE userId = ?",
+    userId,
+  );
   const str = JSON.stringify(data);
   if (existing) {
-    db.prepare('UPDATE user_settings SET settings = ?, updatedAt = ? WHERE userId = ?').run(str, now, userId);
+    await db.run(
+      "UPDATE user_settings SET settings = ?, updatedAt = ? WHERE userId = ?",
+      str,
+      now,
+      userId,
+    );
   } else {
-    db.prepare('INSERT INTO user_settings (userId,settings,updatedAt) VALUES (?,?,?)').run(userId, str, now);
+    await db.run(
+      "INSERT INTO user_settings (userId,settings,updatedAt) VALUES (?,?,?)",
+      userId,
+      str,
+      now,
+    );
   }
   res.json(data);
 };

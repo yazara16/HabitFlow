@@ -147,14 +147,13 @@ export function createServer() {
     }
   });
 
-  app.get("/api/me", requireAuth, (req, res) => {
+  app.get("/api/me", requireAuth, async (req, res) => {
     try {
       const uid = req.authUserId;
-      const row = db
-        .prepare(
-          "SELECT id,name,email,photoUrl,createdAt FROM users WHERE id = ?",
-        )
-        .get(uid);
+      const row = await db.get(
+        "SELECT id,name,email,photoUrl,createdAt FROM users WHERE id = ?",
+        uid,
+      );
       return res.json(row);
     } catch (e) {
       return res.status(500).json({ error: String(e) });
