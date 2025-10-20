@@ -476,7 +476,10 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
         } catch (e: any) {
           console.error("create habit failed:", e?.message || e);
           try {
-            toast({ title: "Error creando hábito", description: String(e?.message || e) });
+            toast({
+              title: "Error creando hábito",
+              description: String(e?.message || e),
+            });
           } catch (ee) {}
           throw e;
         }
