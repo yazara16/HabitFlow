@@ -1,0 +1,151 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String?
+  photoUrl  String?
+  createdAt DateTime @default(now())
+
+  habits            Habit[]
+  notifications     Notification[]
+  habitLogs         HabitLog[]
+  habitOverrides    HabitOverride[]
+  userSettings      UserSetting?
+  userAchievements  UserAchievement[]
+  reminders         Reminder[]
+  devices           Device[]
+}
+
+model Habit {
+  id             String   @id @default(uuid())
+  userId         String
+  name           String
+  description    String?
+  category       String?
+  color          String?
+  icon           String?
+  target         Int?
+  completed      Int     @default(0)
+  streak         Int     @default(0)
+  frequency      String?
+  monthlyDays    String?
+  monthlyMonths  String?
+  reminderTime   String?
+  reminderEnabled Boolean @default(false)
+  createdAt      DateTime @default(now())
+  lastCompleted  String?
+
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  habitLogs      HabitLog[]
+  habitOverrides HabitOverride[]
+  reminders      Reminder[]
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String?
+  title     String?
+  message   String?
+  time      String?
+  read      Boolean  @default(false)
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model HabitLog {
+  id               String   @id @default(uuid())
+  habitId          String
+  userId           String
+  date             String
+  completedAmount  Int      @default(0)
+  completedBoolean Boolean  @default(false)
+  note             String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  habit            Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model HabitOverride {
+  id        String   @id @default(uuid())
+  habitId   String
+  userId    String
+  date      String
+  hidden    Boolean  @default(false)
+  patch     Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  habit     Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserSetting {
+  userId   String  @id
+  settings Json?
+  updatedAt DateTime @updatedAt
+
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Achievement {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  title     String?
+  description String?
+  criteria  Json?
+  createdAt DateTime @default(now())
+
+  userAchievements UserAchievement[]
+}
+
+model UserAchievement {
+  id            String   @id @default(uuid())
+  userId        String
+  achievementId String
+  earnedAt      DateTime
+  meta          Json?
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+}
+
+model Reminder {
+  id        String   @id @default(uuid())
+  userId    String
+  habitId   String?
+  timeOfDay String?
+  enabled   Boolean  @default(true)
+  timezone  String?
+  recurrence String?
+  days      String?
+  nextRun   String?
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  habit     Habit?   @relation(fields: [habitId], references: [id], onDelete: Cascade)
+}
+
+model Device {
+  id        String   @id @default(uuid())
+  userId    String
+  platform  String?
+  pushToken String?
+  lastSeenAt String?
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
