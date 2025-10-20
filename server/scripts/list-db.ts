@@ -1,13 +1,13 @@
 import db from '../db';
 
-function list() {
+async function list() {
   console.log('Users:');
-  const users = db.prepare('SELECT id,name,email,createdAt FROM users').all();
+  const users = await db.all('SELECT id,name,email,createdAt FROM users');
   console.table(users);
 
   console.log('\nHabits:');
-  const habits = db.prepare('SELECT id,userId,name,target,completed,streak,frequency,createdAt FROM habits').all();
+  const habits = await db.all('SELECT id,userId,name,target,completed,streak,frequency,createdAt FROM habits');
   console.table(habits);
 }
 
-list();
+list().catch((e) => { console.error(e); process.exit(1); });
