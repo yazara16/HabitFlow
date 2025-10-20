@@ -459,11 +459,14 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
         // Optimistic update: apply patch immediately to improve UX (instant toggle/check)
         const previous = habits;
         setHabits((prev) =>
-          prev.map((h) => (h.id === id ? { ...h, ...patch } as Habit : h)),
+          prev.map((h) => (h.id === id ? ({ ...h, ...patch } as Habit) : h)),
         );
 
         try {
-          const updated: Habit = await updateMutation.mutateAsync({ id, patch });
+          const updated: Habit = await updateMutation.mutateAsync({
+            id,
+            patch,
+          });
           // Ensure we use server-canonical habit after success
           setHabits((prev) => prev.map((h) => (h.id === id ? updated : h)));
 
