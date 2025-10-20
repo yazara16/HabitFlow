@@ -16,6 +16,7 @@ import {
   BookOpen,
 } from "lucide-react";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { toast } from "@/hooks/use-toast";
 
 export type HabitCategory =
   | "exercise"
@@ -411,6 +412,16 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
     () => ({
       habits,
       addHabit: async (habit, options) => {
+        if (!user) {
+          try {
+            toast({
+              title: "No autenticado",
+              description: "Por favor inicia sesión",
+            });
+          } catch (e) {}
+          return;
+        }
+
         const assignDate = options?.assignDate ?? new Date();
         const createdAt = assignDate.toISOString();
         const body = {

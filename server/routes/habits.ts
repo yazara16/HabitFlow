@@ -30,6 +30,7 @@ export const getHabitsHandler: RequestHandler = async (req, res) => {
 export const createHabitHandler: RequestHandler = async (req, res) => {
   const userId = req.params.userId;
   const data = req.body || {};
+  console.log("createHabitHandler called", { userId, body: data });
   if (!data.name) return res.status(400).json({ message: "Missing name" });
   const id = uuidv4();
   const createdAt = data.createdAt || new Date().toISOString();
@@ -54,6 +55,7 @@ export const createHabitHandler: RequestHandler = async (req, res) => {
     data.lastCompleted || null,
   );
   const row = await db.get("SELECT * FROM habits WHERE id = ?", id);
+  console.log("Inserted habit row:", row);
   const habit = {
     id: row.id,
     userId: row.userId,
