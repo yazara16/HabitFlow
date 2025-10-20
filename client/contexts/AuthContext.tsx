@@ -47,6 +47,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Try to restore session from token
     const token = localStorage.getItem("auth:token");
+    const isBuilder = typeof window !== "undefined" && window.location.search.includes("builder.frameEditing");
+    const wantsDevAuth = typeof window !== "undefined" && window.location.search.includes("dev_auth");
+
     if (token) {
       fetch(`/api/me`, { headers: { Authorization: `Bearer ${token}` } })
         .then(async (res) => {
@@ -62,6 +65,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .catch(() => {
           // ignore
         });
+      return;
+    }
+
+    // Developer auto-login for testing inside Builder or with ?dev_auth in URL
+    if (isBuilder || wantsDevAuth) {
+      try {
+        const devId = (window as any)?.DEV_USER_ID || "dev-user";
+        const devUser = {
+          id: devId,
+          name: "Developer",
+          email: "dev@example.com",
+          createdAt: new Date().toISOString(),
+        };
+        localStorage.setItem("auth:token", "dev-token");
+        setUser(devUser as any);
+      } catch (e) {}
     }
   }, []);
 
