@@ -497,17 +497,7 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
             patch,
           });
           // Ensure we use server-canonical habit after success
-          setHabits((prev) =>
-            prev.map((h) =>
-              h.id === id
-                ? ({
-                    ...updated,
-                    completedToday:
-                      prev.find((p) => p.id === id)?.completedToday ?? false,
-                  } as Habit)
-                : h,
-            ),
-          );
+          setHabits((prev) => prev.map((h) => (h.id === id ? updated : h)));
 
           // If completed change, create a habit log for today
           try {
