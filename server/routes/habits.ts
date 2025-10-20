@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 export const getHabitsHandler: RequestHandler = async (req, res) => {
   const userId = req.params.userId;
   const rows = await db.all("SELECT * FROM habits WHERE userId = ?", userId);
+  const today = new Date().toISOString().split("T")[0];
   const habits = rows.map((r: any) => ({
     id: r.id,
     userId: r.userId,
@@ -23,6 +24,7 @@ export const getHabitsHandler: RequestHandler = async (req, res) => {
     reminderEnabled: !!r.reminderEnabled,
     createdAt: r.createdAt,
     lastCompleted: r.lastCompleted,
+    completedToday: r.lastCompleted === today,
   }));
   res.json(habits);
 };
