@@ -1,18 +1,18 @@
 import type { RequestHandler } from 'express';
 import db from '../db';
 
-export const listUsers: RequestHandler = (_req, res) => {
-  const rows = db.prepare('SELECT id,name,email,photoUrl,createdAt FROM users').all();
+export const listUsers: RequestHandler = async (_req, res) => {
+  const rows = await db.all('SELECT id,name,email,photoUrl,createdAt FROM users');
   res.json(rows);
 };
 
-export const listHabits: RequestHandler = (_req, res) => {
-  const rows = db.prepare('SELECT id,userId,name,description,category,target,completed,streak,frequency,createdAt,lastCompleted FROM habits').all();
+export const listHabits: RequestHandler = async (_req, res) => {
+  const rows = await db.all('SELECT id,userId,name,description,category,target,completed,streak,frequency,createdAt,lastCompleted FROM habits');
   res.json(rows);
 };
 
-export const dbStats: RequestHandler = (_req, res) => {
-  const userCount = db.prepare('SELECT COUNT(*) as c FROM users').get().c;
-  const habitCount = db.prepare('SELECT COUNT(*) as c FROM habits').get().c;
+export const dbStats: RequestHandler = async (_req, res) => {
+  const userCount = (await db.get('SELECT COUNT(*) as c FROM users'))?.c ?? 0;
+  const habitCount = (await db.get('SELECT COUNT(*) as c FROM habits'))?.c ?? 0;
   res.json({ users: userCount, habits: habitCount });
 };
