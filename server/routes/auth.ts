@@ -3,24 +3,28 @@ import db from "../db";
 import bcrypt from "bcryptjs";
 import { v4 as uuidv4 } from "uuid";
 
-export const registerHandler: RequestHandler = (req, res) => {
+export const registerHandler: RequestHandler = async (req, res) => {
   const { name, email, password, photoUrl } = req.body || {};
   if (!name || !email || !password)
     return res.status(400).json({ message: "Missing fields" });
 
   // Check existing
-  const existing = db
-    .prepare("SELECT id,email FROM users WHERE email = ?")
-    .get(email);
+  const existing = await db.get("SELECT id,email FROM users WHERE email = ?", email);
   if (existing)
     return res.status(400).json({ message: "Email already registered" });
 
   const id = uuidv4();
   const hashed = bcrypt.hashSync(password, 8);
   const createdAt = new Date().toISOString();
-  db.prepare(
+  await db.run(
     "INSERT INTO users (id,name,email,password,photoUrl,createdAt) VALUES (?,?,?,?,?,?)",
-  ).run(id, name, email, hashed, photoUrl || null, createdAt);
+    id,
+    name,
+    email,
+    hashed,
+    photoUrl || null,
+    createdAt,
+  );
 
   // Seed default habits for new user based on preferences
   const prefs: string[] = req.body?.preferredCategories || [];
