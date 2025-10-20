@@ -1,4 +1,4 @@
-import prisma from './prisma';
+import prisma from "./prisma";
 
 // Lightweight DB helper to match previous API (async)
 export async function all(sql: string, ...params: any[]) {

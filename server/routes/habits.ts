@@ -1,10 +1,10 @@
-import type { RequestHandler } from 'express';
-import db from '../db';
-import { v4 as uuidv4 } from 'uuid';
+import type { RequestHandler } from "express";
+import db from "../db";
+import { v4 as uuidv4 } from "uuid";
 
 export const getHabitsHandler: RequestHandler = async (req, res) => {
   const userId = req.params.userId;
-  const rows = await db.all('SELECT * FROM habits WHERE userId = ?', userId);
+  const rows = await db.all("SELECT * FROM habits WHERE userId = ?", userId);
   const habits = rows.map((r: any) => ({
     id: r.id,
     userId: r.userId,
@@ -30,10 +30,11 @@ export const getHabitsHandler: RequestHandler = async (req, res) => {
 export const createHabitHandler: RequestHandler = async (req, res) => {
   const userId = req.params.userId;
   const data = req.body || {};
-  if (!data.name) return res.status(400).json({ message: 'Missing name' });
+  if (!data.name) return res.status(400).json({ message: "Missing name" });
   const id = uuidv4();
   const createdAt = data.createdAt || new Date().toISOString();
-  await db.run(`INSERT INTO habits (id,userId,name,description,category,color,icon,target,completed,streak,frequency,monthlyDays,monthlyMonths,reminderTime,reminderEnabled,createdAt,lastCompleted) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+  await db.run(
+    `INSERT INTO habits (id,userId,name,description,category,color,icon,target,completed,streak,frequency,monthlyDays,monthlyMonths,reminderTime,reminderEnabled,createdAt,lastCompleted) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
     id,
     userId,
     data.name,
@@ -52,7 +53,7 @@ export const createHabitHandler: RequestHandler = async (req, res) => {
     createdAt,
     data.lastCompleted || null,
   );
-  const row = await db.get('SELECT * FROM habits WHERE id = ?', id);
+  const row = await db.get("SELECT * FROM habits WHERE id = ?", id);
   const habit = {
     id: row.id,
     userId: row.userId,
@@ -79,8 +80,12 @@ export const updateHabitHandler: RequestHandler = async (req, res) => {
   const userId = req.params.userId;
   const habitId = req.params.habitId;
   const data = req.body || {};
-  const row = await db.get('SELECT * FROM habits WHERE id = ? AND userId = ?', habitId, userId);
-  if (!row) return res.status(404).json({ message: 'Not found' });
+  const row = await db.get(
+    "SELECT * FROM habits WHERE id = ? AND userId = ?",
+    habitId,
+    userId,
+  );
+  if (!row) return res.status(404).json({ message: "Not found" });
 
   const updated = {
     name: data.name ?? row.name,
@@ -92,14 +97,29 @@ export const updateHabitHandler: RequestHandler = async (req, res) => {
     completed: data.completed ?? row.completed,
     streak: data.streak ?? row.streak,
     frequency: data.frequency ?? row.frequency,
-    monthlyDays: typeof data.monthlyDays !== 'undefined' ? JSON.stringify(data.monthlyDays) : row.monthlyDays,
-    monthlyMonths: typeof data.monthlyMonths !== 'undefined' ? JSON.stringify(data.monthlyMonths) : row.monthlyMonths,
+    monthlyDays:
+      typeof data.monthlyDays !== "undefined"
+        ? JSON.stringify(data.monthlyDays)
+        : row.monthlyDays,
+    monthlyMonths:
+      typeof data.monthlyMonths !== "undefined"
+        ? JSON.stringify(data.monthlyMonths)
+        : row.monthlyMonths,
     reminderTime: data.reminderTime ?? row.reminderTime,
-    reminderEnabled: typeof data.reminderEnabled !== 'undefined' ? (data.reminderEnabled ? 1 : 0) : row.reminderEnabled,
-    lastCompleted: typeof data.lastCompleted !== 'undefined' ? data.lastCompleted : row.lastCompleted,
+    reminderEnabled:
+      typeof data.reminderEnabled !== "undefined"
+        ? data.reminderEnabled
+          ? 1
+          : 0
+        : row.reminderEnabled,
+    lastCompleted:
+      typeof data.lastCompleted !== "undefined"
+        ? data.lastCompleted
+        : row.lastCompleted,
   };
 
-  await db.run(`UPDATE habits SET name=?,description=?,category=?,color=?,icon=?,target=?,completed=?,streak=?,frequency=?,monthlyDays=?,monthlyMonths=?,reminderTime=?,reminderEnabled=?,lastCompleted=? WHERE id=? AND userId=?`,
+  await db.run(
+    `UPDATE habits SET name=?,description=?,category=?,color=?,icon=?,target=?,completed=?,streak=?,frequency=?,monthlyDays=?,monthlyMonths=?,reminderTime=?,reminderEnabled=?,lastCompleted=? WHERE id=? AND userId=?`,
     updated.name,
     updated.description,
     updated.category,
@@ -118,7 +138,7 @@ export const updateHabitHandler: RequestHandler = async (req, res) => {
     userId,
   );
 
-  const row2 = await db.get('SELECT * FROM habits WHERE id = ?', habitId);
+  const row2 = await db.get("SELECT * FROM habits WHERE id = ?", habitId);
   const habit = {
     id: row2.id,
     userId: row2.userId,
@@ -144,8 +164,16 @@ export const updateHabitHandler: RequestHandler = async (req, res) => {
 export const deleteHabitHandler: RequestHandler = async (req, res) => {
   const userId = req.params.userId;
   const habitId = req.params.habitId;
-  const row = await db.get('SELECT * FROM habits WHERE id = ? AND userId = ?', habitId, userId);
-  if (!row) return res.status(404).json({ message: 'Not found' });
-  await db.run('DELETE FROM habits WHERE id = ? AND userId = ?', habitId, userId);
+  const row = await db.get(
+    "SELECT * FROM habits WHERE id = ? AND userId = ?",
+    habitId,
+    userId,
+  );
+  if (!row) return res.status(404).json({ message: "Not found" });
+  await db.run(
+    "DELETE FROM habits WHERE id = ? AND userId = ?",
+    habitId,
+    userId,
+  );
   res.status(204).send();
 };

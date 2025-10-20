@@ -8,7 +8,10 @@ export const registerHandler: RequestHandler = async (req, res) => {
     return res.status(400).json({ message: "Missing fields" });
 
   // Check existing
-  const existing = await db.get("SELECT id,email FROM users WHERE email = ?", email);
+  const existing = await db.get(
+    "SELECT id,email FROM users WHERE email = ?",
+    email,
+  );
   if (existing)
     return res.status(400).json({ message: "Email already registered" });
 
@@ -212,7 +215,10 @@ export const registerHandler: RequestHandler = async (req, res) => {
     );
   }
 
-  const user = await db.get("SELECT id,name,email,photoUrl,createdAt FROM users WHERE id = ?", id);
+  const user = await db.get(
+    "SELECT id,name,email,photoUrl,createdAt FROM users WHERE id = ?",
+    id,
+  );
   // Sign JWT for session (if configured)
   let token: string | undefined = undefined;
   try {
@@ -282,19 +288,34 @@ export const loginHandler: RequestHandler = async (req, res) => {
 
 export const googleMockHandler: RequestHandler = async (req, res) => {
   const email = "demo-google@habitflow.app";
-  let row = await db.get("SELECT id,name,email,photoUrl,createdAt FROM users WHERE email = ?", email);
+  let row = await db.get(
+    "SELECT id,name,email,photoUrl,createdAt FROM users WHERE email = ?",
+    email,
+  );
   if (!row) {
     const id = uuidv4();
     const createdAt = new Date().toISOString();
-    await db.run("INSERT INTO users (id,name,email,createdAt) VALUES (?,?,?,?)", id, "Usuario Google", email, createdAt);
-    row = await db.get("SELECT id,name,email,photoUrl,createdAt FROM users WHERE id = ?", id);
+    await db.run(
+      "INSERT INTO users (id,name,email,createdAt) VALUES (?,?,?,?)",
+      id,
+      "Usuario Google",
+      email,
+      createdAt,
+    );
+    row = await db.get(
+      "SELECT id,name,email,photoUrl,createdAt FROM users WHERE id = ?",
+      id,
+    );
   }
   res.json(row);
 };
 
 export const getUserHandler: RequestHandler = async (req, res) => {
   const id = req.params.id;
-  const row = await db.get("SELECT id,name,email,photoUrl,createdAt FROM users WHERE id = ?", id);
+  const row = await db.get(
+    "SELECT id,name,email,photoUrl,createdAt FROM users WHERE id = ?",
+    id,
+  );
   if (!row) return res.status(404).json({ message: "Not found" });
   res.json(row);
 };
@@ -305,8 +326,13 @@ export const updateUserHandler: RequestHandler = async (req, res) => {
 
   // If email is changing, ensure it's not already used
   if (email) {
-    const existing = await db.get("SELECT id FROM users WHERE email = ? AND id != ?", email, id);
-    if (existing) return res.status(400).json({ message: "Email already in use" });
+    const existing = await db.get(
+      "SELECT id FROM users WHERE email = ? AND id != ?",
+      email,
+      id,
+    );
+    if (existing)
+      return res.status(400).json({ message: "Email already in use" });
   }
 
   await db.run(
@@ -316,6 +342,9 @@ export const updateUserHandler: RequestHandler = async (req, res) => {
     email,
     id,
   );
-  const row = await db.get("SELECT id,name,email,photoUrl,createdAt FROM users WHERE id = ?", id);
+  const row = await db.get(
+    "SELECT id,name,email,photoUrl,createdAt FROM users WHERE id = ?",
+    id,
+  );
   res.json(row);
 };
