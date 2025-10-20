@@ -414,7 +414,10 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
       addHabit: async (habit, options) => {
         if (!user) {
           try {
-            toast({ title: "No autenticado", description: "Por favor inicia sesión" });
+            toast({
+              title: "No autenticado",
+              description: "Por favor inicia sesión",
+            });
           } catch (e) {}
           return;
         }
