@@ -471,7 +471,11 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
           setHabits((prev) =>
             prev.map((h) =>
               h.id === id
-                ? ({ ...updated, completedToday: prev.find((p) => p.id === id)?.completedToday ?? false } as Habit)
+                ? ({
+                    ...updated,
+                    completedToday:
+                      prev.find((p) => p.id === id)?.completedToday ?? false,
+                  } as Habit)
                 : h,
             ),
           );

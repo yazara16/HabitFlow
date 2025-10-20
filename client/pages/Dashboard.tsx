@@ -433,7 +433,8 @@ export default function Dashboard() {
                 {habits.map((habit) => {
                   const Icon = habit.icon;
                   const progress = (habit.completed / habit.target) * 100;
-                  const isCompleted = habit.completedToday || habit.completed >= habit.target;
+                  const isCompleted =
+                    habit.completedToday || habit.completed >= habit.target;
 
                   return (
                     <div
