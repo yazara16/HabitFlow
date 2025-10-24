@@ -454,7 +454,7 @@ export default function Dashboard() {
                       </Button>
 
                       <div className={`p-2 rounded-lg ${habit.color}`}>
-                        <Icon className="h-4 w-4" />
+                        {typeof Icon === 'function' ? <Icon className="h-4 w-4" /> : <Star className="h-4 w-4" />}
                       </div>
 
                       <div className="flex-1 min-w-0">
