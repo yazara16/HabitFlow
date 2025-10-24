@@ -282,7 +282,7 @@ export default function Habits() {
                         <div className="flex items-start justify-between">
                           <div className="flex items-center space-x-3">
                             <div className={`p-2 rounded-lg ${habit.color}`}>
-                              <Icon className="h-4 w-4" />
+                              {typeof Icon === "function" ? <Icon className="h-4 w-4" /> : <Star className="h-4 w-4" /> }
                             </div>
                             <div className="flex-1 min-w-0">
                               <CardTitle className="text-lg truncate">{habit.name}</CardTitle>
