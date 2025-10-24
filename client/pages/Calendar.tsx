@@ -29,6 +29,7 @@ import {
   Clock,
   Grid3X3,
   List,
+  Star,
 } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import HabitDialog from "@/components/HabitDialog";
