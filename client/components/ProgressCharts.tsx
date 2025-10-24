@@ -348,7 +348,7 @@ export default function ProgressCharts() {
             <div className="flex items-center space-x-2 text-primary">
               <Award className="h-4 w-4" />
               <span className="text-sm font-medium">
-                ¡Mejor semana: 7/7 días completados!
+                {monthlyStreakState.length ? `Mejor semana: ${Math.max(...monthlyStreakState.map(w => w.days))}/7 días completados` : 'Mejor semana: —'}
               </span>
             </div>
           </div>
@@ -370,52 +370,46 @@ export default function ProgressCharts() {
           <div className="space-y-4">
             <div className="p-3 border border-border rounded-lg">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium">
-                  Mejor momento del día
-                </span>
-                <Badge variant="outline">Mañana</Badge>
+                <span className="text-sm font-medium">Mejor momento del día</span>
+                <Badge variant="outline">{timeAnalytics.bestWindow}</Badge>
               </div>
               <p className="text-xs text-muted-foreground">
-                Completas el 78% de tus hábitos entre 6:00 AM - 10:00 AM
+                {`Completas el ${timeAnalytics.successRate}% de tus hábitos en ${timeAnalytics.bestWindow}`}
               </p>
             </div>
 
             <div className="p-3 border border-border rounded-lg">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium">Día más productivo</span>
-                <Badge variant="outline">Martes</Badge>
+                <Badge variant="outline">{timeAnalytics.bestDay}</Badge>
               </div>
               <p className="text-xs text-muted-foreground">
-                Promedio de 4.8/5 hábitos completados los martes
+                {`Promedio de ${weeklyData.length ? (Math.round(weeklyData.reduce((s,d) => s + d.completed,0)/weeklyData.length*10)/10) : 0 } hábitos completados`}
               </p>
             </div>
 
             <div className="p-3 border border-border rounded-lg">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium">
-                  Hábito más consistente
-                </span>
-                <Badge variant="outline">Hidratación</Badge>
+                <span className="text-sm font-medium">Hábito más consistente</span>
+                <Badge variant="outline">{timeAnalytics.consistentHabit}</Badge>
               </div>
               <p className="text-xs text-muted-foreground">
-                100% de éxito en los últimos 7 días
+                {`Consistencia: ${timeAnalytics.successRate}% en los últimos 30 días`}
               </p>
             </div>
           </div>
 
           <div className="mt-4 grid grid-cols-3 gap-2 text-center">
             <div>
-              <div className="text-lg font-bold text-foreground">6.2</div>
-              <div className="text-xs text-muted-foreground">
-                Promedio diario
-              </div>
+              <div className="text-lg font-bold text-foreground">{timeAnalytics.avgDaily}</div>
+              <div className="text-xs text-muted-foreground">Promedio diario</div>
             </div>
             <div>
-              <div className="text-lg font-bold text-foreground">25</div>
+              <div className="text-lg font-bold text-foreground">{timeAnalytics.maxStreak}</div>
               <div className="text-xs text-muted-foreground">Racha máxima</div>
             </div>
             <div>
-              <div className="text-lg font-bold text-foreground">89%</div>
+              <div className="text-lg font-bold text-foreground">{timeAnalytics.successRate}%</div>
               <div className="text-xs text-muted-foreground">Tasa de éxito</div>
             </div>
           </div>
