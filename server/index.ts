@@ -72,7 +72,7 @@ export function createServer() {
   const app = express();
 
   // Security: restrict CORS to front-end origin if provided and allow credentials for cookie usage
-  const FRONTEND = process.env.FRONTEND_URL || "http://localhost:5173";
+  const FRONTEND = process.env.FRONTEND_URL || "http://localhost:8080";
   app.use(cors({ origin: FRONTEND, credentials: true }));
 
   // Basic security headers
