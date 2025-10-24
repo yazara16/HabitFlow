@@ -192,9 +192,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!user) throw new Error("No user");
       try {
         const token = localStorage.getItem("auth:token");
+        const devHeader = token === "dev-token" ? { "x-dev-user": user.id } : {};
         const res = await fetch(`/api/users/${user.id}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+          headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}), ...devHeader },
           body: JSON.stringify(patch),
         });
         if (!res.ok) throw new Error("Failed to update");
