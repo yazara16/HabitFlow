@@ -45,10 +45,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
 
   useEffect(() => {
-    // Try to restore session from token
+    // Try to restore session from token, and fall back to local storage when server is unreachable
     const token = localStorage.getItem("auth:token");
     const isBuilder = typeof window !== "undefined" && window.location.search.includes("builder.frameEditing");
     const wantsDevAuth = typeof window !== "undefined" && window.location.search.includes("dev_auth");
+
+    const tryRestoreLocal = () => {
+      try {
+        const raw = localStorage.getItem(CURRENT_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (parsed && parsed.id) {
+          setUser(parsed as AuthUser);
+        } else if (typeof raw === "string") {
+          // legacy: CURRENT_KEY stored just id
+          const usersRaw = localStorage.getItem(USERS_KEY) || "{}";
+          const users = JSON.parse(usersRaw) as Record<string, any>;
+          const u = users[raw];
+          if (u) setUser(u as AuthUser);
+        }
+      } catch (e) {
+        // ignore
+      }
+    };
 
     if (token) {
       fetch(`/api/me`, { headers: { Authorization: `Bearer ${token}` } })
@@ -58,12 +77,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setUser(u);
             // persist token
             localStorage.setItem("auth:token", token);
+            // persist full user locally for offline/dev fallback
+            try {
+              localStorage.setItem(CURRENT_KEY, JSON.stringify(u));
+            } catch (e) {}
           } else {
             localStorage.removeItem("auth:token");
+            tryRestoreLocal();
           }
         })
         .catch(() => {
-          // ignore
+          // server not reachable, try local restore
+          tryRestoreLocal();
         });
       return;
     }
@@ -79,14 +104,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           createdAt: new Date().toISOString(),
         };
         localStorage.setItem("auth:token", "dev-token");
+        // persist full user for local fallback
+        localStorage.setItem(CURRENT_KEY, JSON.stringify(devUser));
         setUser(devUser as any);
       } catch (e) {}
     }
   }, []);
 
   const persistUser = (u: AuthUser) => {
-    // Persist minimal session (user id) locally
-    localStorage.setItem(CURRENT_KEY, u.id);
+    // Persist full user locally for offline/dev fallback
+    try {
+      localStorage.setItem(CURRENT_KEY, JSON.stringify(u));
+    } catch (e) {}
     setUser(u);
   };
 
@@ -200,7 +229,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         });
         if (!res.ok) throw new Error("Failed to update");
         const updated: AuthUser = await res.json();
-        setUser(updated);
+        persistUser(updated);
         return updated;
       } catch (e) {
         // Fallback: update localStorage stub users
@@ -212,7 +241,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const updated = { ...existing, ...patch };
           users[updated.id || user.id] = updated;
           localStorage.setItem(USERS_KEY, JSON.stringify(users));
-          setUser(updated as AuthUser);
+          persistUser(updated as AuthUser);
           return updated as AuthUser;
         } catch (err) {
           throw e;
