@@ -550,7 +550,7 @@ export default function Dashboard() {
                     <div className="flex items-center space-x-3">
                       {(() => {
                         const Icon = category.icon;
-                        return <Icon className={`h-4 w-4 ${category.color}`} />;
+                        return typeof Icon === 'function' ? <Icon className={`h-4 w-4 ${category.color}`} /> : <Star className={`h-4 w-4 ${category.color}`} />;
                       })()}
                       <span className="text-sm font-medium">
                         {category.name}
