@@ -242,11 +242,13 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
     mutationFn: async (body: any) => {
       if (!user) throw new Error("Not authenticated");
       const token = localStorage.getItem("auth:token");
+      const devHeader = token === 'dev-token' ? { 'x-dev-user': user.id } : {};
       const res = await fetch(`/api/users/${user.id}/habits`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          ...devHeader,
         },
         body: JSON.stringify(body),
       });
