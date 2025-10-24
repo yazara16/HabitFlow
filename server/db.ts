@@ -121,15 +121,16 @@ export async function all(sql: string, ...params: any[]) {
     const sets = updateMatch[2];
     const where = updateMatch[3];
     const rows = data[table] || [];
+    // determine how many ? are in SET to separate set params from where params
+    const questionMarksInSets = (sets.match(/\?/g) || []).length;
     for (let i = 0; i < rows.length; i++) {
       const r = rows[i];
-      if (matchesWhere(r, where, params)) {
+      // pass where params only (after set params)
+      const whereParams = params.slice(questionMarksInSets);
+      if (matchesWhere(r, where, whereParams)) {
         // apply sets
         // split by comma not inside parentheses
         const assignments = sets.split(/,(?![^()]*\))/);
-        let paramIndex = 0;
-        // We need to determine correct param index from where clause too. Simpler: apply by replacing COALESCE(?, col) patterns: find '?' positions in sets and map to params sequentially
-        const questionMarksInSets = (sets.match(/\?/g) || []).length;
         const setParams = params.slice(0, questionMarksInSets);
         let pIdx = 0;
         for (const assign of assignments) {
