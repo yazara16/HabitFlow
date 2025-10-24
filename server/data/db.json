@@ -191,6 +191,12 @@
       "createdAt": "2025-10-24T20:07:20.444Z"
     }
   ],
-  "user_settings": [],
+  "user_settings": [
+    {
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "settings": "{\"name\":\"Yazmin Aranxa\",\"email\":\"yaz@ejemplo.com\",\"bio\":\"Construyendo mejores hábitos cada día\",\"timezone\":\"America/Mexico_City\",\"language\":\"es\",\"pushEnabled\":true,\"emailEnabled\":false,\"dailyReminder\":true,\"weeklyReport\":true,\"achievementNotifications\":true,\"reminderTime\":\"09:00\",\"theme\":\"dark\",\"colorScheme\":\"pink\",\"compactMode\":false,\"animationsEnabled\":true,\"analyticsEnabled\":true,\"shareProgress\":false,\"publicProfile\":false,\"defaultReminderEnabled\":true,\"autoArchiveCompleted\":false,\"streakResetTime\":\"00:00\",\"weekStartsOn\":\"monday\"}",
+      "updatedAt": "2025-10-24T20:08:40.580Z"
+    }
+  ],
   "devices": []
 }
