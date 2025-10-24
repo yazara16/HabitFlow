@@ -237,7 +237,7 @@ export default function ProgressCharts() {
           <div className="mt-4 p-3 bg-muted/50 rounded-lg">
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Promedio semanal:</span>
-              <span className="font-medium text-foreground">77%</span>
+              <span className="font-medium text-foreground">{weeklyData.length ? Math.round(weeklyData.reduce((s,d) => s + d.percentage, 0)/weeklyData.length) + '%' : '0%'}</span>
             </div>
           </div>
         </CardContent>
