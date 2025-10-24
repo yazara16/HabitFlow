@@ -192,8 +192,12 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
     queryFn: async () => {
       if (!user) return [] as Habit[];
       const token = localStorage.getItem("auth:token");
+      const devHeader = token === 'dev-token' ? { 'x-dev-user': user.id } : {};
       const res = await fetch(`/api/users/${user.id}/habits`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          ...devHeader,
+        },
       });
       if (!res.ok) throw new Error("Failed to load habits");
       return (await res.json()) as Habit[];
