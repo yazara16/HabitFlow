@@ -302,9 +302,13 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
     mutationFn: async (id: string) => {
       if (!user) throw new Error("Not authenticated");
       const token = localStorage.getItem("auth:token");
+      const devHeader = token === 'dev-token' ? { 'x-dev-user': user.id } : {};
       const res = await fetch(`/api/users/${user.id}/habits/${id}`, {
         method: "DELETE",
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          ...devHeader,
+        },
       });
       if (!res.ok && res.status !== 204) {
         const text = await res.text().catch(() => "");
