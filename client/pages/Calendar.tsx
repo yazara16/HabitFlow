@@ -665,7 +665,7 @@ export default function Calendar() {
                               }}
                               className={`flex items-center space-x-1 p-2 rounded text-xs ${habit.color} cursor-move`}
                             >
-                              <Icon className="h-3 w-3" />
+                              {typeof Icon === 'function' ? <Icon className="h-3 w-3" /> : <Star className="h-3 w-3" /> }
                               <span className="truncate">{habit.name}</span>
                               {habit.completed && (
                                 <CheckCircle2 className="h-3 w-3 text-success ml-auto" />
