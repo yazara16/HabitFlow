@@ -244,7 +244,7 @@ export default function Habits() {
               const Icon = category.icon;
               return (
                 <TabsTrigger key={category.id} value={category.id} className="flex items-center space-x-2">
-                  <Icon className="h-4 w-4" />
+                  {typeof Icon === "function" ? <Icon className="h-4 w-4" /> : <Star className="h-4 w-4" /> }
                   <span className="hidden sm:inline">{category.name}</span>
                   <Badge variant="secondary" className="text-xs">{category.count}</Badge>
                 </TabsTrigger>
