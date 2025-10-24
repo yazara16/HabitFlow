@@ -256,7 +256,7 @@ export default function ProgressCharts() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {categoryData.map((category, index) => {
+            {categoryDataState.map((category, index) => {
               const percentage = (category.completed / category.total) * 100;
               return (
                 <div key={index} className="space-y-2">
