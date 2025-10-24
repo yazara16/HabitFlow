@@ -218,10 +218,20 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
         Book,
         BookOpen,
       };
-      const mapped = fetchedHabits.map((h: any) => ({
-        ...h,
-        icon: typeof h.icon === "string" ? iconMap[h.icon] || Star : h.icon || Star,
-      }));
+      const mapped = fetchedHabits.map((h: any) => {
+        let icon = Star;
+        if (typeof h.icon === "string") {
+          icon = iconMap[h.icon] || Star;
+        } else if (typeof h.icon === "function") {
+          icon = h.icon;
+        } else if (h.icon && typeof h.icon === "object") {
+          // sometimes stored as { name: 'ShoppingCart' }
+          if (typeof h.icon.name === "string") {
+            icon = iconMap[h.icon.name] || Star;
+          }
+        }
+        return { ...h, icon };
+      });
       setHabits(mapped);
     }
     if (habitsError) setHabits([]);
