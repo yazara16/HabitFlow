@@ -70,6 +70,10 @@ export default function Dashboard() {
   const userName = user?.name ?? "";
   const navigate = useNavigate();
 
+  // Greeting based on time: 00:00-11:59 => "¡Buen día", 12:00-23:59 => "¡Buena tarde"
+  const hour = new Date().getHours();
+  const greetingLabel = hour >= 0 && hour < 12 ? "¡Buen día" : "¡Buena tarde";
+
   // Fetch dashboard stats via React Query
   const {
     data: serverStats,
