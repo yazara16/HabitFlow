@@ -273,7 +273,7 @@ export default function Habits() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredHabits.map((habit) => {
                   const Icon = habit.icon;
-                  const progress = (habit.completed / habit.target) * 100;
+                  const progress = habit.target ? (habit.completed / habit.target) * 100 : 0;
                   const isCompleted = habit.completed >= habit.target;
                   
                   return (
