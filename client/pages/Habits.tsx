@@ -131,7 +131,7 @@ export default function Habits() {
 
   const totalHabits = habits.length;
   const completedToday = habits.filter(h => h.completedToday).length;
-  const averageStreak = habits.reduce((sum, h) => sum + h.streak, 0) / habits.length;
+  const averageStreak = habits.length ? habits.reduce((sum, h) => sum + h.streak, 0) / habits.length : 0;
 
   return (
     <div className="min-h-screen bg-background">

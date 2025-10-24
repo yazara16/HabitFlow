@@ -162,9 +162,186 @@
       "updatedAt": "2025-10-24T20:01:48.490Z"
     }
   ],
-  "notifications": [],
-  "achievements": [],
-  "user_achievements": [],
+  "notifications": [
+    {
+      "id": "db18428c-da77-4e1e-a8d3-c463833438a7",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "type": "achievement",
+      "title": "Logro: primera-semana-completa",
+      "message": "Has desbloqueado: primera-semana-completa",
+      "time": "2025-10-24T20:09:37.705Z",
+      "read": 0,
+      "metadata": "{\"achievementKey\":\"primera-semana-completa\"}",
+      "createdAt": "2025-10-24T20:09:37.705Z"
+    },
+    {
+      "id": "aee45b2e-b6b4-48d3-ae71-3d60096881e5",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "type": "achievement",
+      "title": "Logro: entrenamiento-constante",
+      "message": "Has desbloqueado: entrenamiento-constante",
+      "time": "2025-10-24T20:09:37.803Z",
+      "read": 0,
+      "metadata": "{\"achievementKey\":\"entrenamiento-constante\"}",
+      "createdAt": "2025-10-24T20:09:37.803Z"
+    },
+    {
+      "id": "d8225c0d-baf1-41bc-8ed4-2385cef4ff49",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "type": "achievement",
+      "title": "Logro: habito-creado",
+      "message": "Has desbloqueado: habito-creado",
+      "time": "2025-10-24T20:09:37.885Z",
+      "read": 0,
+      "metadata": "{\"achievementKey\":\"habito-creado\"}",
+      "createdAt": "2025-10-24T20:09:37.885Z"
+    },
+    {
+      "id": "da08c906-eb54-46af-963f-4490e53d9a79",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "type": "achievement",
+      "title": "Logro: racha-7",
+      "message": "Has desbloqueado: racha-7",
+      "time": "2025-10-24T20:09:37.972Z",
+      "read": 0,
+      "metadata": "{\"achievementKey\":\"racha-7\"}",
+      "createdAt": "2025-10-24T20:09:37.972Z"
+    },
+    {
+      "id": "59f3cefa-1094-4a40-9a01-9ec8ce56bfae",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "type": "achievement",
+      "title": "Logro: 5-habitos-activos",
+      "message": "Has desbloqueado: 5-habitos-activos",
+      "time": "2025-10-24T20:09:37.980Z",
+      "read": 0,
+      "metadata": "{\"achievementKey\":\"5-habitos-activos\"}",
+      "createdAt": "2025-10-24T20:09:37.980Z"
+    },
+    {
+      "id": "16fedbf1-725e-4fb0-b98b-76af06166a6d",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "type": "achievement",
+      "title": "Logro: ejercicio-constante",
+      "message": "Has desbloqueado: ejercicio-constante",
+      "time": "2025-10-24T20:09:38.055Z",
+      "read": 0,
+      "metadata": "{\"achievementKey\":\"ejercicio-constante\"}",
+      "createdAt": "2025-10-24T20:09:38.055Z"
+    }
+  ],
+  "achievements": [
+    {
+      "id": "f8d4e09e-14ab-44ab-9e8b-72da0ead8bac",
+      "key": "primera-semana-completa",
+      "title": "primera-semana-completa",
+      "description": "primera-semana-completa",
+      "criteria": "{\"auto\":true}",
+      "createdAt": "2025-10-24T20:09:37.703Z"
+    },
+    {
+      "id": "55309d83-d00f-4404-8ac0-d83eb4830c36",
+      "key": "entrenamiento-constante",
+      "title": "entrenamiento-constante",
+      "description": "entrenamiento-constante",
+      "criteria": "{\"auto\":true}",
+      "createdAt": "2025-10-24T20:09:37.798Z"
+    },
+    {
+      "id": "f29a5e84-46e8-43dd-b128-55e964a40380",
+      "key": "habito-creado",
+      "title": "habito-creado",
+      "description": "habito-creado",
+      "criteria": "{\"auto\":true}",
+      "createdAt": "2025-10-24T20:09:37.884Z"
+    },
+    {
+      "id": "8a22bea5-4571-4db7-b733-c5f7dc5cc5e5",
+      "key": "racha-7",
+      "title": "racha-7",
+      "description": "racha-7",
+      "criteria": "{\"auto\":true}",
+      "createdAt": "2025-10-24T20:09:37.969Z"
+    },
+    {
+      "id": "fd2376c1-4742-4309-ab9d-f04a95857aa5",
+      "key": "5-habitos-activos",
+      "title": "5-habitos-activos",
+      "description": "5-habitos-activos",
+      "criteria": "{\"auto\":true}",
+      "createdAt": "2025-10-24T20:09:37.978Z"
+    },
+    {
+      "id": "b692575b-51cb-4ebd-9cea-37ea2c99efe9",
+      "key": "ejercicio-constante",
+      "title": "ejercicio-constante",
+      "description": "ejercicio-constante",
+      "criteria": "{\"auto\":true}",
+      "createdAt": "2025-10-24T20:09:38.053Z"
+    }
+  ],
+  "user_achievements": [
+    {
+      "id": "e1a0f4bc-d911-4b6c-9424-deb28f275a1b",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "achievementId": "f8d4e09e-14ab-44ab-9e8b-72da0ead8bac",
+      "earnedAt": "2025-10-24T20:09:37.705Z",
+      "meta": {
+        "title": "Primera semana completa",
+        "desc": "Completaste hábitos durante 7 días seguidos"
+      }
+    },
+    {
+      "id": "87f7c3d5-d70d-4674-828e-776362ac5572",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "achievementId": "55309d83-d00f-4404-8ac0-d83eb4830c36",
+      "earnedAt": "2025-10-24T20:09:37.803Z",
+      "meta": {
+        "title": "Entrenamiento constante",
+        "desc": "Cumpliste tu objetivo de ejercicio"
+      }
+    },
+    {
+      "id": "d05bef93-093f-425e-ac50-3d74f23f13c2",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "achievementId": "f29a5e84-46e8-43dd-b128-55e964a40380",
+      "earnedAt": "2025-10-24T20:09:37.885Z",
+      "meta": {
+        "title": "Hábito creado",
+        "desc": "Creaste tu primer hábito"
+      }
+    },
+    {
+      "id": "ef48398c-a09e-426c-9ecb-a8e9382b6dbb",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "achievementId": "8a22bea5-4571-4db7-b733-c5f7dc5cc5e5",
+      "earnedAt": "2025-10-24T20:09:37.972Z",
+      "meta": {
+        "title": "Racha 7+",
+        "desc": "Alcanza una racha de 7 días en cualquier hábito"
+      }
+    },
+    {
+      "id": "a101242f-2153-4c5f-9f51-3b5e7aa2adb4",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "achievementId": "fd2376c1-4742-4309-ab9d-f04a95857aa5",
+      "earnedAt": "2025-10-24T20:09:37.980Z",
+      "meta": {
+        "title": "5 hábitos activos",
+        "desc": "Crea 5 hábitos en total"
+      }
+    },
+    {
+      "id": "85815652-8ceb-4b2d-9a16-bac6300a0c8b",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "achievementId": "b692575b-51cb-4ebd-9cea-37ea2c99efe9",
+      "earnedAt": "2025-10-24T20:09:38.055Z",
+      "meta": {
+        "title": "Ejercicio constante",
+        "desc": "Mantén ejercicio con racha de 5+"
+      }
+    }
+  ],
   "reminders": [
     {
       "id": "e7ee307e-0bfa-45dc-b2fa-0863a43e489f",
