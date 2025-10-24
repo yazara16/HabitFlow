@@ -54,16 +54,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         const raw = localStorage.getItem(CURRENT_KEY);
         if (!raw) return;
-        const parsed = JSON.parse(raw);
-        if (parsed && parsed.id) {
-          setUser(parsed as AuthUser);
-        } else if (typeof raw === "string") {
-          // legacy: CURRENT_KEY stored just id
-          const usersRaw = localStorage.getItem(USERS_KEY) || "{}";
-          const users = JSON.parse(usersRaw) as Record<string, any>;
-          const u = users[raw];
-          if (u) setUser(u as AuthUser);
+        // Try parse JSON first
+        try {
+          const parsed = JSON.parse(raw);
+          if (parsed && parsed.id) {
+            setUser(parsed as AuthUser);
+            return;
+          }
+        } catch (e) {
+          // not JSON, continue
         }
+        // legacy: CURRENT_KEY stored just id string
+        const usersRaw = localStorage.getItem(USERS_KEY) || "{}";
+        const users = JSON.parse(usersRaw) as Record<string, any>;
+        // direct lookup by key
+        let u = users[raw];
+        if (!u) {
+          // try find by id property inside users values
+          u = Object.values(users).find((x: any) => x && (x.id === raw || x.email === raw));
+        }
+        if (u) setUser(u as AuthUser);
       } catch (e) {
         // ignore
       }
