@@ -318,7 +318,7 @@ export default function ProgressCharts() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {monthlyStreak.map((week, index) => (
+            {monthlyStreakState.map((week, index) => (
               <div key={index} className="flex items-center space-x-3">
                 <div className="w-16 text-sm font-medium text-muted-foreground">
                   {week.week}
