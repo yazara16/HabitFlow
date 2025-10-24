@@ -93,9 +93,9 @@ export function createServer() {
     next();
   });
 
-  // Body parsing
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
+  // Body parsing (increase limits to allow large payloads like data URLs for avatars)
+  app.use(express.json({ limit: '10mb' }));
+  app.use(express.urlencoded({ extended: true, limit: '10mb', parameterLimit: 1000000 }));
 
   // CSRF middleware (optional)
   try {
