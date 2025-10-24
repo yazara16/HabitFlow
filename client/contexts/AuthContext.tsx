@@ -191,9 +191,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     async (patch: Partial<AuthUser>) => {
       if (!user) throw new Error("No user");
       try {
+        const token = localStorage.getItem("auth:token");
         const res = await fetch(`/api/users/${user.id}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
           body: JSON.stringify(patch),
         });
         if (!res.ok) throw new Error("Failed to update");
