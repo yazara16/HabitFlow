@@ -238,7 +238,7 @@ export default function Dashboard() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h1 className="text-3xl font-bold text-foreground mb-2">
-                ¡Buen día{userName ? ", " : ""}
+                {greetingLabel}{userName ? ", " : ""}
                 {userName}! 👋
               </h1>
               <p className="text-muted-foreground capitalize">{today}</p>
