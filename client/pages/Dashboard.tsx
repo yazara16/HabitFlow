@@ -431,7 +431,7 @@ export default function Dashboard() {
               <CardContent className="space-y-4">
                 {habits.map((habit) => {
                   const Icon = habit.icon;
-                  const progress = (habit.completed / habit.target) * 100;
+                  const progress = habit.target ? (habit.completed / habit.target) * 100 : 0;
                   const isCompleted =
                     habit.completedToday || habit.completed >= habit.target;
 
