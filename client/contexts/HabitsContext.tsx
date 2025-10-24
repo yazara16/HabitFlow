@@ -192,7 +192,7 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
     queryFn: async () => {
       if (!user) return [] as Habit[];
       const token = localStorage.getItem("auth:token");
-      const devHeader = token === 'dev-token' ? { 'x-dev-user': user.id } : {};
+      const devHeader = token === "dev-token" ? { "x-dev-user": user.id } : {};
       const res = await fetch(`/api/users/${user.id}/habits`, {
         headers: {
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -246,7 +246,7 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
     mutationFn: async (body: any) => {
       if (!user) throw new Error("Not authenticated");
       const token = localStorage.getItem("auth:token");
-      const devHeader = token === 'dev-token' ? { 'x-dev-user': user.id } : {};
+      const devHeader = token === "dev-token" ? { "x-dev-user": user.id } : {};
       const res = await fetch(`/api/users/${user.id}/habits`, {
         method: "POST",
         headers: {
@@ -277,7 +277,7 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
     }) => {
       if (!user) throw new Error("Not authenticated");
       const token = localStorage.getItem("auth:token");
-      const devHeader = token === 'dev-token' ? { 'x-dev-user': user.id } : {};
+      const devHeader = token === "dev-token" ? { "x-dev-user": user.id } : {};
       const res = await fetch(`/api/users/${user.id}/habits/${id}`, {
         method: "PUT",
         headers: {
@@ -302,7 +302,7 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
     mutationFn: async (id: string) => {
       if (!user) throw new Error("Not authenticated");
       const token = localStorage.getItem("auth:token");
-      const devHeader = token === 'dev-token' ? { 'x-dev-user': user.id } : {};
+      const devHeader = token === "dev-token" ? { "x-dev-user": user.id } : {};
       const res = await fetch(`/api/users/${user.id}/habits/${id}`, {
         method: "DELETE",
         headers: {

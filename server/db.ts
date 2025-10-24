@@ -41,7 +41,9 @@ export async function all(sql: string, ...params: any[]) {
   const s = sql.trim();
 
   // SELECT COUNT(*) as c FROM table WHERE ...
-  const countMatch = s.match(/^SELECT COUNT\(\*\) as c FROM ([a-z_]+)(?: WHERE (.+))?$/i);
+  const countMatch = s.match(
+    /^SELECT COUNT\(\*\) as c FROM ([a-z_]+)(?: WHERE (.+))?$/i,
+  );
   if (countMatch) {
     const table = countMatch[1];
     const where = countMatch[2];
@@ -51,7 +53,9 @@ export async function all(sql: string, ...params: any[]) {
   }
 
   // SELECT COUNT\(DISTINCT ([a-zA-Z_]+)\) as c FROM table WHERE ...
-  const countDistinct = s.match(/^SELECT COUNT\(DISTINCT ([a-z_]+)\) as c FROM ([a-z_]+)(?: WHERE (.+))?$/i);
+  const countDistinct = s.match(
+    /^SELECT COUNT\(DISTINCT ([a-z_]+)\) as c FROM ([a-z_]+)(?: WHERE (.+))?$/i,
+  );
   if (countDistinct) {
     const col = countDistinct[1];
     const table = countDistinct[2];
@@ -63,7 +67,9 @@ export async function all(sql: string, ...params: any[]) {
   }
 
   // SELECT MAX(col) as alias FROM table WHERE ...
-  const maxMatch = s.match(/^SELECT MAX\(([a-z_]+)\) as ([a-zA-Z_]+) FROM ([a-z_]+)(?: WHERE (.+))?$/i);
+  const maxMatch = s.match(
+    /^SELECT MAX\(([a-z_]+)\) as ([a-zA-Z_]+) FROM ([a-z_]+)(?: WHERE (.+))?$/i,
+  );
   if (maxMatch) {
     const col = maxMatch[1];
     const alias = maxMatch[2];
@@ -71,7 +77,9 @@ export async function all(sql: string, ...params: any[]) {
     const where = maxMatch[4];
     let rows = data[table] || [];
     if (where) rows = filterRows(rows, where, params);
-    const vals = rows.map((r: any) => typeof r[col] === "number" ? r[col] : Number.NEGATIVE_INFINITY);
+    const vals = rows.map((r: any) =>
+      typeof r[col] === "number" ? r[col] : Number.NEGATIVE_INFINITY,
+    );
     const max = vals.length ? Math.max(...vals) : null;
     return [{ [alias]: max }];
   }
@@ -90,7 +98,10 @@ export async function all(sql: string, ...params: any[]) {
       const out: any = {};
       for (const c of selected) {
         // handle alias like COUNT(*) as c or functions ignored
-        const simple = c.replace(/.*\.(.*)/, "$1").split(/ as /i)[0].trim();
+        const simple = c
+          .replace(/.*\.(.*)/, "$1")
+          .split(/ as /i)[0]
+          .trim();
         out[simple] = r[simple];
       }
       return out;
@@ -98,7 +109,9 @@ export async function all(sql: string, ...params: any[]) {
   }
 
   // INSERT INTO table (cols) VALUES (?,?,?,?,?) [ON CONFLICT ...]
-  const insertMatch = s.match(/^INSERT INTO ([a-z_]+) \(([^)]+)\) VALUES \(([^)]+)\)/i);
+  const insertMatch = s.match(
+    /^INSERT INTO ([a-z_]+) \(([^)]+)\) VALUES \(([^)]+)\)/i,
+  );
   if (insertMatch) {
     const table = insertMatch[1];
     const cols = insertMatch[2].split(",").map((c: string) => c.trim());

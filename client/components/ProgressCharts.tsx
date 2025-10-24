@@ -38,9 +38,20 @@ export default function ProgressCharts() {
   const { habits, getHabitsForDate } = useHabits();
 
   const [weeklyData, setWeeklyData] = useState<ProgressData[]>([]);
-  const [categoryDataState, setCategoryDataState] = useState<CategoryData[]>([]);
-  const [monthlyStreakState, setMonthlyStreakState] = useState<{ week: string; days: number }[]>([]);
-  const [timeAnalytics, setTimeAnalytics] = useState({ bestWindow: "Mañana", bestDay: "—", consistentHabit: "—", avgDaily: 0, maxStreak: 0, successRate: 0 });
+  const [categoryDataState, setCategoryDataState] = useState<CategoryData[]>(
+    [],
+  );
+  const [monthlyStreakState, setMonthlyStreakState] = useState<
+    { week: string; days: number }[]
+  >([]);
+  const [timeAnalytics, setTimeAnalytics] = useState({
+    bestWindow: "Mañana",
+    bestDay: "—",
+    consistentHabit: "—",
+    avgDaily: 0,
+    maxStreak: 0,
+    successRate: 0,
+  });
 
   const toIso = (d: Date) => d.toISOString().split("T")[0];
 
@@ -60,9 +71,12 @@ export default function ProgressCharts() {
       await Promise.all(
         habits.map(async (h) => {
           try {
-            const res = await fetch(`/api/users/${user.id}/habits/${h.id}/logs?from=${from}&to=${to}`, {
-              headers: { Authorization: `Bearer ${devToken}` },
-            });
+            const res = await fetch(
+              `/api/users/${user.id}/habits/${h.id}/logs?from=${from}&to=${to}`,
+              {
+                headers: { Authorization: `Bearer ${devToken}` },
+              },
+            );
             if (!res.ok) {
               logsByHabit[h.id] = [];
               return;
@@ -92,25 +106,41 @@ export default function ProgressCharts() {
           if (entry && entry.completedBoolean) completed++;
         }
         const percentage = total ? Math.round((completed / total) * 100) : 0;
-        return { day: d.toLocaleDateString("es-ES", { weekday: "short" }), completed, total, percentage };
+        return {
+          day: d.toLocaleDateString("es-ES", { weekday: "short" }),
+          completed,
+          total,
+          percentage,
+        };
       });
       setWeeklyData(weekData);
 
       // Category data over last 7 days
-      const catMap: Record<string, { completed: number; total: number; color: string }> = {};
+      const catMap: Record<
+        string,
+        { completed: number; total: number; color: string }
+      > = {};
       for (const h of habits) {
         const color = h.color?.split(" ")[0] || "bg-muted";
-        if (!catMap[h.category]) catMap[h.category] = { completed: 0, total: 0, color };
+        if (!catMap[h.category])
+          catMap[h.category] = { completed: 0, total: 0, color };
         const logs = logsByHabit[h.id] || [];
         // count completed logs in last 7 days
         const completedCount = logs.filter((l: any) => {
           const d = new Date(l.date);
-          return d >= days[0] && d <= days[days.length - 1] && l.completedBoolean;
+          return (
+            d >= days[0] && d <= days[days.length - 1] && l.completedBoolean
+          );
         }).length;
         catMap[h.category].completed += completedCount;
         catMap[h.category].total += days.length; // opportunities approximation
       }
-      const categories = Object.keys(catMap).map((k) => ({ name: k, completed: catMap[k].completed, total: Math.max(1, catMap[k].total), color: catMap[k].color }));
+      const categories = Object.keys(catMap).map((k) => ({
+        name: k,
+        completed: catMap[k].completed,
+        total: Math.max(1, catMap[k].total),
+        color: catMap[k].color,
+      }));
       setCategoryDataState(categories);
 
       // Monthly streak trend (4 weeks window)
@@ -126,7 +156,11 @@ export default function ProgressCharts() {
           endW.setMonth(startW.getMonth() + 1, 0);
         }
         let perfectDays = 0;
-        for (let dt = new Date(startW); dt <= endW; dt.setDate(dt.getDate() + 1)) {
+        for (
+          let dt = new Date(startW);
+          dt <= endW;
+          dt.setDate(dt.getDate() + 1)
+        ) {
           const hf = getHabitsForDate(new Date(dt));
           if (hf.length === 0) continue;
           let completedAll = true;
@@ -145,18 +179,34 @@ export default function ProgressCharts() {
       setMonthlyStreakState(weeksArr);
 
       // Time analytics
-      const timeBuckets: Record<string, number> = { morning: 0, afternoon: 0, evening: 0 };
-      const dayCounts: Record<string, { completed: number; total: number }> = {};
-      const habitConsistency: Record<string, { completed: number; possible: number; name: string }> = {};
+      const timeBuckets: Record<string, number> = {
+        morning: 0,
+        afternoon: 0,
+        evening: 0,
+      };
+      const dayCounts: Record<string, { completed: number; total: number }> =
+        {};
+      const habitConsistency: Record<
+        string,
+        { completed: number; possible: number; name: string }
+      > = {};
 
       for (const h of habits) {
         const logs = logsByHabit[h.id] || [];
         // consistency: count completed in range
-        const completedCount = logs.filter((l: any) => l.completedBoolean).length;
-        habitConsistency[h.name || h.id] = { completed: completedCount, possible: logs.length || 30, name: h.name };
+        const completedCount = logs.filter(
+          (l: any) => l.completedBoolean,
+        ).length;
+        habitConsistency[h.name || h.id] = {
+          completed: completedCount,
+          possible: logs.length || 30,
+          name: h.name,
+        };
         for (const l of logs) {
           // day of week
-          const dow = new Date(l.date).toLocaleDateString("es-ES", { weekday: "long" });
+          const dow = new Date(l.date).toLocaleDateString("es-ES", {
+            weekday: "long",
+          });
           if (!dayCounts[dow]) dayCounts[dow] = { completed: 0, total: 0 };
           dayCounts[dow].total += 1;
           if (l.completedBoolean) dayCounts[dow].completed += 1;
@@ -164,32 +214,73 @@ export default function ProgressCharts() {
           const rt = h.reminderTime || "";
           const hour = parseInt(rt.split(":")[0] || "0", 10);
           if (!isNaN(hour)) {
-            if (hour >= 6 && hour < 12) timeBuckets.morning += l.completedBoolean ? 1 : 0;
-            else if (hour >= 12 && hour < 18) timeBuckets.afternoon += l.completedBoolean ? 1 : 0;
+            if (hour >= 6 && hour < 12)
+              timeBuckets.morning += l.completedBoolean ? 1 : 0;
+            else if (hour >= 12 && hour < 18)
+              timeBuckets.afternoon += l.completedBoolean ? 1 : 0;
             else timeBuckets.evening += l.completedBoolean ? 1 : 0;
           }
         }
       }
 
-      const bestWindow = Object.entries(timeBuckets).sort((a, b) => b[1] - a[1])[0]?.[0] || "morning";
-      const windowLabel = bestWindow === "morning" ? "Mañana" : bestWindow === "afternoon" ? "Tarde" : "Noche";
+      const bestWindow =
+        Object.entries(timeBuckets).sort((a, b) => b[1] - a[1])[0]?.[0] ||
+        "morning";
+      const windowLabel =
+        bestWindow === "morning"
+          ? "Mañana"
+          : bestWindow === "afternoon"
+            ? "Tarde"
+            : "Noche";
 
       const bestDay = Object.keys(dayCounts).length
-        ? Object.entries(dayCounts).sort((a, b) => (b[1].completed / Math.max(1, b[1].total)) - (a[1].completed / Math.max(1, a[1].total)))[0][0]
+        ? Object.entries(dayCounts).sort(
+            (a, b) =>
+              b[1].completed / Math.max(1, b[1].total) -
+              a[1].completed / Math.max(1, a[1].total),
+          )[0][0]
         : "—";
 
       const consistencyEntries = Object.values(habitConsistency);
       const mostConsistent = consistencyEntries.length
-        ? consistencyEntries.sort((a, b) => b.completed / Math.max(1, b.possible) - a.completed / Math.max(1, a.possible))[0].name
+        ? consistencyEntries.sort(
+            (a, b) =>
+              b.completed / Math.max(1, b.possible) -
+              a.completed / Math.max(1, a.possible),
+          )[0].name
         : "—";
 
-      const avgDaily = days.reduce((acc, d) => acc + weekData.find((wd) => wd.day === d.toLocaleDateString("es-ES", { weekday: "short" }))!.completed, 0) / 7 || 0;
+      const avgDaily =
+        days.reduce(
+          (acc, d) =>
+            acc +
+            weekData.find(
+              (wd) =>
+                wd.day === d.toLocaleDateString("es-ES", { weekday: "short" }),
+            )!.completed,
+          0,
+        ) / 7 || 0;
       const maxStreak = Math.max(...habits.map((h) => h.streak || 0), 0);
-      const totalCompleted = consistencyEntries.reduce((acc, v) => acc + v.completed, 0);
-      const totalPossible = consistencyEntries.reduce((acc, v) => acc + v.possible, 0);
-      const successRate = totalPossible ? Math.round((totalCompleted / totalPossible) * 100) : 0;
+      const totalCompleted = consistencyEntries.reduce(
+        (acc, v) => acc + v.completed,
+        0,
+      );
+      const totalPossible = consistencyEntries.reduce(
+        (acc, v) => acc + v.possible,
+        0,
+      );
+      const successRate = totalPossible
+        ? Math.round((totalCompleted / totalPossible) * 100)
+        : 0;
 
-      setTimeAnalytics({ bestWindow: windowLabel, bestDay, consistentHabit: mostConsistent, avgDaily: Math.round(avgDaily * 10) / 10, maxStreak, successRate });
+      setTimeAnalytics({
+        bestWindow: windowLabel,
+        bestDay,
+        consistentHabit: mostConsistent,
+        avgDaily: Math.round(avgDaily * 10) / 10,
+        maxStreak,
+        successRate,
+      });
     };
 
     build();
@@ -237,7 +328,14 @@ export default function ProgressCharts() {
           <div className="mt-4 p-3 bg-muted/50 rounded-lg">
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Promedio semanal:</span>
-              <span className="font-medium text-foreground">{weeklyData.length ? Math.round(weeklyData.reduce((s,d) => s + d.percentage, 0)/weeklyData.length) + '%' : '0%'}</span>
+              <span className="font-medium text-foreground">
+                {weeklyData.length
+                  ? Math.round(
+                      weeklyData.reduce((s, d) => s + d.percentage, 0) /
+                        weeklyData.length,
+                    ) + "%"
+                  : "0%"}
+              </span>
             </div>
           </div>
         </CardContent>
@@ -294,11 +392,15 @@ export default function ProgressCharts() {
 
           <div className="mt-6 grid grid-cols-2 gap-4">
             <div className="text-center p-3 bg-success/10 rounded-lg">
-              <div className="text-2xl font-bold text-success">{categoryDataState.reduce((s,c) => s + c.completed, 0)}</div>
+              <div className="text-2xl font-bold text-success">
+                {categoryDataState.reduce((s, c) => s + c.completed, 0)}
+              </div>
               <div className="text-xs text-muted-foreground">Completados</div>
             </div>
             <div className="text-center p-3 bg-muted/50 rounded-lg">
-              <div className="text-2xl font-bold text-foreground">{categoryDataState.reduce((s,c) => s + c.total, 0)}</div>
+              <div className="text-2xl font-bold text-foreground">
+                {categoryDataState.reduce((s, c) => s + c.total, 0)}
+              </div>
               <div className="text-xs text-muted-foreground">Total</div>
             </div>
           </div>
@@ -348,7 +450,9 @@ export default function ProgressCharts() {
             <div className="flex items-center space-x-2 text-primary">
               <Award className="h-4 w-4" />
               <span className="text-sm font-medium">
-                {monthlyStreakState.length ? `Mejor semana: ${Math.max(...monthlyStreakState.map(w => w.days))}/7 días completados` : 'Mejor semana: —'}
+                {monthlyStreakState.length
+                  ? `Mejor semana: ${Math.max(...monthlyStreakState.map((w) => w.days))}/7 días completados`
+                  : "Mejor semana: —"}
               </span>
             </div>
           </div>
@@ -370,7 +474,9 @@ export default function ProgressCharts() {
           <div className="space-y-4">
             <div className="p-3 border border-border rounded-lg">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium">Mejor momento del día</span>
+                <span className="text-sm font-medium">
+                  Mejor momento del día
+                </span>
                 <Badge variant="outline">{timeAnalytics.bestWindow}</Badge>
               </div>
               <p className="text-xs text-muted-foreground">
@@ -384,13 +490,15 @@ export default function ProgressCharts() {
                 <Badge variant="outline">{timeAnalytics.bestDay}</Badge>
               </div>
               <p className="text-xs text-muted-foreground">
-                {`Promedio de ${weeklyData.length ? (Math.round(weeklyData.reduce((s,d) => s + d.completed,0)/weeklyData.length*10)/10) : 0 } hábitos completados`}
+                {`Promedio de ${weeklyData.length ? Math.round((weeklyData.reduce((s, d) => s + d.completed, 0) / weeklyData.length) * 10) / 10 : 0} hábitos completados`}
               </p>
             </div>
 
             <div className="p-3 border border-border rounded-lg">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium">Hábito más consistente</span>
+                <span className="text-sm font-medium">
+                  Hábito más consistente
+                </span>
                 <Badge variant="outline">{timeAnalytics.consistentHabit}</Badge>
               </div>
               <p className="text-xs text-muted-foreground">
@@ -401,15 +509,23 @@ export default function ProgressCharts() {
 
           <div className="mt-4 grid grid-cols-3 gap-2 text-center">
             <div>
-              <div className="text-lg font-bold text-foreground">{timeAnalytics.avgDaily}</div>
-              <div className="text-xs text-muted-foreground">Promedio diario</div>
+              <div className="text-lg font-bold text-foreground">
+                {timeAnalytics.avgDaily}
+              </div>
+              <div className="text-xs text-muted-foreground">
+                Promedio diario
+              </div>
             </div>
             <div>
-              <div className="text-lg font-bold text-foreground">{timeAnalytics.maxStreak}</div>
+              <div className="text-lg font-bold text-foreground">
+                {timeAnalytics.maxStreak}
+              </div>
               <div className="text-xs text-muted-foreground">Racha máxima</div>
             </div>
             <div>
-              <div className="text-lg font-bold text-foreground">{timeAnalytics.successRate}%</div>
+              <div className="text-lg font-bold text-foreground">
+                {timeAnalytics.successRate}%
+              </div>
               <div className="text-xs text-muted-foreground">Tasa de éxito</div>
             </div>
           </div>

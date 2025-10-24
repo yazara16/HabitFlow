@@ -238,7 +238,8 @@ export default function Dashboard() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h1 className="text-3xl font-bold text-foreground mb-2">
-                {greetingLabel}{userName ? ", " : ""}
+                {greetingLabel}
+                {userName ? ", " : ""}
                 {userName}! 👋
               </h1>
               <p className="text-muted-foreground capitalize">{today}</p>
@@ -435,7 +436,9 @@ export default function Dashboard() {
               <CardContent className="space-y-4">
                 {habits.map((habit) => {
                   const Icon = habit.icon;
-                  const progress = habit.target ? (habit.completed / habit.target) * 100 : 0;
+                  const progress = habit.target
+                    ? (habit.completed / habit.target) * 100
+                    : 0;
                   const isCompleted =
                     habit.completedToday || habit.completed >= habit.target;
 
@@ -458,7 +461,11 @@ export default function Dashboard() {
                       </Button>
 
                       <div className={`p-2 rounded-lg ${habit.color}`}>
-                        {typeof Icon === 'function' ? <Icon className="h-4 w-4" /> : <Star className="h-4 w-4" />}
+                        {typeof Icon === "function" ? (
+                          <Icon className="h-4 w-4" />
+                        ) : (
+                          <Star className="h-4 w-4" />
+                        )}
                       </div>
 
                       <div className="flex-1 min-w-0">
@@ -554,7 +561,11 @@ export default function Dashboard() {
                     <div className="flex items-center space-x-3">
                       {(() => {
                         const Icon = category.icon;
-                        return typeof Icon === 'function' ? <Icon className={`h-4 w-4 ${category.color}`} /> : <Star className={`h-4 w-4 ${category.color}`} />;
+                        return typeof Icon === "function" ? (
+                          <Icon className={`h-4 w-4 ${category.color}`} />
+                        ) : (
+                          <Star className={`h-4 w-4 ${category.color}`} />
+                        );
                       })()}
                       <span className="text-sm font-medium">
                         {category.name}

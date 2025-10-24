@@ -583,7 +583,11 @@ export default function Calendar() {
                                 key={habitIndex}
                                 className={`flex items-center space-x-1 p-1 rounded text-xs ${habit.color}`}
                               >
-                                {typeof Icon === 'function' ? <Icon className="h-3 w-3" /> : <Star className="h-3 w-3" /> }
+                                {typeof Icon === "function" ? (
+                                  <Icon className="h-3 w-3" />
+                                ) : (
+                                  <Star className="h-3 w-3" />
+                                )}
                                 <span className="truncate">{habit.name}</span>
                                 {habit.completed && (
                                   <CheckCircle2 className="h-3 w-3 text-success ml-auto" />
@@ -665,7 +669,11 @@ export default function Calendar() {
                               }}
                               className={`flex items-center space-x-1 p-2 rounded text-xs ${habit.color} cursor-move`}
                             >
-                              {typeof Icon === 'function' ? <Icon className="h-3 w-3" /> : <Star className="h-3 w-3" /> }
+                              {typeof Icon === "function" ? (
+                                <Icon className="h-3 w-3" />
+                              ) : (
+                                <Star className="h-3 w-3" />
+                              )}
                               <span className="truncate">{habit.name}</span>
                               {habit.completed && (
                                 <CheckCircle2 className="h-3 w-3 text-success ml-auto" />
@@ -766,7 +774,11 @@ export default function Calendar() {
                     }}
                   >
                     <div className={`p-2 rounded-lg ${habit.color}`}>
-                      {typeof Icon === 'function' ? <Icon className="h-4 w-4" /> : <Star className="h-4 w-4" /> }
+                      {typeof Icon === "function" ? (
+                        <Icon className="h-4 w-4" />
+                      ) : (
+                        <Star className="h-4 w-4" />
+                      )}
                     </div>
 
                     <div className="flex-1">

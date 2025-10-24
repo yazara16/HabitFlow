@@ -47,8 +47,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Try to restore session from token, and fall back to local storage when server is unreachable
     const token = localStorage.getItem("auth:token");
-    const isBuilder = typeof window !== "undefined" && window.location.search.includes("builder.frameEditing");
-    const wantsDevAuth = typeof window !== "undefined" && window.location.search.includes("dev_auth");
+    const isBuilder =
+      typeof window !== "undefined" &&
+      window.location.search.includes("builder.frameEditing");
+    const wantsDevAuth =
+      typeof window !== "undefined" &&
+      window.location.search.includes("dev_auth");
 
     const tryRestoreLocal = () => {
       try {
@@ -71,7 +75,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         let u = users[raw];
         if (!u) {
           // try find by id property inside users values
-          u = Object.values(users).find((x: any) => x && (x.id === raw || x.email === raw));
+          u = Object.values(users).find(
+            (x: any) => x && (x.id === raw || x.email === raw),
+          );
         }
         if (u) setUser(u as AuthUser);
       } catch (e) {
@@ -206,7 +212,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const users = JSON.parse(usersRaw) as Record<string, any>;
         const user = users[data.email];
         if (!user) throw new Error("Credenciales inválidas");
-        if (user.password !== data.password) throw new Error("Credenciales inválidas");
+        if (user.password !== data.password)
+          throw new Error("Credenciales inválidas");
         // persist session
         localStorage.setItem("auth:token", "dev-token");
         persistUser(user as AuthUser);
@@ -231,10 +238,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!user) throw new Error("No user");
       try {
         const token = localStorage.getItem("auth:token");
-        const devHeader = token === "dev-token" ? { "x-dev-user": user.id } : {};
+        const devHeader =
+          token === "dev-token" ? { "x-dev-user": user.id } : {};
         const res = await fetch(`/api/users/${user.id}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}), ...devHeader },
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            ...devHeader,
+          },
           body: JSON.stringify(patch),
         });
         if (!res.ok) throw new Error("Failed to update");
