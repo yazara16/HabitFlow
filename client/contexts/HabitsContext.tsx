@@ -208,7 +208,22 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
       setHabits(initialHabits);
       return;
     }
-    if (Array.isArray(fetchedHabits)) setHabits(fetchedHabits);
+    if (Array.isArray(fetchedHabits)) {
+      const iconMap: Record<string, any> = {
+        Dumbbell,
+        Droplets,
+        DollarSign,
+        ShoppingCart,
+        Star,
+        Book,
+        BookOpen,
+      };
+      const mapped = fetchedHabits.map((h: any) => ({
+        ...h,
+        icon: typeof h.icon === "string" ? iconMap[h.icon] || Star : h.icon || Star,
+      }));
+      setHabits(mapped);
+    }
     if (habitsError) setHabits([]);
   }, [fetchedHabits, user, habitsError]);
 
