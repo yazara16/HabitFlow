@@ -167,7 +167,35 @@ export default function Settings() {
         },
         body: JSON.stringify(settings),
       });
-      if (!res.ok) throw new Error("Error saving settings");
+      if (!res.ok) {
+        // try to extract server error
+        let msg = "Error saving settings";
+        try {
+          const json = await res.json();
+          msg = json?.message || json?.error || msg;
+        } catch (err) {
+          try {
+            const text = await res.text();
+            if (text) msg = text;
+          } catch (e) {}
+        }
+        // fallback: save locally to storage so user doesn't lose changes
+        try {
+          const key = `user_settings:${user.id}`;
+          localStorage.setItem(key, JSON.stringify(settings));
+          setHasUnsavedChanges(false);
+          toast({
+            title: "Guardado localmente",
+            description:
+              "No se pudo guardar en el servidor, los ajustes se conservaron localmente.",
+            variant: "destructive",
+          });
+          setSaving(false);
+          return;
+        } catch (e) {
+          throw new Error(msg);
+        }
+      }
       setHasUnsavedChanges(false);
       toast({
         title: "Preferencias guardadas",
