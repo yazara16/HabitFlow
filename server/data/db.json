@@ -60,7 +60,7 @@
       "completed": 0,
       "streak": 0,
       "frequency": "monthly",
-      "monthlyDays": "[25]",
+      "monthlyDays": "[26]",
       "monthlyMonths": "[10]",
       "reminderTime": "09:00",
       "reminderEnabled": 0,
@@ -84,6 +84,25 @@
       "reminderTime": "09:00",
       "reminderEnabled": 1,
       "createdAt": "2025-10-24T20:05:00.694Z",
+      "lastCompleted": null
+    },
+    {
+      "id": "c90b8d10-6869-45f0-a234-79f6213eb0a6",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "name": "comprar ropa",
+      "description": null,
+      "category": "shopping",
+      "color": "text-orange-500 bg-orange-500/10",
+      "icon": {},
+      "target": 1,
+      "completed": 0,
+      "streak": 0,
+      "frequency": "monthly",
+      "monthlyDays": "[24]",
+      "monthlyMonths": "[10]",
+      "reminderTime": "09:00",
+      "reminderEnabled": 1,
+      "createdAt": "2025-10-24T20:07:18.773Z",
       "lastCompleted": null
     }
   ],
@@ -158,6 +177,18 @@
       "days": null,
       "nextRun": null,
       "createdAt": "2025-10-24T20:05:02.379Z"
+    },
+    {
+      "id": "7e7c19e7-6f52-42c2-96de-143877ad6977",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "habitId": "c90b8d10-6869-45f0-a234-79f6213eb0a6",
+      "timeOfDay": "09:00",
+      "enabled": 1,
+      "timezone": null,
+      "recurrence": "monthly",
+      "days": null,
+      "nextRun": null,
+      "createdAt": "2025-10-24T20:07:20.444Z"
     }
   ],
   "user_settings": [],

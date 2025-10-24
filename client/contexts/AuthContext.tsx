@@ -190,14 +190,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const updateProfile = useCallback(
     async (patch: Partial<AuthUser>) => {
       if (!user) throw new Error("No user");
-      const res = await fetch(`/api/users/${user.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(patch),
-      });
-      if (!res.ok) throw new Error("Failed to update");
-      const updated: AuthUser = await res.json();
-      setUser(updated);
+      try {
+        const res = await fetch(`/api/users/${user.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(patch),
+        });
+        if (!res.ok) throw new Error("Failed to update");
+        const updated: AuthUser = await res.json();
+        setUser(updated);
+        return updated;
+      } catch (e) {
+        // Fallback: update localStorage stub users
+        try {
+          const usersRaw = localStorage.getItem(USERS_KEY) || "{}";
+          const users = JSON.parse(usersRaw) as Record<string, any>;
+          const existing = users[user.id] || users[user.email];
+          if (!existing) throw e;
+          const updated = { ...existing, ...patch };
+          users[updated.id || user.id] = updated;
+          localStorage.setItem(USERS_KEY, JSON.stringify(users));
+          setUser(updated as AuthUser);
+          return updated as AuthUser;
+        } catch (err) {
+          throw e;
+        }
+      }
     },
     [user],
   );
