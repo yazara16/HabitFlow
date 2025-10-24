@@ -1,0 +1,60 @@
+{
+  "users": [
+    {
+      "id": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "name": "Yazmin Aranxa",
+      "email": "yaz@ejemplo.com",
+      "password": "$2a$08$qMnk/NFfaBLYC2R5hzFGAebELQ3atzpkR0x4IvyyNl3nNnUjyQf1S",
+      "photoUrl": null,
+      "createdAt": "2025-10-24T19:55:52.066Z"
+    }
+  ],
+  "habits": [
+    {
+      "id": "ea610869-749d-44c0-bcc4-b374d459e8c2",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "name": "Lista de compras semanal",
+      "description": "Planificación de compras del hogar",
+      "category": "shopping",
+      "color": "text-orange-500 bg-orange-500/10",
+      "icon": "ShoppingCart",
+      "target": 1,
+      "completed": 0,
+      "streak": 0,
+      "frequency": "weekly",
+      "monthlyDays": null,
+      "monthlyMonths": null,
+      "reminderTime": "18:00",
+      "reminderEnabled": 1,
+      "createdAt": "2025-10-24T19:55:52.069Z",
+      "lastCompleted": null
+    },
+    {
+      "id": "f7467fee-c4f5-4d7e-8b8d-70b52de6957a",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "name": "Correr 1 hora",
+      "description": null,
+      "category": "exercise",
+      "color": "text-red-500 bg-red-500/10",
+      "icon": {},
+      "target": 1,
+      "completed": 0,
+      "streak": 0,
+      "frequency": "daily",
+      "monthlyDays": "[]",
+      "monthlyMonths": "[]",
+      "reminderTime": "09:00",
+      "reminderEnabled": 0,
+      "createdAt": "2025-10-24T19:56:10.426Z",
+      "lastCompleted": null
+    }
+  ],
+  "habit_logs": [],
+  "habit_overrides": [],
+  "notifications": [],
+  "achievements": [],
+  "user_achievements": [],
+  "reminders": [],
+  "user_settings": [],
+  "devices": []
+}
