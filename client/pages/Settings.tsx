@@ -159,11 +159,13 @@ export default function Settings() {
     try {
       await updateProfile({ name: settings.name, email: settings.email });
       const token = localStorage.getItem("auth:token");
+      const devHeader = token === "dev-token" ? { "x-dev-user": user.id } : {};
       const res = await fetch(`/api/users/${user.id}/settings`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          ...devHeader,
         },
         body: JSON.stringify(settings),
       });
