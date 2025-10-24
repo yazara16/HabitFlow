@@ -294,11 +294,11 @@ export default function ProgressCharts() {
 
           <div className="mt-6 grid grid-cols-2 gap-4">
             <div className="text-center p-3 bg-success/10 rounded-lg">
-              <div className="text-2xl font-bold text-success">22</div>
+              <div className="text-2xl font-bold text-success">{categoryDataState.reduce((s,c) => s + c.completed, 0)}</div>
               <div className="text-xs text-muted-foreground">Completados</div>
             </div>
             <div className="text-center p-3 bg-muted/50 rounded-lg">
-              <div className="text-2xl font-bold text-foreground">28</div>
+              <div className="text-2xl font-bold text-foreground">{categoryDataState.reduce((s,c) => s + c.total, 0)}</div>
               <div className="text-xs text-muted-foreground">Total</div>
             </div>
           </div>
