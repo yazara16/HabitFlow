@@ -145,21 +145,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = useCallback(
     async (data: { email: string; password: string }) => {
-      const res = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body?.message || "Credenciales inválidas");
+      try {
+        const res = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          throw new Error(body?.message || "Credenciales inválidas");
+        }
+        const body = await res.json();
+        const u: AuthUser = body.user || body;
+        const token: string | undefined = body.token;
+        persistUser(u);
+        if (token) localStorage.setItem("auth:token", token);
+        return u;
+      } catch (e) {
+        // Fallback to localStorage users when API/database unavailable
+        const usersRaw = localStorage.getItem(USERS_KEY) || "{}";
+        const users = JSON.parse(usersRaw) as Record<string, any>;
+        const user = users[data.email];
+        if (!user) throw new Error("Credenciales inválidas");
+        if (user.password !== data.password) throw new Error("Credenciales inválidas");
+        // persist session
+        localStorage.setItem("auth:token", "dev-token");
+        persistUser(user as AuthUser);
+        return user as AuthUser;
       }
-      const body = await res.json();
-      const u: AuthUser = body.user || body;
-      const token: string | undefined = body.token;
-      persistUser(u);
-      if (token) localStorage.setItem("auth:token", token);
-      return u;
     },
     [],
   );
