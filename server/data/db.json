@@ -59,9 +59,9 @@
       "target": 1,
       "completed": 0,
       "streak": 0,
-      "frequency": "daily",
-      "monthlyDays": "[]",
-      "monthlyMonths": "[]",
+      "frequency": "monthly",
+      "monthlyDays": "[25]",
+      "monthlyMonths": "[10]",
       "reminderTime": "09:00",
       "reminderEnabled": 0,
       "createdAt": "2025-10-24T19:59:49.939Z",
@@ -102,6 +102,26 @@
       "patch": null,
       "createdAt": "2025-10-24T20:00:43.188Z",
       "updatedAt": "2025-10-24T20:00:43.188Z"
+    },
+    {
+      "id": "d6c877f8-f407-432b-a2de-516cf4052690",
+      "habitId": "f7467fee-c4f5-4d7e-8b8d-70b52de6957a",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-24",
+      "hidden": 1,
+      "patch": null,
+      "createdAt": "2025-10-24T20:01:18.762Z",
+      "updatedAt": "2025-10-24T20:01:18.762Z"
+    },
+    {
+      "id": "c0b5beaa-3697-46b6-be4b-92791102001d",
+      "habitId": "b15f8f0b-988d-4a08-981b-70271b307bc4",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-24",
+      "hidden": 1,
+      "patch": null,
+      "createdAt": "2025-10-24T20:01:48.490Z",
+      "updatedAt": "2025-10-24T20:01:48.490Z"
     }
   ],
   "notifications": [],
