@@ -8,7 +8,8 @@ export const listOverrides: RequestHandler = async (req, res) => {
   // normalize incoming date to YYYY-MM-DD if provided
   let date: string | undefined = undefined;
   try {
-    if (dateRaw) date = new Date(dateRaw + "T00:00:00").toISOString().split("T")[0];
+    if (dateRaw)
+      date = new Date(dateRaw + "T00:00:00").toISOString().split("T")[0];
   } catch (e) {
     date = dateRaw;
   }
@@ -23,7 +24,10 @@ export const listOverrides: RequestHandler = async (req, res) => {
     rows.map((r: any) => ({
       ...r,
       hidden: !!r.hidden,
-      patch: typeof r.patch === 'string' && r.patch ? JSON.parse(r.patch) : r.patch || null,
+      patch:
+        typeof r.patch === "string" && r.patch
+          ? JSON.parse(r.patch)
+          : r.patch || null,
     })),
   );
 };
@@ -64,7 +68,10 @@ export const createOverride: RequestHandler = async (req, res) => {
       dateIso,
       existing.id,
     );
-      const row = await db.get("SELECT * FROM habit_overrides WHERE id = ?", existing.id);
+    const row = await db.get(
+      "SELECT * FROM habit_overrides WHERE id = ?",
+      existing.id,
+    );
     if (!row) {
       const fallback = {
         id: existing.id,
@@ -81,7 +88,10 @@ export const createOverride: RequestHandler = async (req, res) => {
     return res.status(200).json({
       ...row,
       hidden: !!row.hidden,
-      patch: typeof row.patch === 'string' && row.patch ? JSON.parse(row.patch) : row.patch || null,
+      patch:
+        typeof row.patch === "string" && row.patch
+          ? JSON.parse(row.patch)
+          : row.patch || null,
     });
   }
 
@@ -119,13 +129,14 @@ export const createOverride: RequestHandler = async (req, res) => {
     };
     return res.status(201).json(fallback);
   }
-  res
-    .status(201)
-    .json({
-      ...row,
-      hidden: !!row.hidden,
-      patch: typeof row.patch === 'string' && row.patch ? JSON.parse(row.patch) : row.patch || null,
-    });
+  res.status(201).json({
+    ...row,
+    hidden: !!row.hidden,
+    patch:
+      typeof row.patch === "string" && row.patch
+        ? JSON.parse(row.patch)
+        : row.patch || null,
+  });
 };
 
 export const deleteOverride: RequestHandler = async (req, res) => {

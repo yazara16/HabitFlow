@@ -68,7 +68,8 @@ type Habit = HabitType;
 
 export default function Dashboard() {
   useHabitReminders();
-  const { habits, addHabit, updateHabit, removeHabit, getHabitsForDate } = useHabits();
+  const { habits, addHabit, updateHabit, removeHabit, getHabitsForDate } =
+    useHabits();
   const { user } = useAuth();
   const [habitDialogOpen, setHabitDialogOpen] = useState(false);
   const [celebrate, setCelebrate] = useState(false);
@@ -95,7 +96,10 @@ export default function Dashboard() {
       const token = localStorage.getItem("auth:token");
       const devHeader = token === "dev-token" ? { "x-dev-user": user.id } : {};
       const res = await fetch(`/api/users/${user.id}/dashboard`, {
-        headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}), ...devHeader },
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          ...devHeader,
+        },
       });
       if (!res.ok) {
         const text = await res.text().catch(() => "");
@@ -120,7 +124,10 @@ export default function Dashboard() {
       const token = localStorage.getItem("auth:token");
       const devHeader = token === "dev-token" ? { "x-dev-user": user.id } : {};
       const res = await fetch(`/api/users/${user.id}/achievements`, {
-        headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}), ...devHeader },
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          ...devHeader,
+        },
       });
       if (!res.ok) throw new Error("Failed to load achievements");
       return await res.json();
@@ -151,10 +158,13 @@ export default function Dashboard() {
   // Prefer client-side derived values for immediate UI responsiveness; fall back to serverStats only if client data is unavailable
   const clientCompleted = todayHabits.filter((h) => h.completedToday).length;
   const clientTotal = todayHabits.length || 1;
-  const completedHabitsToday = clientCompleted ?? serverStats?.completedToday ?? 0;
+  const completedHabitsToday =
+    clientCompleted ?? serverStats?.completedToday ?? 0;
   const totalHabitsToday = clientTotal ?? serverStats?.totalHabits ?? 1;
   const completionPercentage =
-    totalHabitsToday === 0 ? 0 : (completedHabitsToday / totalHabitsToday) * 100;
+    totalHabitsToday === 0
+      ? 0
+      : (completedHabitsToday / totalHabitsToday) * 100;
 
   // Keep totalHabits for week calculations (all habits count)
   const totalHabits = serverStats?.totalHabits ?? (habits.length || 1);
@@ -525,10 +535,7 @@ export default function Dashboard() {
 
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                          >
+                          <Button variant="ghost" size="sm">
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
@@ -545,13 +552,19 @@ export default function Dashboard() {
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
                             onClick={() => {
-                              const ok = window.confirm('¿Eliminar este hábito?');
+                              const ok = window.confirm(
+                                "¿Eliminar este hábito?",
+                              );
                               if (!ok) return;
                               try {
                                 removeHabit(habit.id);
-                                toast({ title: 'Hábito eliminado' });
+                                toast({ title: "Hábito eliminado" });
                               } catch (e) {
-                                toast({ title: 'Error', description: 'No se pudo eliminar el hábito', variant: 'destructive' });
+                                toast({
+                                  title: "Error",
+                                  description: "No se pudo eliminar el hábito",
+                                  variant: "destructive",
+                                });
                               }
                             }}
                             className="text-destructive"

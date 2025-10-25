@@ -238,7 +238,7 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
           try {
             if (!v) return [];
             if (Array.isArray(v)) return v;
-            if (typeof v === 'string') return JSON.parse(v);
+            if (typeof v === "string") return JSON.parse(v);
             return [];
           } catch (e) {
             return [];
@@ -277,7 +277,9 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
     onSuccess: (created: Habit) => {
       queryClient.invalidateQueries({ queryKey: ["habits", user?.id] });
       queryClient.invalidateQueries({ queryKey: ["dashboard", user?.id] });
-      queryClient.invalidateQueries({ queryKey: ["calendar", /* month range handled separately */] });
+      queryClient.invalidateQueries({
+        queryKey: ["calendar" /* month range handled separately */],
+      });
       queryClient.invalidateQueries({ queryKey: ["achievements", user?.id] });
     },
   });
@@ -311,7 +313,7 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
     onSuccess: (_updated: Habit) => {
       queryClient.invalidateQueries({ queryKey: ["habits", user?.id] });
       queryClient.invalidateQueries({ queryKey: ["dashboard", user?.id] });
-      queryClient.invalidateQueries({ queryKey: ["calendar", /* range */] });
+      queryClient.invalidateQueries({ queryKey: ["calendar" /* range */] });
       queryClient.invalidateQueries({ queryKey: ["achievements", user?.id] });
     },
   });
@@ -337,7 +339,7 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
     onSuccess: (_id) => {
       queryClient.invalidateQueries({ queryKey: ["habits", user?.id] });
       queryClient.invalidateQueries({ queryKey: ["dashboard", user?.id] });
-      queryClient.invalidateQueries({ queryKey: ["calendar", /* range */] });
+      queryClient.invalidateQueries({ queryKey: ["calendar" /* range */] });
       queryClient.invalidateQueries({ queryKey: ["achievements", user?.id] });
     },
   });
@@ -638,9 +640,13 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
         } catch (e) {
           // rollback optimistic update on error
           setHabits(previous);
-          console.error('updateHabit failed', e);
+          console.error("updateHabit failed", e);
           try {
-            toast({ title: 'Error actualizando hábito', description: String(e?.message || e), variant: 'destructive' });
+            toast({
+              title: "Error actualizando hábito",
+              description: String(e?.message || e),
+              variant: "destructive",
+            });
           } catch (ee) {}
           throw e;
         }

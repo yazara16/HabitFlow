@@ -48,7 +48,9 @@ export const getCalendarData: RequestHandler = async (req, res) => {
       else {
         // keep latest updatedAt
         const existing = overridesMap[key];
-        const a = new Date(existing.updatedAt || existing.createdAt || 0).getTime();
+        const a = new Date(
+          existing.updatedAt || existing.createdAt || 0,
+        ).getTime();
         const b = new Date(o.updatedAt || o.createdAt || 0).getTime();
         if (b >= a) overridesMap[key] = o;
       }
@@ -56,7 +58,10 @@ export const getCalendarData: RequestHandler = async (req, res) => {
     const overrides = Object.values(overridesMap).map((r: any) => ({
       ...r,
       hidden: !!r.hidden,
-      patch: typeof r.patch === 'string' && r.patch ? JSON.parse(r.patch) : r.patch || null,
+      patch:
+        typeof r.patch === "string" && r.patch
+          ? JSON.parse(r.patch)
+          : r.patch || null,
     }));
 
     return res.json({ logs, overrides });

@@ -75,7 +75,10 @@ export default function ProgressCharts() {
             const res = await fetch(
               `/api/users/${user.id}/habits/${h.id}/logs?from=${from}&to=${to}`,
               {
-                headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}), ...devHeader },
+                headers: {
+                  ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                  ...devHeader,
+                },
               },
             );
             if (!res.ok) {

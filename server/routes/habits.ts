@@ -176,20 +176,31 @@ export const updateHabitHandler: RequestHandler = async (req, res) => {
     userId,
   );
 
-  const row2 = await db.get("SELECT * FROM habits WHERE id = ? AND userId = ?", habitId, userId);
+  const row2 = await db.get(
+    "SELECT * FROM habits WHERE id = ? AND userId = ?",
+    habitId,
+    userId,
+  );
   if (!row2) return res.status(404).json({ message: "Not found after update" });
   const today = new Date().toISOString().split("T")[0];
   // Normalize monthlyDays/monthlyMonths: if JSON string, parse it
   let monthlyDays: any = [];
   let monthlyMonths: any = [];
   try {
-    if (typeof row2.monthlyDays === 'string' && row2.monthlyDays) monthlyDays = JSON.parse(row2.monthlyDays);
+    if (typeof row2.monthlyDays === "string" && row2.monthlyDays)
+      monthlyDays = JSON.parse(row2.monthlyDays);
     else if (Array.isArray(row2.monthlyDays)) monthlyDays = row2.monthlyDays;
-  } catch (e) { monthlyDays = [] }
+  } catch (e) {
+    monthlyDays = [];
+  }
   try {
-    if (typeof row2.monthlyMonths === 'string' && row2.monthlyMonths) monthlyMonths = JSON.parse(row2.monthlyMonths);
-    else if (Array.isArray(row2.monthlyMonths)) monthlyMonths = row2.monthlyMonths;
-  } catch (e) { monthlyMonths = [] }
+    if (typeof row2.monthlyMonths === "string" && row2.monthlyMonths)
+      monthlyMonths = JSON.parse(row2.monthlyMonths);
+    else if (Array.isArray(row2.monthlyMonths))
+      monthlyMonths = row2.monthlyMonths;
+  } catch (e) {
+    monthlyMonths = [];
+  }
 
   const habit = {
     id: row2.id,

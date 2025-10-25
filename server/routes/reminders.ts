@@ -57,13 +57,11 @@ export const createReminder: RequestHandler = async (req, res) => {
   } catch (e) {
     parsedDays = [];
   }
-  res
-    .status(201)
-    .json({
-      ...row,
-      enabled: !!row.enabled,
-      days: parsedDays,
-    });
+  res.status(201).json({
+    ...row,
+    enabled: !!row.enabled,
+    days: parsedDays,
+  });
 };
 
 export const updateReminder: RequestHandler = async (req, res) => {

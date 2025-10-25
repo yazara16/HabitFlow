@@ -127,7 +127,9 @@ export default function Calendar() {
     {},
   );
   // calendarOverridesMap: key `${date}_${habitId}` -> { hidden: boolean, patch: object|null }
-  const [calendarOverridesMap, setCalendarOverridesMap] = useState<Record<string, any>>({});
+  const [calendarOverridesMap, setCalendarOverridesMap] = useState<
+    Record<string, any>
+  >({});
 
   function toCalHabit(h: Habit, date: Date): CalendarHabit {
     const iso = date.toISOString().split("T")[0];
@@ -189,7 +191,10 @@ export default function Calendar() {
         // apply patch fields if present
         if (o.patch && idx !== -1) {
           const base = realHabits[idx];
-          const patched = { ...base, completed: !!o.patch.completed ? true : base.completed } as CalendarHabit;
+          const patched = {
+            ...base,
+            completed: !!o.patch.completed ? true : base.completed,
+          } as CalendarHabit;
           realHabits[idx] = patched;
         }
         // if not present and patch exists, add a one-off habit entry
@@ -267,7 +272,10 @@ export default function Calendar() {
         const overridesMap: Record<string, any> = {};
         for (const o of json.overrides || []) {
           const key = `${o.date}_${o.habitId}`;
-          overridesMap[key] = { hidden: !!o.hidden, patch: o.patch ? o.patch : null };
+          overridesMap[key] = {
+            hidden: !!o.hidden,
+            patch: o.patch ? o.patch : null,
+          };
         }
         setCalendarLogsMap(map);
         setCalendarOverridesMap(overridesMap);
@@ -416,16 +424,22 @@ export default function Calendar() {
     const h = habits.find((x) => x.id === habitId);
     if (!h) return;
     // Create a per-day override so the habit appears only on this date
-    updateHabitForDate(h.id, dropDate, {} as any).then(() => {
-      const m = dropDate.getMonth() + 1;
-      const d = dropDate.getDate();
-      toast({
-        title: "Hábito programado",
-        description: `Agregado al ${d} de ${monthNames[m - 1]}.`,
+    updateHabitForDate(h.id, dropDate, {} as any)
+      .then(() => {
+        const m = dropDate.getMonth() + 1;
+        const d = dropDate.getDate();
+        toast({
+          title: "Hábito programado",
+          description: `Agregado al ${d} de ${monthNames[m - 1]}.`,
+        });
+      })
+      .catch(() => {
+        toast({
+          title: "Error",
+          description: "No se pudo programar el hábito",
+          variant: "destructive",
+        });
       });
-    }).catch(() => {
-      toast({ title: 'Error', description: 'No se pudo programar el hábito', variant: 'destructive' });
-    });
   };
 
   return (
