@@ -134,16 +134,17 @@ export default function Habits() {
   const toggleHabit = (habitId: string) => {
     const h = habits.find((h) => h.id === habitId);
     if (!h) return;
-    const newCompleted = h.completedToday
-      ? Math.max(0, h.completed - 1)
-      : Math.min(h.target, h.completed + 1);
+    const today = new Date().toISOString().split("T")[0];
+    const willMark = !h.completedToday;
+    const newCompleted = willMark
+      ? Math.min(h.target, h.completed + 1)
+      : Math.max(0, h.completed - 1);
+    const newStreak = willMark ? h.streak + 1 : Math.max(0, h.streak - 1);
     updateHabit(habitId, {
       completed: newCompleted,
-      completedToday: !h.completedToday,
-      streak: !h.completedToday ? h.streak + 1 : h.streak,
-      lastCompleted: !h.completedToday
-        ? new Date().toISOString().split("T")[0]
-        : h.lastCompleted,
+      completedToday: willMark,
+      streak: newStreak,
+      lastCompleted: willMark ? today : null,
     });
   };
 
