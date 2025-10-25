@@ -68,7 +68,7 @@ type Habit = HabitType;
 
 export default function Dashboard() {
   useHabitReminders();
-  const { habits, addHabit, updateHabit, removeHabit } = useHabits();
+  const { habits, addHabit, updateHabit, removeHabit, getHabitsForDate } = useHabits();
   const { user } = useAuth();
   const [habitDialogOpen, setHabitDialogOpen] = useState(false);
   const [celebrate, setCelebrate] = useState(false);
