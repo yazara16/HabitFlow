@@ -363,8 +363,13 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
   const getHabitsForDate = (date: Date): Habit[] => {
     const iso = toISO(date);
     return habits
-      .filter((h) => isHabitScheduledOnDate(h, date))
-      .filter((h) => !perDayHidden[h.id]?.has(iso))
+      .filter((h) => {
+        const override = perDayOverrides[h.id]?.[iso];
+        // If override explicitly hides the habit for that date, exclude it
+        if (override && (override as any).hidden) return false;
+        // Include habit if normally scheduled OR there is an override for that date
+        return isHabitScheduledOnDate(h, date) || !!override;
+      })
       .map((h) => {
         const override = perDayOverrides[h.id]?.[iso];
         return override ? { ...h, ...override } : h;
