@@ -382,18 +382,16 @@ export default function Calendar() {
   const handleDropHabit = (habitId: string, dropDate: Date) => {
     const h = habits.find((x) => x.id === habitId);
     if (!h) return;
-    const createdAt = dropDate.toISOString().split("T")[0];
-    const m = dropDate.getMonth() + 1;
-    const d = dropDate.getDate();
-    updateHabit(h.id, {
-      createdAt,
-      frequency: "monthly" as any,
-      monthlyMonths: [m],
-      monthlyDays: [d],
-    });
-    toast({
-      title: "Hábito movido",
-      description: `Programado el ${d} de ${monthNames[m - 1]}.`,
+    // Create a per-day override so the habit appears only on this date
+    updateHabitForDate(h.id, dropDate, {} as any).then(() => {
+      const m = dropDate.getMonth() + 1;
+      const d = dropDate.getDate();
+      toast({
+        title: "Hábito programado",
+        description: `Agregado al ${d} de ${monthNames[m - 1]}.`,
+      });
+    }).catch(() => {
+      toast({ title: 'Error', description: 'No se pudo programar el hábito', variant: 'destructive' });
     });
   };
 
