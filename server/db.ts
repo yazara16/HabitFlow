@@ -28,7 +28,30 @@ async function ensureData() {
 async function readData() {
   await ensureData();
   const raw = await fs.readFile(DATA_FILE, "utf-8");
-  return JSON.parse(raw);
+  try {
+    return JSON.parse(raw);
+  } catch (e) {
+    // If file is empty/corrupt, reinitialize with default structure to avoid JSON.parse errors
+    const initial: any = {
+      users: [],
+      habits: [],
+      habit_logs: [],
+      habit_overrides: [],
+      notifications: [],
+      achievements: [],
+      user_achievements: [],
+      reminders: [],
+      user_settings: [],
+      devices: [],
+    };
+    try {
+      await fs.writeFile(DATA_FILE, JSON.stringify(initial, null, 2));
+    } catch (err) {
+      // if writing fails, rethrow original parse error for visibility
+      throw e;
+    }
+    return initial;
+  }
 }
 
 async function writeData(data: any) {

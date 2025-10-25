@@ -28,14 +28,14 @@
       "icon": "ShoppingCart",
       "target": 1,
       "completed": 0,
-      "streak": 1,
+      "streak": 2,
       "frequency": "weekly",
       "monthlyDays": null,
       "monthlyMonths": null,
       "reminderTime": "18:00",
       "reminderEnabled": 1,
       "createdAt": "2025-10-24T19:55:52.069Z",
-      "lastCompleted": "2025-10-24"
+      "lastCompleted": "2025-10-25"
     },
     {
       "id": "f7467fee-c4f5-4d7e-8b8d-70b52de6957a",
@@ -941,6 +941,182 @@
       "note": null,
       "createdAt": "2025-10-24T20:54:38.146Z",
       "updatedAt": "2025-10-24T20:54:38.146Z"
+    },
+    {
+      "id": "72ff3e5f-e69c-411e-abe1-9e995dbabc80",
+      "habitId": "ea610869-749d-44c0-bcc4-b374d459e8c2",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-25",
+      "completedAmount": 1,
+      "completedBoolean": 1,
+      "note": null,
+      "createdAt": "2025-10-25T00:14:36.162Z",
+      "updatedAt": "2025-10-25T00:14:36.162Z"
+    },
+    {
+      "id": "8d2c5a91-8631-46ad-96ae-87b531ca67c2",
+      "habitId": "ea610869-749d-44c0-bcc4-b374d459e8c2",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-25",
+      "completedAmount": 0,
+      "completedBoolean": 0,
+      "note": null,
+      "createdAt": "2025-10-25T00:14:37.298Z",
+      "updatedAt": "2025-10-25T00:14:37.298Z"
+    },
+    {
+      "id": "d1ef7b90-4e07-457e-b49b-22a46e7574b3",
+      "habitId": "ea610869-749d-44c0-bcc4-b374d459e8c2",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-25",
+      "completedAmount": 0,
+      "completedBoolean": 0,
+      "note": null,
+      "createdAt": "2025-10-25T00:14:39.613Z",
+      "updatedAt": "2025-10-25T00:14:39.613Z"
+    },
+    {
+      "id": "6e9c1040-dbea-4167-9cd1-a11953b122ab",
+      "habitId": "ea610869-749d-44c0-bcc4-b374d459e8c2",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-25",
+      "completedAmount": 0,
+      "completedBoolean": 0,
+      "note": null,
+      "createdAt": "2025-10-25T00:14:41.293Z",
+      "updatedAt": "2025-10-25T00:14:41.293Z"
+    },
+    {
+      "id": "c3ca4613-4351-460b-a821-dba2a42124f6",
+      "habitId": "ea610869-749d-44c0-bcc4-b374d459e8c2",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-25",
+      "completedAmount": 0,
+      "completedBoolean": 0,
+      "note": null,
+      "createdAt": "2025-10-25T00:14:41.905Z",
+      "updatedAt": "2025-10-25T00:14:41.905Z"
+    },
+    {
+      "id": "48acf9a2-0770-456d-91dd-ef69eeb18446",
+      "habitId": "ea610869-749d-44c0-bcc4-b374d459e8c2",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-25",
+      "completedAmount": 0,
+      "completedBoolean": 0,
+      "note": null,
+      "createdAt": "2025-10-25T00:14:42.076Z",
+      "updatedAt": "2025-10-25T00:14:42.076Z"
+    },
+    {
+      "id": "ce3e02ce-5230-48ec-8403-476264b29865",
+      "habitId": "ea610869-749d-44c0-bcc4-b374d459e8c2",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-25",
+      "completedAmount": 0,
+      "completedBoolean": 0,
+      "note": null,
+      "createdAt": "2025-10-25T00:14:42.223Z",
+      "updatedAt": "2025-10-25T00:14:42.223Z"
+    },
+    {
+      "id": "0622e59a-5e3c-4fe3-9453-a9990fa6eddf",
+      "habitId": "ea610869-749d-44c0-bcc4-b374d459e8c2",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-25",
+      "completedAmount": 0,
+      "completedBoolean": 0,
+      "note": null,
+      "createdAt": "2025-10-25T00:14:42.399Z",
+      "updatedAt": "2025-10-25T00:14:42.399Z"
+    },
+    {
+      "id": "308ef9ab-0246-4e9f-a6ac-d26a466dae28",
+      "habitId": "ea610869-749d-44c0-bcc4-b374d459e8c2",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-25",
+      "completedAmount": 0,
+      "completedBoolean": 0,
+      "note": null,
+      "createdAt": "2025-10-25T00:14:42.623Z",
+      "updatedAt": "2025-10-25T00:14:42.623Z"
+    },
+    {
+      "id": "3c184c54-b2e4-4d30-b43e-a9a0380215ab",
+      "habitId": "ea610869-749d-44c0-bcc4-b374d459e8c2",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-25",
+      "completedAmount": 0,
+      "completedBoolean": 0,
+      "note": null,
+      "createdAt": "2025-10-25T00:14:44.392Z",
+      "updatedAt": "2025-10-25T00:14:44.392Z"
+    },
+    {
+      "id": "8c375583-e24a-4326-a8b5-33894d5a0bd0",
+      "habitId": "ea610869-749d-44c0-bcc4-b374d459e8c2",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-25",
+      "completedAmount": 0,
+      "completedBoolean": 0,
+      "note": null,
+      "createdAt": "2025-10-25T00:14:44.553Z",
+      "updatedAt": "2025-10-25T00:14:44.553Z"
+    },
+    {
+      "id": "c3c463b5-d902-4eab-a2dd-74461740b989",
+      "habitId": "ea610869-749d-44c0-bcc4-b374d459e8c2",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-25",
+      "completedAmount": 0,
+      "completedBoolean": 0,
+      "note": null,
+      "createdAt": "2025-10-25T00:14:44.728Z",
+      "updatedAt": "2025-10-25T00:14:44.728Z"
+    },
+    {
+      "id": "652b564d-9dc6-46e1-8d51-215576167543",
+      "habitId": "ea610869-749d-44c0-bcc4-b374d459e8c2",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-25",
+      "completedAmount": 0,
+      "completedBoolean": 0,
+      "note": null,
+      "createdAt": "2025-10-25T00:14:44.912Z",
+      "updatedAt": "2025-10-25T00:14:44.912Z"
+    },
+    {
+      "id": "31290e8a-cb66-4eb7-8f7a-6296861ff1e3",
+      "habitId": "ea610869-749d-44c0-bcc4-b374d459e8c2",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-25",
+      "completedAmount": 0,
+      "completedBoolean": 0,
+      "note": null,
+      "createdAt": "2025-10-25T00:14:45.105Z",
+      "updatedAt": "2025-10-25T00:14:45.105Z"
+    },
+    {
+      "id": "fd2fc639-f802-49cd-9f6d-99a556961052",
+      "habitId": "ea610869-749d-44c0-bcc4-b374d459e8c2",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-25",
+      "completedAmount": 0,
+      "completedBoolean": 0,
+      "note": null,
+      "createdAt": "2025-10-25T00:14:45.336Z",
+      "updatedAt": "2025-10-25T00:14:45.336Z"
+    },
+    {
+      "id": "648b83c8-7bcd-40f5-8b6c-fe01e2a5d17f",
+      "habitId": "ea610869-749d-44c0-bcc4-b374d459e8c2",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-25",
+      "completedAmount": 0,
+      "completedBoolean": 0,
+      "note": null,
+      "createdAt": "2025-10-25T00:14:45.609Z",
+      "updatedAt": "2025-10-25T00:14:45.609Z"
     }
   ],
   "habit_overrides": [
