@@ -1,12 +1,45 @@
 {
   "users": [],
-  "habits": [],
+  "habits": [
+    {
+      "id": "0a8736aa-1c8e-4cf4-ac1e-f22deb9fffe8",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "name": "Correr 1 hora",
+      "description": null,
+      "category": "exercise",
+      "color": "text-red-500 bg-red-500/10",
+      "icon": {},
+      "target": 1,
+      "completed": 0,
+      "streak": 0,
+      "frequency": "monthly",
+      "monthlyDays": "[25]",
+      "monthlyMonths": "[10]",
+      "reminderTime": "09:00",
+      "reminderEnabled": 1,
+      "createdAt": "2025-10-25T00:38:29.336Z",
+      "lastCompleted": null
+    }
+  ],
   "habit_logs": [],
   "habit_overrides": [],
   "notifications": [],
   "achievements": [],
   "user_achievements": [],
-  "reminders": [],
+  "reminders": [
+    {
+      "id": "34a9dd95-1292-437f-bd92-5eb465c5c087",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "habitId": "0a8736aa-1c8e-4cf4-ac1e-f22deb9fffe8",
+      "timeOfDay": "09:00",
+      "enabled": 1,
+      "timezone": null,
+      "recurrence": "monthly",
+      "days": null,
+      "nextRun": null,
+      "createdAt": "2025-10-25T00:38:29.444Z"
+    }
+  ],
   "user_settings": [],
   "devices": []
 }

@@ -2,7 +2,7 @@ import type { RequestHandler } from "express";
 import db from "../db";
 
 // GET /api/users/:userId/calendar?from=YYYY-MM-DD&to=YYYY-MM-DD
-export const getCalendarData: RequestHandler = (req, res) => {
+export const getCalendarData: RequestHandler = async (req, res) => {
   const userId = req.params.userId;
   const from = req.query.from as string | undefined;
   const to = req.query.to as string | undefined;
