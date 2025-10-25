@@ -105,15 +105,15 @@
       "color": "text-orange-500 bg-orange-500/10",
       "icon": {},
       "target": 1,
-      "completed": 0,
-      "streak": 0,
+      "completed": 1,
+      "streak": 1,
       "frequency": "monthly",
       "monthlyDays": "[24]",
       "monthlyMonths": "[10]",
       "reminderTime": "09:00",
       "reminderEnabled": 0,
       "createdAt": "2025-10-25T01:13:03.298Z",
-      "lastCompleted": null
+      "lastCompleted": "2025-10-25"
     },
     {
       "id": "b5f7c070-7771-468e-a5d5-a81ab69fb0bb",
@@ -124,15 +124,15 @@
       "color": "text-red-500 bg-red-500/10",
       "icon": {},
       "target": 1,
-      "completed": 0,
-      "streak": 0,
+      "completed": 1,
+      "streak": 1,
       "frequency": "monthly",
       "monthlyDays": "[24]",
       "monthlyMonths": "[10]",
       "reminderTime": "09:00",
       "reminderEnabled": 0,
       "createdAt": "2025-10-25T01:13:18.061Z",
-      "lastCompleted": null
+      "lastCompleted": "2025-10-25"
     }
   ],
   "habit_logs": [
