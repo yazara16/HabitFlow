@@ -145,12 +145,12 @@ export default function Dashboard() {
     day: "numeric",
   });
 
+  const todayHabits = getHabitsForDate(new Date());
   const completedHabitsToday =
-    serverStats?.completedToday ??
-    habits.filter((h) => h.completedToday).length;
-  const totalHabits = serverStats?.totalHabits ?? (habits.length || 1);
+    serverStats?.completedToday ?? todayHabits.filter((h) => h.completedToday).length;
+  const totalHabitsToday = serverStats?.totalHabits ?? (todayHabits.length || 1);
   const completionPercentage =
-    totalHabits === 0 ? 0 : (completedHabitsToday / totalHabits) * 100;
+    totalHabitsToday === 0 ? 0 : (completedHabitsToday / totalHabitsToday) * 100;
 
   const yesterdayCompleted = serverStats?.yesterdayCompleted ?? 0;
   const completedDiff = completedHabitsToday - yesterdayCompleted;
