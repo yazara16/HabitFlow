@@ -45,6 +45,21 @@ export const createLog: RequestHandler = async (req, res) => {
     now,
   );
   const row = await db.get("SELECT * FROM habit_logs WHERE id = ?", id);
+  if (!row) {
+    // If the read-back failed, return a representation based on what we inserted
+    const fallback = {
+      id,
+      habitId,
+      userId,
+      date: data.date,
+      completedAmount: data.completedAmount || 0,
+      completedBoolean: !!data.completedBoolean,
+      note: data.note || null,
+      createdAt: now,
+      updatedAt: now,
+    };
+    return res.status(201).json(fallback);
+  }
   res.status(201).json({ ...row, completedBoolean: !!row.completedBoolean });
 };
 
