@@ -310,6 +310,9 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
     },
     onSuccess: (_updated: Habit) => {
       queryClient.invalidateQueries({ queryKey: ["habits", user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard", user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["calendar", /* range */] });
+      queryClient.invalidateQueries({ queryKey: ["achievements", user?.id] });
     },
   });
 
