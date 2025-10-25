@@ -10,15 +10,15 @@
       "color": "text-cyan-600 bg-cyan-600/10",
       "icon": {},
       "target": 1,
-      "completed": 1,
-      "streak": 4,
+      "completed": 0,
+      "streak": 3,
       "frequency": "monthly",
       "monthlyDays": "[24]",
       "monthlyMonths": "[10]",
       "reminderTime": "09:00",
       "reminderEnabled": 1,
       "createdAt": "2025-10-25T00:16:44.768Z",
-      "lastCompleted": "2025-10-25"
+      "lastCompleted": null
     },
     {
       "id": "4e2e2b6c-a668-41ad-83e8-10614ed9e0f6",
@@ -37,6 +37,25 @@
       "reminderTime": "09:00",
       "reminderEnabled": 1,
       "createdAt": "2025-10-25T00:22:29.419Z",
+      "lastCompleted": null
+    },
+    {
+      "id": "a089b05a-f94e-486f-a5d2-f2a49e08f4c7",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "name": "Correr 1 hora",
+      "description": null,
+      "category": "exercise",
+      "color": "text-red-500 bg-red-500/10",
+      "icon": {},
+      "target": 1,
+      "completed": 0,
+      "streak": 0,
+      "frequency": "monthly",
+      "monthlyDays": "[27]",
+      "monthlyMonths": "[10]",
+      "reminderTime": "09:00",
+      "reminderEnabled": 1,
+      "createdAt": "2025-10-25T00:25:20.923Z",
       "lastCompleted": null
     }
   ],
@@ -733,6 +752,17 @@
       "note": null,
       "createdAt": "2025-10-25T00:22:05.657Z",
       "updatedAt": "2025-10-25T00:22:05.657Z"
+    },
+    {
+      "id": "241f7bff-e3e3-4f00-bda3-5d76d06be947",
+      "habitId": "b8a3e8f2-0639-4738-aa07-0dad1c091089",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-25",
+      "completedAmount": 0,
+      "completedBoolean": 0,
+      "note": null,
+      "createdAt": "2025-10-25T00:28:04.845Z",
+      "updatedAt": "2025-10-25T00:28:04.845Z"
     }
   ],
   "habit_overrides": [
@@ -834,6 +864,18 @@
       "days": null,
       "nextRun": null,
       "createdAt": "2025-10-25T00:22:29.599Z"
+    },
+    {
+      "id": "c403a2bd-48f0-4499-bf4b-0752d8ae59c6",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "habitId": "a089b05a-f94e-486f-a5d2-f2a49e08f4c7",
+      "timeOfDay": "09:00",
+      "enabled": 1,
+      "timezone": null,
+      "recurrence": "monthly",
+      "days": null,
+      "nextRun": null,
+      "createdAt": "2025-10-25T00:25:21.081Z"
     }
   ],
   "user_settings": [],
