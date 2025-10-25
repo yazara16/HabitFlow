@@ -2,7 +2,7 @@
   "users": [],
   "habits": [
     {
-      "id": "3d3f81b0-fba5-4582-aff3-19cbecf7c79f",
+      "id": "baa9872a-a758-4185-80fc-31709fdf06e8",
       "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
       "name": "Correr 1 hora",
       "description": null,
@@ -10,18 +10,18 @@
       "color": "text-red-500 bg-red-500/10",
       "icon": {},
       "target": 1,
-      "completed": 1,
-      "streak": 1,
+      "completed": 0,
+      "streak": 0,
       "frequency": "monthly",
       "monthlyDays": "[24]",
       "monthlyMonths": "[10]",
       "reminderTime": "09:00",
       "reminderEnabled": 0,
-      "createdAt": "2025-10-25T00:52:11.205Z",
-      "lastCompleted": "2025-10-25"
+      "createdAt": "2025-10-25T00:56:31.037Z",
+      "lastCompleted": null
     },
     {
-      "id": "b022c7bd-6dcc-445b-bc1b-70f977837d09",
+      "id": "851b3488-24dd-4d9c-87fc-da4ce2ccedde",
       "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
       "name": "correr 2 horas",
       "description": null,
@@ -36,7 +36,26 @@
       "monthlyMonths": "[10]",
       "reminderTime": "09:00",
       "reminderEnabled": 0,
-      "createdAt": "2025-10-25T06:00:00.000Z",
+      "createdAt": "2025-10-25T00:57:19.283Z",
+      "lastCompleted": null
+    },
+    {
+      "id": "26fe65bd-5966-4b64-a8a5-b59125e338d5",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "name": "correr",
+      "description": null,
+      "category": "exercise",
+      "color": "text-red-500 bg-red-500/10",
+      "icon": {},
+      "target": 1,
+      "completed": 0,
+      "streak": 0,
+      "frequency": "monthly",
+      "monthlyDays": "[24]",
+      "monthlyMonths": "[10]",
+      "reminderTime": "09:00",
+      "reminderEnabled": 0,
+      "createdAt": "2025-10-25T00:58:09.281Z",
       "lastCompleted": null
     }
   ],

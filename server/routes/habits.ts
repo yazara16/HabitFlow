@@ -18,8 +18,24 @@ export const getHabitsHandler: RequestHandler = async (req, res) => {
     completed: r.completed,
     streak: r.streak,
     frequency: r.frequency,
-    monthlyDays: r.monthlyDays ? r.monthlyDays : [],
-    monthlyMonths: r.monthlyMonths ? r.monthlyMonths : [],
+    monthlyDays: (() => {
+      try {
+        if (!r.monthlyDays) return [];
+        if (Array.isArray(r.monthlyDays)) return r.monthlyDays;
+        return JSON.parse(r.monthlyDays);
+      } catch (e) {
+        return [];
+      }
+    })(),
+    monthlyMonths: (() => {
+      try {
+        if (!r.monthlyMonths) return [];
+        if (Array.isArray(r.monthlyMonths)) return r.monthlyMonths;
+        return JSON.parse(r.monthlyMonths);
+      } catch (e) {
+        return [];
+      }
+    })(),
     reminderTime: r.reminderTime,
     reminderEnabled: !!r.reminderEnabled,
     createdAt: r.createdAt,
