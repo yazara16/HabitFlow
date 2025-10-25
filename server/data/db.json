@@ -10,7 +10,7 @@
       "color": "text-cyan-600 bg-cyan-600/10",
       "icon": {},
       "target": 1,
-      "completed": 0,
+      "completed": 1,
       "streak": 4,
       "frequency": "monthly",
       "monthlyDays": "[24]",
@@ -19,6 +19,25 @@
       "reminderEnabled": 1,
       "createdAt": "2025-10-25T00:16:44.768Z",
       "lastCompleted": "2025-10-25"
+    },
+    {
+      "id": "4e2e2b6c-a668-41ad-83e8-10614ed9e0f6",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "name": "comprar ropa",
+      "description": null,
+      "category": "shopping",
+      "color": "text-orange-500 bg-orange-500/10",
+      "icon": {},
+      "target": 1,
+      "completed": 0,
+      "streak": 0,
+      "frequency": "monthly",
+      "monthlyDays": "[26]",
+      "monthlyMonths": "[10]",
+      "reminderTime": "09:00",
+      "reminderEnabled": 1,
+      "createdAt": "2025-10-25T00:22:29.419Z",
+      "lastCompleted": null
     }
   ],
   "habit_logs": [
@@ -637,6 +656,83 @@
       "note": null,
       "createdAt": "2025-10-25T00:18:54.193Z",
       "updatedAt": "2025-10-25T00:18:54.193Z"
+    },
+    {
+      "id": "61e259da-0927-491a-8d9d-669e13133856",
+      "habitId": "b8a3e8f2-0639-4738-aa07-0dad1c091089",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-25",
+      "completedAmount": 0,
+      "completedBoolean": 0,
+      "note": null,
+      "createdAt": "2025-10-25T00:21:03.012Z",
+      "updatedAt": "2025-10-25T00:21:03.012Z"
+    },
+    {
+      "id": "54771043-a6a1-458d-bcd6-9cd9b142ef45",
+      "habitId": "b8a3e8f2-0639-4738-aa07-0dad1c091089",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-25",
+      "completedAmount": 1,
+      "completedBoolean": 1,
+      "note": null,
+      "createdAt": "2025-10-25T00:21:05.304Z",
+      "updatedAt": "2025-10-25T00:21:05.304Z"
+    },
+    {
+      "id": "79378160-20f8-4c71-886d-6a28b12dfb10",
+      "habitId": "b8a3e8f2-0639-4738-aa07-0dad1c091089",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-25",
+      "completedAmount": 0,
+      "completedBoolean": 0,
+      "note": null,
+      "createdAt": "2025-10-25T00:21:07.490Z",
+      "updatedAt": "2025-10-25T00:21:07.490Z"
+    },
+    {
+      "id": "8924f62e-4ba7-444a-9c56-6f29d9402a2c",
+      "habitId": "b8a3e8f2-0639-4738-aa07-0dad1c091089",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-25",
+      "completedAmount": 1,
+      "completedBoolean": 1,
+      "note": null,
+      "createdAt": "2025-10-25T00:21:11.076Z",
+      "updatedAt": "2025-10-25T00:21:11.076Z"
+    },
+    {
+      "id": "f5e2053c-f169-4730-a4d9-6e49ec4da856",
+      "habitId": "b8a3e8f2-0639-4738-aa07-0dad1c091089",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-25",
+      "completedAmount": 0,
+      "completedBoolean": 0,
+      "note": null,
+      "createdAt": "2025-10-25T00:21:12.318Z",
+      "updatedAt": "2025-10-25T00:21:12.318Z"
+    },
+    {
+      "id": "16c97f96-3af2-4b78-af31-409086a701cf",
+      "habitId": "b8a3e8f2-0639-4738-aa07-0dad1c091089",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-24",
+      "completedAmount": 1,
+      "completedBoolean": 1,
+      "note": null,
+      "createdAt": "2025-10-25T00:21:51.054Z",
+      "updatedAt": "2025-10-25T00:21:51.054Z"
+    },
+    {
+      "id": "323da142-4396-4f9a-9f86-566ac46b7201",
+      "habitId": "b8a3e8f2-0639-4738-aa07-0dad1c091089",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-25",
+      "completedAmount": 1,
+      "completedBoolean": 1,
+      "note": null,
+      "createdAt": "2025-10-25T00:22:05.657Z",
+      "updatedAt": "2025-10-25T00:22:05.657Z"
     }
   ],
   "habit_overrides": [
@@ -669,6 +765,46 @@
       "patch": "{\"completed\":1,\"completedToday\":true,\"lastCompleted\":\"2025-10-24\"}",
       "createdAt": "2025-10-25T00:18:19.595Z",
       "updatedAt": "2025-10-25T00:18:19.595Z"
+    },
+    {
+      "id": "3cb312c6-da55-41fb-84c7-0c374a026722",
+      "habitId": "b8a3e8f2-0639-4738-aa07-0dad1c091089",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-02",
+      "hidden": 1,
+      "patch": null,
+      "createdAt": "2025-10-25T00:21:23.213Z",
+      "updatedAt": "2025-10-25T00:21:23.213Z"
+    },
+    {
+      "id": "a500ed89-05af-426b-9e21-f6aee2cfda81",
+      "habitId": "b8a3e8f2-0639-4738-aa07-0dad1c091089",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-04",
+      "hidden": 1,
+      "patch": null,
+      "createdAt": "2025-10-25T00:21:27.667Z",
+      "updatedAt": "2025-10-25T00:21:27.667Z"
+    },
+    {
+      "id": "a08d0895-ae0e-4480-a550-0433e4512f1e",
+      "habitId": "b8a3e8f2-0639-4738-aa07-0dad1c091089",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-02",
+      "hidden": 1,
+      "patch": null,
+      "createdAt": "2025-10-25T00:21:39.440Z",
+      "updatedAt": "2025-10-25T00:21:39.440Z"
+    },
+    {
+      "id": "bf4bfb11-2a01-4c7c-8614-fb271939424b",
+      "habitId": "b8a3e8f2-0639-4738-aa07-0dad1c091089",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-24",
+      "hidden": 0,
+      "patch": "{\"completed\":1,\"completedToday\":true,\"lastCompleted\":\"2025-10-24\"}",
+      "createdAt": "2025-10-25T00:21:50.966Z",
+      "updatedAt": "2025-10-25T00:21:50.966Z"
     }
   ],
   "notifications": [],
@@ -686,6 +822,18 @@
       "days": null,
       "nextRun": null,
       "createdAt": "2025-10-25T00:16:44.946Z"
+    },
+    {
+      "id": "1385379d-34df-46ba-9bf4-3caa87f65beb",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "habitId": "4e2e2b6c-a668-41ad-83e8-10614ed9e0f6",
+      "timeOfDay": "09:00",
+      "enabled": 1,
+      "timezone": null,
+      "recurrence": "monthly",
+      "days": null,
+      "nextRun": null,
+      "createdAt": "2025-10-25T00:22:29.599Z"
     }
   ],
   "user_settings": [],
