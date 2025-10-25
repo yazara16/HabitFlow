@@ -32,6 +32,11 @@ export const createOverride: RequestHandler = async (req, res) => {
   const { userId, habitId } = req.params;
   const data = req.body || {};
   if (!data.date) return res.status(400).json({ message: "Missing date" });
+  // normalize date to YYYY-MM-DD to avoid '2' vs '02' mismatches
+  let dateIso = data.date;
+  try {
+    dateIso = new Date(data.date + "T00:00:00").toISOString().split("T")[0];
+  } catch (e) {}
   const now = new Date().toISOString();
 
   // Prevent duplicate overrides for same habit/date: upsert semantics
@@ -39,7 +44,7 @@ export const createOverride: RequestHandler = async (req, res) => {
     "SELECT id FROM habit_overrides WHERE habitId = ? AND userId = ? AND date = ?",
     habitId,
     userId,
-    data.date,
+    dateIso,
   );
 
   if (existing) {
