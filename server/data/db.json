@@ -67,15 +67,15 @@
       "color": "text-red-500 bg-red-500/10",
       "icon": {},
       "target": 1,
-      "completed": 0,
-      "streak": 0,
+      "completed": 1,
+      "streak": 1,
       "frequency": "monthly",
       "monthlyDays": "[24]",
       "monthlyMonths": "[10]",
       "reminderTime": "09:00",
       "reminderEnabled": 0,
       "createdAt": "2025-10-25T01:02:02.543Z",
-      "lastCompleted": null
+      "lastCompleted": "2025-10-25"
     },
     {
       "id": "b64429d3-3729-4a0f-9d6f-2dbd557cd7a9",
@@ -95,6 +95,25 @@
       "reminderEnabled": 0,
       "createdAt": "2025-10-25T01:02:29.614Z",
       "lastCompleted": null
+    },
+    {
+      "id": "251c92c5-87d0-4fbb-819a-90f966918af0",
+      "userId": "user_1756599757375",
+      "name": "Leer 1 hora",
+      "description": null,
+      "category": "study",
+      "color": "text-cyan-600 bg-cyan-600/10",
+      "icon": {},
+      "target": 1,
+      "completed": 1,
+      "streak": 1,
+      "frequency": "monthly",
+      "monthlyDays": "[24]",
+      "monthlyMonths": "[10]",
+      "reminderTime": "09:00",
+      "reminderEnabled": 0,
+      "createdAt": "2025-10-25T01:09:58.259Z",
+      "lastCompleted": "2025-10-25"
     }
   ],
   "habit_logs": [
@@ -181,6 +200,12 @@
   "achievements": [],
   "user_achievements": [],
   "reminders": [],
-  "user_settings": [],
+  "user_settings": [
+    {
+      "userId": "user_1756599757375",
+      "settings": "{\"name\":\"Yaz Moreno\",\"email\":\"yaz@ejemplo.com\",\"bio\":\"Construyendo mejores hábitos cada día\",\"timezone\":\"America/Mexico_City\",\"language\":\"es\",\"pushEnabled\":true,\"emailEnabled\":false,\"dailyReminder\":true,\"weeklyReport\":true,\"achievementNotifications\":true,\"reminderTime\":\"09:00\",\"theme\":\"dark\",\"colorScheme\":\"pink\",\"compactMode\":false,\"animationsEnabled\":true,\"analyticsEnabled\":true,\"shareProgress\":false,\"publicProfile\":false,\"defaultReminderEnabled\":true,\"autoArchiveCompleted\":false,\"streakResetTime\":\"00:00\",\"weekStartsOn\":\"monday\"}",
+      "updatedAt": "2025-10-25T01:08:56.446Z"
+    }
+  ],
   "devices": []
 }
