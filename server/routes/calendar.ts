@@ -20,16 +20,44 @@ export const getCalendarData: RequestHandler = (req, res) => {
       params.push(to);
     }
 
-    const logs = db
-      .prepare(
-        `SELECT id,habitId,userId,date,completedAmount,completedBoolean,note,createdAt,updatedAt FROM habit_logs WHERE ${where} ORDER BY date ASC`,
-      )
-      .all(...params);
-    const overrides = db
-      .prepare(
-        `SELECT id,habitId,userId,date,hidden,patch,createdAt,updatedAt FROM habit_overrides WHERE userId = ? ${from ? "AND date >= ?" : ""} ${to ? "AND date <= ?" : ""} ORDER BY date ASC`,
-      )
-      .all(...[userId].concat(from ? [from] : []).concat(to ? [to] : []));
+    const logs = await db.all(
+      `SELECT id,habitId,userId,date,completedAmount,completedBoolean,note,createdAt,updatedAt FROM habit_logs WHERE ${where} ORDER BY date ASC`,
+      ...params,
+    );
+
+    const overrideParams: any[] = [userId];
+    let overrideWhere = "userId = ?";
+    if (from) {
+      overrideWhere += " AND date >= ?";
+      overrideParams.push(from);
+    }
+    if (to) {
+      overrideWhere += " AND date <= ?";
+      overrideParams.push(to);
+    }
+    const overridesRaw = await db.all(
+      `SELECT id,habitId,userId,date,hidden,patch,createdAt,updatedAt FROM habit_overrides WHERE ${overrideWhere} ORDER BY date ASC`,
+      ...overrideParams,
+    );
+
+    // Deduplicate overrides by habitId+date keeping the most recently updated
+    const overridesMap: Record<string, any> = {};
+    for (const o of overridesRaw || []) {
+      const key = `${o.date}_${o.habitId}`;
+      if (!overridesMap[key]) overridesMap[key] = o;
+      else {
+        // keep latest updatedAt
+        const existing = overridesMap[key];
+        const a = new Date(existing.updatedAt || existing.createdAt || 0).getTime();
+        const b = new Date(o.updatedAt || o.createdAt || 0).getTime();
+        if (b >= a) overridesMap[key] = o;
+      }
+    }
+    const overrides = Object.values(overridesMap).map((r: any) => ({
+      ...r,
+      hidden: !!r.hidden,
+      patch: typeof r.patch === 'string' && r.patch ? JSON.parse(r.patch) : r.patch || null,
+    }));
 
     return res.json({ logs, overrides });
   } catch (e: any) {
