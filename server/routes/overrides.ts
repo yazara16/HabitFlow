@@ -61,7 +61,7 @@ export const createOverride: RequestHandler = async (req, res) => {
       "DELETE FROM habit_overrides WHERE habitId = ? AND userId = ? AND date = ? AND id != ?",
       habitId,
       userId,
-      data.date,
+      dateIso,
       existing.id,
     );
       const row = await db.get("SELECT * FROM habit_overrides WHERE id = ?", existing.id);
