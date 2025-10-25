@@ -1,26 +1,6 @@
 {
   "users": [],
-  "habits": [
-    {
-      "id": "0a8736aa-1c8e-4cf4-ac1e-f22deb9fffe8",
-      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
-      "name": "Correr 1 hora",
-      "description": null,
-      "category": "exercise",
-      "color": "text-red-500 bg-red-500/10",
-      "icon": {},
-      "target": 1,
-      "completed": 1,
-      "streak": 1,
-      "frequency": "monthly",
-      "monthlyDays": "[25]",
-      "monthlyMonths": "[10]",
-      "reminderTime": "09:00",
-      "reminderEnabled": 1,
-      "createdAt": "2025-10-25T00:38:29.336Z",
-      "lastCompleted": "2025-10-25"
-    }
-  ],
+  "habits": [],
   "habit_logs": [
     {
       "id": "94c474da-0916-4a9f-8197-f9dcf5bbab2f",
@@ -32,6 +12,50 @@
       "note": null,
       "createdAt": "2025-10-25T00:40:15.033Z",
       "updatedAt": "2025-10-25T00:40:15.033Z"
+    },
+    {
+      "id": "120b0052-1d4e-4a1f-8d5e-692a42a955a0",
+      "habitId": "0a8736aa-1c8e-4cf4-ac1e-f22deb9fffe8",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-02",
+      "completedAmount": 0,
+      "completedBoolean": 0,
+      "note": null,
+      "createdAt": "2025-10-25T00:41:32.717Z",
+      "updatedAt": "2025-10-25T00:41:32.717Z"
+    },
+    {
+      "id": "57d1e51b-485b-491b-93ba-55b76f791b23",
+      "habitId": "0a8736aa-1c8e-4cf4-ac1e-f22deb9fffe8",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-02",
+      "completedAmount": 1,
+      "completedBoolean": 1,
+      "note": null,
+      "createdAt": "2025-10-25T00:41:34.226Z",
+      "updatedAt": "2025-10-25T00:41:34.226Z"
+    },
+    {
+      "id": "98994b12-b448-4d3d-9a89-8298f6c59970",
+      "habitId": "0a8736aa-1c8e-4cf4-ac1e-f22deb9fffe8",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-02",
+      "completedAmount": 0,
+      "completedBoolean": 0,
+      "note": null,
+      "createdAt": "2025-10-25T00:41:34.437Z",
+      "updatedAt": "2025-10-25T00:41:34.437Z"
+    },
+    {
+      "id": "0c39f453-729f-4b6d-9660-c0b8af47c292",
+      "habitId": "0a8736aa-1c8e-4cf4-ac1e-f22deb9fffe8",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-02",
+      "completedAmount": 1,
+      "completedBoolean": 1,
+      "note": null,
+      "createdAt": "2025-10-25T00:41:35.216Z",
+      "updatedAt": "2025-10-25T00:41:35.216Z"
     }
   ],
   "habit_overrides": [],
