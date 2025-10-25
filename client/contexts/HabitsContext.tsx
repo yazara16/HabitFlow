@@ -612,6 +612,10 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
         } catch (e) {
           // rollback optimistic update on error
           setHabits(previous);
+          console.error('updateHabit failed', e);
+          try {
+            toast({ title: 'Error actualizando hábito', description: String(e?.message || e), variant: 'destructive' });
+          } catch (ee) {}
           throw e;
         }
       },
