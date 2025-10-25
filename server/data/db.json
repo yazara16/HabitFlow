@@ -1,6 +1,26 @@
 {
   "users": [],
-  "habits": [],
+  "habits": [
+    {
+      "id": "95c76a03-3ab5-4948-b93d-8a2d2994c7af",
+      "userId": "user_1756599757375",
+      "name": "Correr 1 hora",
+      "description": "Ir al parque",
+      "category": "custom",
+      "color": "text-purple-500 bg-purple-500/10",
+      "icon": {},
+      "target": 1,
+      "completed": 0,
+      "streak": 0,
+      "frequency": "monthly",
+      "monthlyDays": "[24]",
+      "monthlyMonths": "[10]",
+      "reminderTime": "09:00",
+      "reminderEnabled": 0,
+      "createdAt": "2025-10-25T01:22:51.309Z",
+      "lastCompleted": null
+    }
+  ],
   "habit_logs": [],
   "habit_overrides": [],
   "notifications": [],
