@@ -234,7 +234,19 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
             icon = iconMap[h.icon.name] || Star;
           }
         }
-        return { ...h, icon };
+        const parseArr = (v: any) => {
+          try {
+            if (!v) return [];
+            if (Array.isArray(v)) return v;
+            if (typeof v === 'string') return JSON.parse(v);
+            return [];
+          } catch (e) {
+            return [];
+          }
+        };
+        const monthlyDays = parseArr(h.monthlyDays);
+        const monthlyMonths = parseArr(h.monthlyMonths);
+        return { ...h, icon, monthlyDays, monthlyMonths };
       });
       setHabits(mapped);
     }
