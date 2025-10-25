@@ -13,7 +13,7 @@
       "completed": 0,
       "streak": 4,
       "frequency": "monthly",
-      "monthlyDays": "[24,25]",
+      "monthlyDays": "[24]",
       "monthlyMonths": "[10]",
       "reminderTime": "09:00",
       "reminderEnabled": 1,
@@ -560,9 +560,117 @@
       "note": null,
       "createdAt": "2025-10-25T00:17:36.253Z",
       "updatedAt": "2025-10-25T00:17:36.253Z"
+    },
+    {
+      "id": "b2b5ed6b-e179-4244-a45b-6ee6e2c5e98e",
+      "habitId": "b8a3e8f2-0639-4738-aa07-0dad1c091089",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-24",
+      "completedAmount": 1,
+      "completedBoolean": 1,
+      "note": null,
+      "createdAt": "2025-10-25T00:18:13.184Z",
+      "updatedAt": "2025-10-25T00:18:13.184Z"
+    },
+    {
+      "id": "9697046d-3803-4006-9dc5-3334de50bdbc",
+      "habitId": "b8a3e8f2-0639-4738-aa07-0dad1c091089",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-24",
+      "completedAmount": 0,
+      "completedBoolean": 0,
+      "note": null,
+      "createdAt": "2025-10-25T00:18:18.758Z",
+      "updatedAt": "2025-10-25T00:18:18.758Z"
+    },
+    {
+      "id": "082ef53d-3eb0-4a12-8bc2-b0fdcf2c8580",
+      "habitId": "b8a3e8f2-0639-4738-aa07-0dad1c091089",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-24",
+      "completedAmount": 1,
+      "completedBoolean": 1,
+      "note": null,
+      "createdAt": "2025-10-25T00:18:19.704Z",
+      "updatedAt": "2025-10-25T00:18:19.704Z"
+    },
+    {
+      "id": "a592e9ff-ec31-465a-bfff-f25de5f3d301",
+      "habitId": "b8a3e8f2-0639-4738-aa07-0dad1c091089",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-25",
+      "completedAmount": 0,
+      "completedBoolean": 0,
+      "note": null,
+      "createdAt": "2025-10-25T00:18:45.260Z",
+      "updatedAt": "2025-10-25T00:18:45.260Z"
+    },
+    {
+      "id": "8855bedf-2b0f-4092-9e1e-ba0890f6305a",
+      "habitId": "b8a3e8f2-0639-4738-aa07-0dad1c091089",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-25",
+      "completedAmount": 0,
+      "completedBoolean": 0,
+      "note": null,
+      "createdAt": "2025-10-25T00:18:46.835Z",
+      "updatedAt": "2025-10-25T00:18:46.835Z"
+    },
+    {
+      "id": "04727bfc-dfee-4ff9-aaa4-0e9ac82f9974",
+      "habitId": "b8a3e8f2-0639-4738-aa07-0dad1c091089",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-25",
+      "completedAmount": 0,
+      "completedBoolean": 0,
+      "note": null,
+      "createdAt": "2025-10-25T00:18:53.226Z",
+      "updatedAt": "2025-10-25T00:18:53.226Z"
+    },
+    {
+      "id": "e81e729c-507e-409a-bfb5-f390c8a2f5e7",
+      "habitId": "b8a3e8f2-0639-4738-aa07-0dad1c091089",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-25",
+      "completedAmount": 0,
+      "completedBoolean": 0,
+      "note": null,
+      "createdAt": "2025-10-25T00:18:54.193Z",
+      "updatedAt": "2025-10-25T00:18:54.193Z"
     }
   ],
-  "habit_overrides": [],
+  "habit_overrides": [
+    {
+      "id": "c93d01e6-dcbc-4bfa-9361-cb90f3edf46e",
+      "habitId": "b8a3e8f2-0639-4738-aa07-0dad1c091089",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-24",
+      "hidden": 0,
+      "patch": "{\"completed\":1,\"completedToday\":true,\"lastCompleted\":\"2025-10-24\"}",
+      "createdAt": "2025-10-25T00:18:13.090Z",
+      "updatedAt": "2025-10-25T00:18:13.090Z"
+    },
+    {
+      "id": "0bf6f79b-ba4a-422d-a65a-8ae2050a1f60",
+      "habitId": "b8a3e8f2-0639-4738-aa07-0dad1c091089",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-24",
+      "hidden": 0,
+      "patch": "{\"completed\":0,\"completedToday\":false}",
+      "createdAt": "2025-10-25T00:18:18.668Z",
+      "updatedAt": "2025-10-25T00:18:18.668Z"
+    },
+    {
+      "id": "e65159eb-0f85-4bac-ae5d-a86612add22d",
+      "habitId": "b8a3e8f2-0639-4738-aa07-0dad1c091089",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-24",
+      "hidden": 0,
+      "patch": "{\"completed\":1,\"completedToday\":true,\"lastCompleted\":\"2025-10-24\"}",
+      "createdAt": "2025-10-25T00:18:19.595Z",
+      "updatedAt": "2025-10-25T00:18:19.595Z"
+    }
+  ],
   "notifications": [],
   "achievements": [],
   "user_achievements": [],
