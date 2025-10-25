@@ -87,8 +87,24 @@ export const createHabitHandler: RequestHandler = async (req, res) => {
     completed: row.completed,
     streak: row.streak,
     frequency: row.frequency,
-    monthlyDays: row.monthlyDays ? row.monthlyDays : [],
-    monthlyMonths: row.monthlyMonths ? row.monthlyMonths : [],
+    monthlyDays: (() => {
+      try {
+        if (!row.monthlyDays) return [];
+        if (Array.isArray(row.monthlyDays)) return row.monthlyDays;
+        return JSON.parse(row.monthlyDays);
+      } catch (e) {
+        return [];
+      }
+    })(),
+    monthlyMonths: (() => {
+      try {
+        if (!row.monthlyMonths) return [];
+        if (Array.isArray(row.monthlyMonths)) return row.monthlyMonths;
+        return JSON.parse(row.monthlyMonths);
+      } catch (e) {
+        return [];
+      }
+    })(),
     reminderTime: row.reminderTime,
     reminderEnabled: !!row.reminderEnabled,
     createdAt: row.createdAt,
