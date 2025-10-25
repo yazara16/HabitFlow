@@ -148,9 +148,11 @@ export default function Dashboard() {
   });
 
   const todayHabits = getHabitsForDate(new Date());
-  const completedHabitsToday =
-    serverStats?.completedToday ?? todayHabits.filter((h) => h.completedToday).length;
-  const totalHabitsToday = serverStats?.totalHabits ?? (todayHabits.length || 1);
+  // Prefer client-side derived values for immediate UI responsiveness; fall back to serverStats only if client data is unavailable
+  const clientCompleted = todayHabits.filter((h) => h.completedToday).length;
+  const clientTotal = todayHabits.length || 1;
+  const completedHabitsToday = clientCompleted ?? serverStats?.completedToday ?? 0;
+  const totalHabitsToday = clientTotal ?? serverStats?.totalHabits ?? 1;
   const completionPercentage =
     totalHabitsToday === 0 ? 0 : (completedHabitsToday / totalHabitsToday) * 100;
 
