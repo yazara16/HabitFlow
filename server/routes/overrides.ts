@@ -25,8 +25,34 @@ export const createOverride: RequestHandler = async (req, res) => {
   const { userId, habitId } = req.params;
   const data = req.body || {};
   if (!data.date) return res.status(400).json({ message: "Missing date" });
-  const id = uuidv4();
   const now = new Date().toISOString();
+
+  // Prevent duplicate overrides for same habit/date: upsert semantics
+  const existing = await db.get(
+    "SELECT id FROM habit_overrides WHERE habitId = ? AND userId = ? AND date = ?",
+    habitId,
+    userId,
+    data.date,
+  );
+
+  if (existing) {
+    // Update existing
+    await db.run(
+      "UPDATE habit_overrides SET hidden = ?, patch = ?, updatedAt = ? WHERE id = ?",
+      data.hidden ? 1 : 0,
+      data.patch ? JSON.stringify(data.patch) : null,
+      now,
+      existing.id,
+    );
+    const row = await db.get("SELECT * FROM habit_overrides WHERE id = ?", existing.id);
+    return res.status(200).json({
+      ...row,
+      hidden: !!row.hidden,
+      patch: row.patch ? JSON.parse(row.patch) : null,
+    });
+  }
+
+  const id = uuidv4();
   await db.run(
     "INSERT INTO habit_overrides (id,habitId,userId,date,hidden,patch,createdAt,updatedAt) VALUES (?,?,?,?,?,?,?,?)",
     id,
@@ -44,7 +70,7 @@ export const createOverride: RequestHandler = async (req, res) => {
     .json({
       ...row,
       hidden: !!row.hidden,
-      patch: row.patch ? row.patch : null,
+      patch: row.patch ? JSON.parse(row.patch) : null,
     });
 };
 
