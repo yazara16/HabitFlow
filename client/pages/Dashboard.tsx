@@ -433,7 +433,7 @@ export default function Dashboard() {
                   >
                     <Clock className="h-3 w-3" />
                     <span>
-                      {Math.max(habits.length - completedHabitsToday, 0)}{" "}
+                      {Math.max(totalHabitsToday - completedHabitsToday, 0)}{" "}
                       pendientes
                     </span>
                   </Badge>
@@ -577,7 +577,7 @@ export default function Dashboard() {
                   <Target className="h-4 w-4" />
                   <span>
                     Solo quedan{" "}
-                    {Math.max(habits.length - completedHabitsToday, 0)} para
+                    {Math.max(totalHabitsToday - completedHabitsToday, 0)} para
                     completar el día
                   </span>
                 </div>
