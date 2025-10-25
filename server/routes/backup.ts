@@ -3,7 +3,7 @@ import path from "path";
 import db from "../db";
 import { RequestHandler } from "../types.d";
 
-export const createBackup: RequestHandler = (req, res) => {
+export const createBackup: RequestHandler = async (req, res) => {
   try {
     const userId = req.params.userId;
     if (!userId) return res.status(400).json({ message: "Missing userId" });
