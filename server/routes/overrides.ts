@@ -130,6 +130,7 @@ export const createOverride: RequestHandler = async (req, res) => {
 
 export const deleteOverride: RequestHandler = async (req, res) => {
   const { userId, habitId, overrideId } = req.params;
+  // No date normalization needed here; lookup by id
   const row = await db.get(
     "SELECT * FROM habit_overrides WHERE id = ? AND habitId = ? AND userId = ?",
     overrideId,
