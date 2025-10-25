@@ -283,7 +283,7 @@ export default function Dashboard() {
                     {statsLoading ? (
                       <span className="inline-block w-24 h-6 bg-muted/30 rounded animate-pulse" />
                     ) : (
-                      `${completedHabitsToday}/${totalHabits}`
+                      `${completedHabitsToday}/${totalHabitsToday}`
                     )}
                   </p>
                 </div>
