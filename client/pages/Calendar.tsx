@@ -169,9 +169,35 @@ export default function Calendar() {
       const isCurrentMonth = date.getMonth() === month;
       const isToday = date.toDateString() === today.toDateString();
 
-      const realHabits: CalendarHabit[] = isCurrentMonth
+      // start with client-side computed habits for the date
+      let realHabits: CalendarHabit[] = isCurrentMonth
         ? getHabitsForDate(date).map((h) => toCalHabit(h, date))
         : [];
+
+      // apply server-side overrides (if any) for this date
+      const iso = date.toISOString().split("T")[0];
+      for (const key of Object.keys(calendarOverridesMap)) {
+        if (!key.startsWith(`${iso}_`)) continue;
+        const habitId = key.split("_")[1];
+        const o = calendarOverridesMap[key];
+        // find existing habit
+        const idx = realHabits.findIndex((rh) => rh.id === habitId);
+        if (o.hidden) {
+          if (idx !== -1) realHabits.splice(idx, 1);
+          continue;
+        }
+        // apply patch fields if present
+        if (o.patch && idx !== -1) {
+          const base = realHabits[idx];
+          const patched = { ...base, completed: !!o.patch.completed ? true : base.completed } as CalendarHabit;
+          realHabits[idx] = patched;
+        }
+        // if not present and patch exists, add a one-off habit entry
+        if (o.patch && idx === -1) {
+          const h = habits.find((hb) => hb.id === habitId);
+          if (h) realHabits.push(toCalHabit(h, date));
+        }
+      }
 
       const dayHabits = isCurrentMonth ? realHabits : [];
       const completionRate =
