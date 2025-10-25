@@ -93,8 +93,9 @@ export default function Dashboard() {
     queryFn: async () => {
       if (!user) throw new Error("Not authenticated");
       const token = localStorage.getItem("auth:token");
+      const devHeader = token === "dev-token" ? { "x-dev-user": user.id } : {};
       const res = await fetch(`/api/users/${user.id}/dashboard`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}), ...devHeader },
       });
       if (!res.ok) {
         const text = await res.text().catch(() => "");
