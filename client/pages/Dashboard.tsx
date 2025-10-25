@@ -443,7 +443,7 @@ export default function Dashboard() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {habits.map((habit) => {
+                {todayHabits.map((habit) => {
                   const Icon = habit.icon;
                   const progress = habit.target
                     ? (habit.completed / habit.target) * 100
