@@ -336,6 +336,9 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
     },
     onSuccess: (_id) => {
       queryClient.invalidateQueries({ queryKey: ["habits", user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard", user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["calendar", /* range */] });
+      queryClient.invalidateQueries({ queryKey: ["achievements", user?.id] });
     },
   });
   const [perDayHidden, setPerDayHidden] = useState<Record<string, Set<string>>>(
