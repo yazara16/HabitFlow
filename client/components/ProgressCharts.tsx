@@ -64,7 +64,8 @@ export default function ProgressCharts() {
       start.setDate(end.getDate() - 29);
       const from = toIso(start);
       const to = toIso(end);
-      const devToken = localStorage.getItem("auth:token") || "dev-token";
+      const token = localStorage.getItem("auth:token") || "dev-token";
+      const devHeader = token === "dev-token" ? { "x-dev-user": user.id } : {};
 
       // fetch logs per habit in parallel
       const logsByHabit: Record<string, any[]> = {};
@@ -74,7 +75,7 @@ export default function ProgressCharts() {
             const res = await fetch(
               `/api/users/${user.id}/habits/${h.id}/logs?from=${from}&to=${to}`,
               {
-                headers: { Authorization: `Bearer ${devToken}` },
+                headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}), ...devHeader },
               },
             );
             if (!res.ok) {
