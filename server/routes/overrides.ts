@@ -4,7 +4,14 @@ import { v4 as uuidv4 } from "uuid";
 
 export const listOverrides: RequestHandler = async (req, res) => {
   const { userId, habitId } = req.params;
-  const date = req.query.date as string | undefined;
+  const dateRaw = req.query.date as string | undefined;
+  // normalize incoming date to YYYY-MM-DD if provided
+  let date: string | undefined = undefined;
+  try {
+    if (dateRaw) date = new Date(dateRaw + "T00:00:00").toISOString().split("T")[0];
+  } catch (e) {
+    date = dateRaw;
+  }
   let stmt = "SELECT * FROM habit_overrides WHERE userId = ? AND habitId = ?";
   const params: any[] = [userId, habitId];
   if (date) {

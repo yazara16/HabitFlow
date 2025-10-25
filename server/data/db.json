@@ -1,7 +1,91 @@
 {
   "users": [],
-  "habits": [],
-  "habit_logs": [],
+  "habits": [
+    {
+      "id": "c4cd74d5-b743-46e4-a969-b476f77f4754",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "name": "Correr 1 hora",
+      "description": null,
+      "category": "exercise",
+      "color": "text-red-500 bg-red-500/10",
+      "icon": {},
+      "target": 1,
+      "completed": 0,
+      "streak": 0,
+      "frequency": "monthly",
+      "monthlyDays": "[24]",
+      "monthlyMonths": "[]",
+      "reminderTime": "09:00",
+      "reminderEnabled": 0,
+      "createdAt": "2025-10-25T00:46:20.648Z",
+      "lastCompleted": null
+    },
+    {
+      "id": "3e6ca225-80ce-4290-b6a7-3845d877682d",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "name": "correr 2 horas",
+      "description": null,
+      "category": "exercise",
+      "color": "text-red-500 bg-red-500/10",
+      "icon": {},
+      "target": 1,
+      "completed": 0,
+      "streak": 0,
+      "frequency": "monthly",
+      "monthlyDays": "[25]",
+      "monthlyMonths": "[10]",
+      "reminderTime": "09:00",
+      "reminderEnabled": 0,
+      "createdAt": "2025-10-25T00:47:26.179Z",
+      "lastCompleted": null
+    }
+  ],
+  "habit_logs": [
+    {
+      "id": "f116c467-57c9-4f36-835d-8d12d0100328",
+      "habitId": "c4cd74d5-b743-46e4-a969-b476f77f4754",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-25",
+      "completedAmount": 1,
+      "completedBoolean": 1,
+      "note": null,
+      "createdAt": "2025-10-25T00:46:36.347Z",
+      "updatedAt": "2025-10-25T00:46:36.347Z"
+    },
+    {
+      "id": "8b22b747-58d8-4425-a719-554552717d0c",
+      "habitId": "c4cd74d5-b743-46e4-a969-b476f77f4754",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-25",
+      "completedAmount": 0,
+      "completedBoolean": 0,
+      "note": null,
+      "createdAt": "2025-10-25T00:46:37.356Z",
+      "updatedAt": "2025-10-25T00:46:37.356Z"
+    },
+    {
+      "id": "f171ba45-5a03-4a06-b404-9c5b941bb760",
+      "habitId": "c4cd74d5-b743-46e4-a969-b476f77f4754",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-25",
+      "completedAmount": 1,
+      "completedBoolean": 1,
+      "note": null,
+      "createdAt": "2025-10-25T00:46:48.580Z",
+      "updatedAt": "2025-10-25T00:46:48.580Z"
+    },
+    {
+      "id": "6a08a7c2-a99a-48df-a00f-101198b350f0",
+      "habitId": "c4cd74d5-b743-46e4-a969-b476f77f4754",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-25",
+      "completedAmount": 0,
+      "completedBoolean": 0,
+      "note": null,
+      "createdAt": "2025-10-25T00:46:49.397Z",
+      "updatedAt": "2025-10-25T00:46:49.397Z"
+    }
+  ],
   "habit_overrides": [],
   "notifications": [],
   "achievements": [],
