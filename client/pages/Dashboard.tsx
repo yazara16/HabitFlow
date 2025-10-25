@@ -152,6 +152,9 @@ export default function Dashboard() {
   const completionPercentage =
     totalHabitsToday === 0 ? 0 : (completedHabitsToday / totalHabitsToday) * 100;
 
+  // Keep totalHabits for week calculations (all habits count)
+  const totalHabits = serverStats?.totalHabits ?? (habits.length || 1);
+
   const yesterdayCompleted = serverStats?.yesterdayCompleted ?? 0;
   const completedDiff = completedHabitsToday - yesterdayCompleted;
 
