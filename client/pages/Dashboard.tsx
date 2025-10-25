@@ -118,8 +118,9 @@ export default function Dashboard() {
     queryFn: async () => {
       if (!user) return [] as any[];
       const token = localStorage.getItem("auth:token");
+      const devHeader = token === "dev-token" ? { "x-dev-user": user.id } : {};
       const res = await fetch(`/api/users/${user.id}/achievements`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}), ...devHeader },
       });
       if (!res.ok) throw new Error("Failed to load achievements");
       return await res.json();
