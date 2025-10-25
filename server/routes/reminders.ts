@@ -35,12 +35,34 @@ export const createReminder: RequestHandler = async (req, res) => {
     now,
   );
   const row = await db.get("SELECT * FROM reminders WHERE id = ?", id);
+  if (!row) {
+    // Fallback representation when read-back failed
+    const fallback = {
+      id,
+      userId,
+      habitId: data.habitId || null,
+      timeOfDay: data.timeOfDay,
+      enabled: !!data.enabled,
+      timezone: data.timezone || null,
+      recurrence: data.recurrence || null,
+      days: data.days || [],
+      nextRun: data.nextRun || null,
+      createdAt: now,
+    };
+    return res.status(201).json(fallback);
+  }
+  let parsedDays: any = [];
+  try {
+    parsedDays = row.days ? JSON.parse(row.days) : [];
+  } catch (e) {
+    parsedDays = [];
+  }
   res
     .status(201)
     .json({
       ...row,
       enabled: !!row.enabled,
-      days: row.days ? JSON.parse(row.days) : [],
+      days: parsedDays,
     });
 };
 
