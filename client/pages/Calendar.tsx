@@ -126,6 +126,8 @@ export default function Calendar() {
   const [calendarLogsMap, setCalendarLogsMap] = useState<Record<string, any>>(
     {},
   );
+  // calendarOverridesMap: key `${date}_${habitId}` -> { hidden: boolean, patch: object|null }
+  const [calendarOverridesMap, setCalendarOverridesMap] = useState<Record<string, any>>({});
 
   function toCalHabit(h: Habit, date: Date): CalendarHabit {
     const iso = date.toISOString().split("T")[0];
