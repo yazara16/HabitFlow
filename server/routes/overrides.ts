@@ -16,7 +16,7 @@ export const listOverrides: RequestHandler = async (req, res) => {
     rows.map((r: any) => ({
       ...r,
       hidden: !!r.hidden,
-      patch: r.patch ? r.patch : null,
+      patch: typeof r.patch === 'string' && r.patch ? JSON.parse(r.patch) : r.patch || null,
     })),
   );
 };
