@@ -44,6 +44,14 @@ export const createOverride: RequestHandler = async (req, res) => {
       now,
       existing.id,
     );
+    // remove any other duplicates for same habit/date
+    await db.run(
+      "DELETE FROM habit_overrides WHERE habitId = ? AND userId = ? AND date = ? AND id != ?",
+      habitId,
+      userId,
+      data.date,
+      existing.id,
+    );
     const row = await db.get("SELECT * FROM habit_overrides WHERE id = ?", existing.id);
     return res.status(200).json({
       ...row,
@@ -63,6 +71,14 @@ export const createOverride: RequestHandler = async (req, res) => {
     data.patch ? JSON.stringify(data.patch) : null,
     now,
     now,
+  );
+  // delete any pre-existing duplicates that might exist (keep the newly inserted id)
+  await db.run(
+    "DELETE FROM habit_overrides WHERE habitId = ? AND userId = ? AND date = ? AND id != ?",
+    habitId,
+    userId,
+    data.date,
+    id,
   );
   const row = await db.get("SELECT * FROM habit_overrides WHERE id = ?", id);
   res
