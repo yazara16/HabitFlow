@@ -24,13 +24,13 @@
     "prisma:migrate": "prisma migrate deploy"
   },
   "dependencies": {
-    "dotenv": "^17.2.1",
+    "@prisma/client": "^5.18.0",
+    "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "node-fetch": "^3.3.2",
     "pg": "^8.10.0",
-    "zod": "^3.25.76",
     "prisma": "^5.18.0",
-    "@prisma/client": "^5.18.0"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@hookform/resolvers": "^5.2.1",
