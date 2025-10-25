@@ -55,6 +55,14 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useHabits, Habit as HabitType } from "@/contexts/HabitsContext";
 import { toast } from "@/hooks/use-toast";
 import { useHabitReminders } from "@/hooks/use-habit-reminders";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import { Edit, Trash2 } from "lucide-react";
 
 type Habit = HabitType;
 
