@@ -52,11 +52,24 @@ export const createOverride: RequestHandler = async (req, res) => {
       data.date,
       existing.id,
     );
-    const row = await db.get("SELECT * FROM habit_overrides WHERE id = ?", existing.id);
+      const row = await db.get("SELECT * FROM habit_overrides WHERE id = ?", existing.id);
+    if (!row) {
+      const fallback = {
+        id: existing.id,
+        habitId,
+        userId,
+        date: data.date,
+        hidden: !!data.hidden,
+        patch: data.patch || null,
+        createdAt: now,
+        updatedAt: now,
+      };
+      return res.status(200).json(fallback);
+    }
     return res.status(200).json({
       ...row,
       hidden: !!row.hidden,
-      patch: row.patch ? JSON.parse(row.patch) : null,
+      patch: typeof row.patch === 'string' && row.patch ? JSON.parse(row.patch) : row.patch || null,
     });
   }
 
