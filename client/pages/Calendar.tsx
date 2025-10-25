@@ -238,8 +238,13 @@ export default function Calendar() {
             completedAmount: l.completedAmount,
           };
         }
-        // overrides not used directly here but could be merged
+        const overridesMap: Record<string, any> = {};
+        for (const o of json.overrides || []) {
+          const key = `${o.date}_${o.habitId}`;
+          overridesMap[key] = { hidden: !!o.hidden, patch: o.patch ? o.patch : null };
+        }
         setCalendarLogsMap(map);
+        setCalendarOverridesMap(overridesMap);
       } catch (e) {}
     })();
     return () => {
