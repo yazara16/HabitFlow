@@ -2,7 +2,7 @@
   "users": [],
   "habits": [
     {
-      "id": "c4cd74d5-b743-46e4-a969-b476f77f4754",
+      "id": "3d3f81b0-fba5-4582-aff3-19cbecf7c79f",
       "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
       "name": "Correr 1 hora",
       "description": null,
@@ -10,18 +10,18 @@
       "color": "text-red-500 bg-red-500/10",
       "icon": {},
       "target": 1,
-      "completed": 0,
-      "streak": 0,
+      "completed": 1,
+      "streak": 1,
       "frequency": "monthly",
       "monthlyDays": "[24]",
-      "monthlyMonths": "[]",
+      "monthlyMonths": "[10]",
       "reminderTime": "09:00",
       "reminderEnabled": 0,
-      "createdAt": "2025-10-25T00:46:20.648Z",
-      "lastCompleted": null
+      "createdAt": "2025-10-25T00:52:11.205Z",
+      "lastCompleted": "2025-10-25"
     },
     {
-      "id": "3e6ca225-80ce-4290-b6a7-3845d877682d",
+      "id": "b022c7bd-6dcc-445b-bc1b-70f977837d09",
       "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
       "name": "correr 2 horas",
       "description": null,
@@ -36,7 +36,7 @@
       "monthlyMonths": "[10]",
       "reminderTime": "09:00",
       "reminderEnabled": 0,
-      "createdAt": "2025-10-25T00:47:26.179Z",
+      "createdAt": "2025-10-25T06:00:00.000Z",
       "lastCompleted": null
     }
   ],
@@ -84,6 +84,39 @@
       "note": null,
       "createdAt": "2025-10-25T00:46:49.397Z",
       "updatedAt": "2025-10-25T00:46:49.397Z"
+    },
+    {
+      "id": "063fd789-84ec-403e-a106-7cba049e1de5",
+      "habitId": "3d3f81b0-fba5-4582-aff3-19cbecf7c79f",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-25",
+      "completedAmount": 1,
+      "completedBoolean": 1,
+      "note": null,
+      "createdAt": "2025-10-25T00:52:38.635Z",
+      "updatedAt": "2025-10-25T00:52:38.635Z"
+    },
+    {
+      "id": "91f6e17f-213b-41b9-895a-ecace8b33a4e",
+      "habitId": "3d3f81b0-fba5-4582-aff3-19cbecf7c79f",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-25",
+      "completedAmount": 0,
+      "completedBoolean": 0,
+      "note": null,
+      "createdAt": "2025-10-25T00:52:39.843Z",
+      "updatedAt": "2025-10-25T00:52:39.843Z"
+    },
+    {
+      "id": "6a1f73c8-0033-46b0-bafb-7c861e0143c4",
+      "habitId": "3d3f81b0-fba5-4582-aff3-19cbecf7c79f",
+      "userId": "2b08951d-9a24-409d-b34d-58f89c584021",
+      "date": "2025-10-25",
+      "completedAmount": 1,
+      "completedBoolean": 1,
+      "note": null,
+      "createdAt": "2025-10-25T00:52:50.994Z",
+      "updatedAt": "2025-10-25T00:52:50.994Z"
     }
   ],
   "habit_overrides": [],
